@@ -1,0 +1,40 @@
+<div>
+    <ul class="megamenu skyblue">
+        <% _.each(categories, function(category) { %>
+        <li class="active grid" data-id="<%= category._id %>">
+            <a class="color1" href="#lullaby/category/<%= category._id %>">
+                <%= category.title%>
+            </a>
+        </li>
+        <% }); %>
+    </ul>
+</div>
+<div class="women_main">
+    <div class="col-md-3 s-d">
+        <div class="w_sidebar">
+            <div class="w_nav1">
+                <h4>All categories</h4>
+                <ul>
+                    <% _.each(categories, function(category) { %>
+                    <li><a href="#lullaby/category/<%= category._id %>"> <%= category.title %></a></li>
+                    <% }); %>
+                </ul>
+            </div>
+            <section class="sky-form">
+                <h4>discount</h4>
+                <div class="row1 scroll-pane">
+                    <div class="col col-4">
+                        <label class="radio"><input type="radio" name="radio" checked=""><i></i>60 % and above</label>
+                        <label class="radio"><input type="radio" name="radio"><i></i>50 % and above</label>
+                        <label class="radio"><input type="radio" name="radio"><i></i>40 % and above</label>
+                    </div>
+                    <div class="col col-4">
+                        <label class="radio"><input type="radio" name="radio"><i></i>30 % and above</label>
+                        <label class="radio"><input type="radio" name="radio"><i></i>20 % and above</label>
+                        <label class="radio"><input type="radio" name="radio"><i></i>10 % and above</label>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

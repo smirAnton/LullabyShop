@@ -1,0 +1,55 @@
+<div class="container">
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Products</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="main">
+                <div class="registration">
+                    <div class="registration_left">
+                        <h2>New product</h2>
+                        <div class="registration_form">
+                            <form id="registrationForm">
+                                <div class="form-group">
+                                    <label>Select category</label>
+                                    <select class="form-control" id="categoryId">
+                                        <% _.each(items, function(category) { %>
+                                            <option data-id="<%= category._id %>"><%= category.title %></option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>
+                                        <input placeholder="Title" type="text" id="title">
+                                    </label>
+                                </div>
+                                <div>
+                                    <label>
+                                        <input placeholder="Price" type="text" id="price">
+                                    </label>
+                                </div>
+                                <div>
+                                    <label>
+                                        <input placeholder="Brand" type="text" id="brand">
+                                    </label>
+                                </div>
+                                <div>
+                                    <label>
+                                        <textarea placeholder="Description" class="form-control" rows="6" id="description"></textarea>
+                                    </label>
+                                </div>
+
+                                <div>
+                                    <input type="submit" value="Create" id="createBtn">
+                                    <input type="submit" value="Cancel" id="cancelBtn">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

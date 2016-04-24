@@ -1,0 +1,56 @@
+<div class="container">
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Blogs</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="registration_form">
+                            <input type="submit" value="Create blog topic" id="createBtn">
+                        </div>
+                   </div>
+                    <div class="panel-body">
+                        <div class="dataTable_wrapper">
+                            <table class="table table-hover" id="dataTables-example">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Title</th>
+                                    <th>Brief Info</th>
+                                    <th>Text</th>
+                                    <th>Posted date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <%
+                                    var counter = 0;
+                                    _.each(collection, function(blog) {
+                                        counter += 1;
+                                %>
+                                <tr class="odd gradeX">
+                                    <td><%= counter %></td>
+                                    <td><%= blog.title %></td>
+                                    <td><%= blog.briefInfo %></td>
+                                    <td><%= blog.text %></td>
+                                    <td><%= new Date(blog.postedDate).toDateString() %></td>
+                                    <td>
+                                        <div class="registration_form">
+                                            <input type="submit" value="Edit" id="editBtn" data-id="<%= blog._id %>">
+                                            <input type="submit" value="Remove" id="removeBtn" data-id="<%= blog._id %>">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

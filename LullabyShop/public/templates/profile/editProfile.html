@@ -1,0 +1,84 @@
+<div class="container">
+    <h1 class="page-header">Your Profile</h1>
+    <div class="row">
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="text-center">
+                <img src="<%= user.avatar %>" class="avatar img-circle img-thumbnail" alt="avatar">
+                <h6>Upload avatar</h6>
+                <form id="upload" data-remote="true" enctype="multipart/form-data">
+                    <input type="file" name="upload" id="avatar" multiple="multiple"><br>
+                    <div class="registration_form">
+                        <div>
+                            <input id="uploadAvatar" class="btn btn-primary" value="Upload Avatar" type="submit" >
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+            <h3>Personal info</h3>
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">First name:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" id="firstName" value="<%= user.firstname %>" type="text">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Surname:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" id="surname" value="<%= user.surname %>" type="text">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Email:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" id="email" value="<%= user.email %>" type="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Phone:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" id="phone" value="<%= user.phone %>" type="text">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Password:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" id="pass" value="<%= user.password %>" type="text">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Day of birth:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" id="dayOfBirth" type="date" value="<%= new Date(user.birthday).toDateString()%>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">City:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" id="city" type="text" value="<%= user.city %>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Street:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" id="street" type="text" value="<%= user.street %>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label"></label>
+                    <div class="col-md-8">
+                        <div class="registration_form">
+                            <div>
+                                <input id="saveBtn" class="btn btn-primary" value="Save" type="submit" >
+                                <span></span>
+                                <input id="cancelBtn" class="btn btn-primary" value="Cancel" type="submit" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

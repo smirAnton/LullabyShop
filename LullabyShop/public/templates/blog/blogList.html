@@ -1,0 +1,64 @@
+    <div class="arriv">
+        <div class="container">
+            <%
+                var chunks = function(array, size) {
+                var results = [];
+                    while (array.length) {
+                        results.push(array.splice(0, size));
+                    }
+                    return results;
+                }
+                var partsForTwoBlogs = chunks(blogs, 2);
+                _.each(partsForTwoBlogs, function(blog) {
+            %>
+            <div class="arriv-top">
+                <div class="col-md-6 arriv-left">
+                    <img src="<%= blog[0].mainImage %>" class="img-responsive" alt="">
+                    <div class="arriv-info">
+                        <h3><%= blog[0].title.toUpperCase() %></h3>
+                        <p><%= blog[0].briefInfo.toUpperCase() %></p>
+                        <div class="crt-btn" data-id="<%= blog[0]._id %>">
+                            <a id="takeLookBtn" href="#lullaby/blog/<%= blog[0]._id %>">TAKE A LOOK</a>
+                        </div>
+                    </div>
+                </div>
+                <% if (typeof blog[1] !== 'undefined') { %>
+                <div class="col-md-6 arriv-right">
+                    <img src="<%= blog[1].mainImage %>" class="img-responsive" alt="">
+                    <div class="arriv-info">
+                        <h3><%= blog[1].title.toUpperCase() %></h3>
+                        <p><%= blog[1].briefInfo.toUpperCase() %></p>
+                        <div class="crt-btn" data-id="<%= blog[1]._id %>">
+                            <a id="takeLookBtn2" href="#lullaby/blog/<%= blog[1]._id %>">TAKE A LOOK</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <% }}); %>
+        </div>
+    </div>
+    <div class="container">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item">
+                    <a id="prevBtn" class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                </li>
+                <%
+                    var index;
+                    for(index = 0; index < count; index += 1) {
+                %>
+                <li class="page-item"><a id="goToBtn" data-id="<%= index + 1 %>" class="page-link" href="#"><%= index + 1 %></a></li>
+                <% } %>
+                <li class="page-item">
+                    <a id="nextBtn" class="page-link" href="" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>

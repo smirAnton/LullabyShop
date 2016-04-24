@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="main">
+        <div class="registration">
+            <div class="registration_left">
+                <h2>Order form</h2>
+                <div class="registration_form">
+                    <form id="registrationForm">
+                        <div>
+                            <label>
+                                <input placeholder="first name:" type="text" id="firstname" value="<%= basket.firstname %>">
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <input placeholder="last name:" type="text" id="surname" value="<%= basket.surname %>">
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <input placeholder="email address:" type="email" id="email" value="<%= basket.email %>">
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                <input placeholder="phone number:" type="text" id="phone" value="<%= basket.phone %>">
+                            </label>
+                        </div>
+                        <div id="makeOrderBtn">
+                            <input type="submit" value="Make order">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

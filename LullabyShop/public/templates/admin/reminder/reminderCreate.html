@@ -1,0 +1,43 @@
+<div class="container">
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Reminders</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="main">
+                <div class="registration">
+                    <div class="registration_left">
+                        <h2>New reminder</h2>
+                        <div class="registration_form">
+                            <form id="registrationForm">
+                                <div class="form-group">
+                                    <label>Select period for passive users (in month)</label>
+                                    <select class="form-control" id="month">
+                                        <%
+                                            var barrier = 13
+                                            var month;
+                                            for(month=1; month < barrier; month += 1) {
+                                        %>
+                                        <option data-id="<%= month %>"><%= month %></option>
+                                        <% }; %>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>
+                                        <textarea placeholder="Reminder text" class="form-control" rows="10" id="text"></textarea>
+                                    </label>
+                                </div>
+                                <div>
+                                    <input type="submit" value="Send" id="sendBtn">
+                                    <input type="submit" value="Cancel" id="cancelBtn">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

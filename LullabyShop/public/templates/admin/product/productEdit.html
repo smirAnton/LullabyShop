@@ -1,0 +1,46 @@
+<div class="container">
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Edit product</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="main">
+                <div class="registration">
+                    <div class="registration_left">
+                        <h2>Product</h2>
+                        <% var item = item.attributes %>
+                        <div class="registration_form">
+                            <div>
+                                <label>
+                                    <input value="<%= item.title %>" type="text" id="title">
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <input value="<%= item.price %>" type="text" id="price">
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <input value="<%= item.brand %>" type="text" id="brand">
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <textarea class="form-control" rows="6" id="description"></textarea>
+                                </label>
+                            </div>
+
+                            <div>
+                                <input type="submit" value="Update" id="updateBtn">
+                                <input type="submit" value="Cancel" id="cancelBtn">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

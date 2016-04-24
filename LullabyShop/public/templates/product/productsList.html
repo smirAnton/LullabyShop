@@ -1,0 +1,82 @@
+<%
+    var chunks = function(array, size) {
+        var results = [];
+        while (array.length) {
+            results.push(array.splice(0, size));
+        }
+        return results;
+    }
+
+    console.log(countProducts);
+    console.log(countPages);
+
+
+%>
+<div class="container">
+    <div class="col-md-9 w_content">
+        <div class="women">
+            <a href="#"><h4>Night wear - <span><%= countProducts %> items</span></h4></a>
+            <ul class="w_nav">
+                <li>Sort :</li>
+                <li><a id="sortByDateBtn" href="#">new </a></li>
+                |
+                <li><a id="sortByTitleBtn" href="#">title </a></li>
+                |
+                <li><a id="sortByPriceBtn" href="#">price: Low High </a></li>
+                <div class="clear"></div>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="grids_of_4">
+            <%
+                var productsJson = products.toJSON();
+                var partsForFourProducts = chunks(productsJson, 4);
+                _.each(partsForFourProducts, function(partOfProducts) {
+            %>
+            <div class="grids_of_4">
+                <% _.each(partOfProducts, function(product) { %>
+                <div class="grid1_of_4">
+                    <div class="content_box">
+                        <a href="#lullaby/product/<%= product._id %>">
+                            <img src="<%= product.searchImage %>" class="img-responsive" alt=""/>
+                        </a>
+                        <h4><a href="#lullaby/product/<%= product._id %>"><%= product.title %></a></h4>
+                        <p><%= product.brand %></p>
+                        <div class="grid_1 simpleCart_shelfItem">
+                            <div class="item_add"><span class="item_price"><h6>ONLY <%= product.price %> UAH</h6></span>
+                            </div>
+                            <div class="item_add">
+                                <span class="item_price">
+                                    <a id="addProductBtn" data-id="<%= product._id %>" href="#">add to cart</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+            <% }); %>
+        </div>
+    </div>
+    <nav>
+        <ul class="pagination">
+            <li class="page-item">
+                <a id="prevBtn" class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                </a>
+            </li>
+            <%
+                for(index = 0; index < countPages; index += 1) {
+            %>
+            <li class="page-item"><a id="goToBtn" data-id="<%= index + 1 %>" class="page-link" href="#"><%= index + 1 %></a></li>
+            <% } %>
+            <li class="page-item">
+                <a id="nextBtn" class="page-link" href="" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
