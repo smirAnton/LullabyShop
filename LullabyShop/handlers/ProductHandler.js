@@ -11,30 +11,40 @@ var ProductHandler = function () {
 
     this.fetch = function (req, res, next) {
         var query = req.query;
-        var page  = query.page || 1;
+        var page = parseInt(query.page) || 1;
         var limit = parseInt(query.count) || 12;
-        var skip  = (page - 1) * limit;
+        var skip = (page - 1) * limit;
 
         ProductModel
-            .find({}, {__v: 0})
-            .skip(skip)
-            .limit(limit)
+            .find({})
             .lean()
-            .exec(function(err, products) {
+            .count(function (err, count) {
                 if (err) {
 
                     return next(err);
                 }
 
-                if (products) {
+                ProductModel
+                    .find({}, {__v: 0})
+                    .skip(skip)
+                    .limit(limit)
+                    .lean()
+                    .exec(function (err, products) {
+                        if (err) {
 
-                    res.status(200).send(products);
-                } else {
-                    err = new Error('Not found products');
-                    err.staus = 404;
+                            return next(err);
+                        }
 
-                    return next(err);
-                }
+                        if (!products) {
+
+                            return res.status(404).send({fail: 'Not found'})
+                        }
+
+                        products[0] = products[0] || {};
+                        products[0].count = count;
+
+                        res.status(200).send(products);
+                    });
             });
     };
 
@@ -48,7 +58,7 @@ var ProductHandler = function () {
                     return next(err);
                 }
 
-                res.status(200).send({amount : amount});
+                res.status(200).send({amount: amount});
             });
     };
 
@@ -60,59 +70,66 @@ var ProductHandler = function () {
             ProductModel
                 .aggregate(
                     [{
-                        $match: {_id: ObjectId(productId) }
+                        $match: {_id: ObjectId(productId)}
                     }, {
-                        '$unwind'                 : '$comments'
+                        '$unwind': '$comments'
                     }, {
                         '$lookup': {
-                            from                  : 'comments',
-                            foreignField          : '_id',
-                            localField            : 'comments',
-                            as                    : 'comments'}
+                            from: 'comments',
+                            foreignField: '_id',
+                            localField: 'comments',
+                            as: 'comments'
+                        }
                     }, {
                         '$project': {
-                            _id                   : 1,
-                            title                 : 1,
-                            price                 : 1,
-                            brand                 : 1,
-                            productCode           : 1,
-                            description           : 1,
-                            mainImage             : 1,
-                            searchImage           : 1,
-                            detailImages          : 1,
-                            comments              : {$arrayElemAt:['$comments', 0]}}
+                            _id: 1,
+                            title: 1,
+                            price: 1,
+                            brand: 1,
+                            productCode: 1,
+                            description: 1,
+                            mainImage: 1,
+                            searchImage: 1,
+                            detailImages: 1,
+                            comments: {$arrayElemAt: ['$comments', 0]}
+                        }
                     }, {
                         $group: {
                             _id: {
-                                _id               : '$_id',
-                                title             : '$title',
-                                price             : '$price',
-                                brand             : '$brand',
-                                searchImage       : '$searchImage',
-                                mainImage         : '$mainImage',
-                                description       : '$description',
-                                productCode       : '$productCode',
-                                detailImages      : '$detailImages'},
+                                _id: '$_id',
+                                title: '$title',
+                                price: '$price',
+                                brand: '$brand',
+                                searchImage: '$searchImage',
+                                mainImage: '$mainImage',
+                                description: '$description',
+                                productCode: '$productCode',
+                                detailImages: '$detailImages'
+                            },
                             comments: {
                                 $push: {
-                                    _id       : '$comments._id',
-                                    user      : '$comments.user',
-                                    text      : '$comments.text',
+                                    _id: '$comments._id',
+                                    user: '$comments.user',
+                                    text: '$comments.text',
                                     postedDate: '$comments.postedDate',
-                                    authorName: '$comments.authorName'}}}
+                                    authorName: '$comments.authorName'
+                                }
+                            }
+                        }
                     }, {
                         $project: {
-                            _id                   : '$_id._id',
-                            title                 : '$_id.title',
-                            price                 : '$_id.price',
-                            brand                 : '$_id.brand',
-                            description           : '$_id.description',
-                            searchImage           : '$_id.searchImage',
-                            mainImage             : '$_id.mainImage',
-                            productCode           : '$_id.productCode',
-                            comments              : 1}
+                            _id: '$_id._id',
+                            title: '$_id.title',
+                            price: '$_id.price',
+                            brand: '$_id.brand',
+                            description: '$_id.description',
+                            searchImage: '$_id.searchImage',
+                            mainImage: '$_id.mainImage',
+                            productCode: '$_id.productCode',
+                            comments: 1
+                        }
                     }])
-                .exec(function(err, product) {
+                .exec(function (err, product) {
                     if (err) {
 
                         return next(err);
@@ -123,7 +140,7 @@ var ProductHandler = function () {
                         res.status(200).send(product[0]);
                     } else {
 
-                        res.status(200).send({fail : 'Not found such product'});
+                        res.status(200).send({fail: 'Not found such product'});
                     }
                 });
         } else {
@@ -142,7 +159,7 @@ var ProductHandler = function () {
             ProductModel
                 .findOne({_id: ObjectId(productId)})
                 .populate('comments')
-                .exec(function(err, product) {
+                .exec(function (err, product) {
                     if (err) {
 
                         return next(err);
@@ -153,7 +170,7 @@ var ProductHandler = function () {
                         res.status(200).send(product);
                     } else {
 
-                        res.status(200).send({fail : 'Not found such product'});
+                        res.status(200).send({fail: 'Not found such product'});
                     }
                 });
         } else {
@@ -195,36 +212,36 @@ var ProductHandler = function () {
 
         if (title && price && brand && description && category) {
             product = new ProductModel({
-                title      : title,
-                price      : price,
-                brand      : brand,
+                title: title,
+                price: price,
+                brand: brand,
                 description: description,
-                category   : category
+                category: category
             });
 
             async.parallel([
-                function (callback) {
-                    product.save(function (err, product) {
-                        return callback(err, product);
-                    });
-                },
-                function (callback) {
-                    CategoryModel
-                        .findByIdAndUpdate(category, {$push: {products: product._id}})
-                        .exec(function (err, category) {
-                            return callback(err, category);
+                    function (callback) {
+                        product.save(function (err, product) {
+                            return callback(err, product);
                         });
-                }],
-            function (err, result) {
-                if (err) {
+                    },
+                    function (callback) {
+                        CategoryModel
+                            .findByIdAndUpdate(category, {$push: {products: product._id}})
+                            .exec(function (err, category) {
+                                return callback(err, category);
+                            });
+                    }],
+                function (err, result) {
+                    if (err) {
 
-                    return next(err);
-                }
-                res.status(201).send({success : 'created'});
-            });
+                        return next(err);
+                    }
+                    res.status(201).send({success: 'created'});
+                });
         } else {
 
-            res.status(200).send({fail : 'Wrong incoming data. Please try again'});
+            res.status(200).send({fail: 'Wrong incoming data. Please try again'});
         }
     };
 
@@ -264,11 +281,11 @@ var ProductHandler = function () {
                             return next(err);
                         }
 
-                        res.status(200).send({success : 'updated'});
+                        res.status(200).send({success: 'updated'});
                     });
             } else {
 
-                res.status(200).send({fail : 'Wrong incoming data. Please, try again'});
+                res.status(200).send({fail: 'Wrong incoming data. Please, try again'});
             }
         } else {
             error = new Error('Bad request');
@@ -308,7 +325,7 @@ var ProductHandler = function () {
                         return next(err);
                     }
 
-                    res.status(200).send({success : 'removed'});
+                    res.status(200).send({success: 'removed'});
                 }
             );
         } else {
@@ -319,63 +336,132 @@ var ProductHandler = function () {
         }
     };
 
-    this.removeAllWhereNotCategory = function(req, res, next) {
+    this.removeAllWhereNotCategory = function (req, res, next) {
         ProductModel
-            .remove({category : null}, function(err, result) {
+            .remove({category: null}, function (err, result) {
                 if (err) {
 
                     return next(err);
                 }
 
-                res.status(200).send({success : 'removed'});
+                res.status(200).send({success: 'removed'});
             })
     };
 
     this.search = function (req, res, next) {
-        var query = req.query;
-        var page  = query.page || 1;
-        var limit = parseInt(query.count) || 12;
-        var skip  = (page - 1) * limit;
-        var title = query.word || '';
+        var searchWord        = req.params.word;
+        var query             = req.query || {};
+        var sortParam         = query.sort;
+        var page              = parseInt(query.page) || 1;
+        var limit             = parseInt(query.count) || 12;
+        var skip              = (page - 1) * limit;
+        var aggregateProducts = [];
+        var aggregateCount    = [];
         var pattern;
 
-        if (title) {
-            // define regular expression for search
-            pattern = new RegExp(title, 'i');
-            //find out amount of products
-            ProductModel
-                .count({title: pattern}, function(err, count) {
-                   if (err) {
+        if (!searchWord) {
 
-                       return next(err);
-                   }
-                    // get part of products by search word
-                    ProductModel
-                        .find({title: pattern})
-                        .skip(skip)
-                        .limit(limit)
-                        .lean()
-                        .exec(function (err, products) {
-                            if (err) {
-
-                                return next(err);
-                            }
-
-                            if (products.length) {
-
-                                products[0].count = count;
-                            } else {
-
-                                products = [];
-                            }
-
-                            res.status(200).send(products);
-                        });
-                });
-        } else {
-
-            res.status(200).send({fail : 'Nope...Please provide searching word'});
+            return res.status(400).send({fail: 'Bad request'});
         }
+        // define regular expression for search
+        pattern = new RegExp(searchWord, 'i');
+
+        aggregateCount.push(
+            {$match: {$or: [{title: pattern}, {description: pattern}]}}
+        );
+
+        aggregateProducts.push(
+            {$match: {$or: [{title: pattern}, {description: pattern}]}},
+            {$skip : skip},
+            {$limit: limit}
+        );
+
+        if (sortParam) {
+            aggregateProducts.push({$sort: {sortParam: 1}});
+        }
+
+        ProductModel
+            .aggregate(aggregateCount)
+            .exec(function (err, count) {
+                if (err) {
+
+                    return next(err);
+                }
+
+                ProductModel
+                    .aggregate(aggregateProducts)
+                    .exec(function (err, products) {
+                        if (err) {
+
+                            return next(err);
+                        }
+
+                        products[0]       = products[0] || {};
+                        products[0].count = count.length;
+
+                        res.status(200).send(products);
+                    });
+            });
+    };
+
+    this.fetchByFilter = function (req, res, next) {
+        var filter              = req.params.filter;
+        var query               = req.query             || {};
+        var page                = parseInt(query.page)  || 1;
+        var limit               = parseInt(query.count) || 12;
+        var skip                = (page - 1) * limit;
+
+        var aggregateCategories = [];
+        var aggregateProducts   = [];
+        var aggregateCount      = [];
+        var parsedFilter;
+        var barrier;
+        var index;
+
+        if (!filter) {
+
+            return res.status(400).send({fail: 'Bad request'});
+        }
+
+        parsedFilter = filter.split('&');
+        barrier      = parsedFilter.length - 1;
+
+        for(index = barrier; index >= 0; index -= 1) {
+            aggregateCategories.push({category: ObjectId(parsedFilter[index])});
+        }
+
+        aggregateCount.push(
+            {$match: {$or: aggregateCategories}}
+        );
+
+        aggregateProducts.push(
+            {$match: {$or: aggregateCategories}},
+            {$skip : skip},
+            {$limit: limit}
+        );
+
+        ProductModel
+            .aggregate(aggregateCount)
+            .exec(function (err, count) {
+                if (err) {
+
+                    return next(err);
+                }
+
+                ProductModel
+                    .aggregate(aggregateProducts)
+                    .exec(function (err, products) {
+                        if (err) {
+
+                            return next(err);
+                        }
+
+                        products[0]       = products[0] || {};
+                        products[0].count = count.length;
+
+                        res.status(200).send(products);
+                    });
+            });
     };
 };
 

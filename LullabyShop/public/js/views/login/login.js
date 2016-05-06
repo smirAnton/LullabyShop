@@ -2,10 +2,10 @@
 
 define([
     'backbone',
+    'validator',
     'underscore',
-    'models/user',
     'text!templates/login/login.html'
-], function (Backbone, _, UserModel, loginTemplate) {
+], function (Backbone, validator, _, loginTemplate) {
     var View = Backbone.View.extend({
         el      : '#content',
         template: _.template(loginTemplate),
@@ -15,98 +15,106 @@ define([
         },
 
         events: {
-            'click #signInBtn': 'onSignIn',
+            'click #loginBtn': 'onLogin',
             'click #cancelBtn': 'onCancel'
         },
 
-        onSignIn: function (e) {
+        onLogin: function (e) {
+            var self = this;
             var rememberMe;
             var password;
+            var userData;
             var email;
-            var user;
 
             e.stopPropagation();
             e.preventDefault();
 
-            rememberMe =$("#rememberMe").is(":checked");
+            rememberMe = $("#rememberMe").is(":checked");
             password   = this.$el.find('#password').val();
             email      = this.$el.find('#email').val();
 
             if (!password || !email) {
+
                 return alert('Please, fill all form\'s fields');
             }
 
-            user = new UserModel({
+            if (!validator.validateEmail(email)) {
+
+                return alert('Nope...Please, provide email');
+            }
+
+            userData = {
                 rememberMe: rememberMe,
                 password  : password,
                 email     : email
-            });
+            };
 
-            user.urlRoot = '/login';
-
-            user.save(null, {
-                success: function (response, xhr) {
+            $.ajax({
+                url    : '/login',
+                method : 'POST',
+                data   : userData,
+                success: function (response) {
                     var userFirstname;
-                    var userEmail;
                     var isAdmin;
                     var userId;
-                    var fail;
 
-                    if (response.attributes.fail) {
-                        fail = response.attributes.fail;
+                    userFirstname = response.firstname;
+                    isAdmin       = response.isAdmin;
+                    userId        = response._id;
 
-                        if (fail === 'Account is not registered. Please, sign up') {
-                            alert(fail);
-                            Backbone.history.navigate('#lullaby/register', {trigger: true});
-                        } else if (fail === 'Account not activated yet. Please, activate it') {
-                            alert(fail);
-
-                            APP.userEmail = email;
-                            localStorage.setItem('userEmail', email);
-
-                            Backbone.history.navigate('#lullaby/activate/choice', {trigger: true});
-                        } else {
-                            alert(fail);
-                        }
-                    } else {
-                        userFirstname = response.attributes.firstname;
-                        userEmail     = response.attributes.email;
-                        userId        = response.attributes._id;
-                        isAdmin       = response.attributes.isAdmin;
-
-                        APP.authorised = true;
-                        localStorage.setItem('loggedIn', 'true');
-
-                        if (response.attributes.isAdmin) {
-
-                            APP.isAdmin = isAdmin;
-                            localStorage.setItem('isAdmin', isAdmin);
-                        }
-
-                        APP.userId = userId;
-                        localStorage.setItem('userId', userId);
-
-                        APP.userEmail = userEmail;
-                        localStorage.setItem('userEmail', userEmail);
-
-                        APP.userFirstname = userFirstname;
-                        localStorage.setItem('userFirstname', userFirstname);
-
-                        alert('Welcome to Lullaby\'s store');
-                        Backbone.history.navigate('lullaby/shop', {trigger: true});
+                    if (response.isAdmin) {
+                        localStorage.setItem('isAdmin', isAdmin);
                     }
+
+                    localStorage.setItem('userFirstname', userFirstname);
+                    localStorage.setItem('loggedIn',      'true');
+                    localStorage.setItem('userId',        userId);
+
+                    alert('Welcome to Lullaby\'s store');
+                    Backbone.history.navigate('lullaby/shop', {trigger: true});
                 },
-                error  : function (err, xhr) {
-                    alert(xhr.statusText);
+                error : function (xhr) {
+                    self.handleError(xhr);
                 }
             });
         },
 
-        onCancel: function(e) {
+        onCancel: function (e) {
             e.stopPropagation();
             e.preventDefault();
 
             Backbone.history.navigate('lullaby/shop', {trigger: true});
+        },
+
+        handleError: function(xhr) {
+            switch (xhr.status) {
+                case 400: // wrong password
+                    alert(xhr.responseJSON.fail);
+                    self.$el.find('#password').val('');
+                    break;
+
+                case 401: // account is not activated
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/activate/choice', {trigger: true});
+                    break;
+
+                case 403: // user is banned
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/shop', {trigger: true});
+                    break;
+
+                case 404: // account is not registered
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/register', {trigger: true});
+                    break;
+
+                case 422: // user not fill all form's fields
+                    alert(xhr.responseJSON.fail);
+                    break;
+
+                default:
+                    break;
+            }
         },
 
         render: function () {

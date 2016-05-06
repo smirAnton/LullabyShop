@@ -1,60 +1,56 @@
 'use strict';
 
-var UserModel    = require('../models/User');
-var validator    = require('validator');
-var NUMBER       = require('../constants/magicNumbers');
+var UserModel = require('../models/User');
+
+var validator = require('validator');
+var ObjectId  = require('mongodb').ObjectID;
+var async     = require('async');
 
 
 var AdminHandler = function () {
 
-    function changeBanStatus(userId, options, callback) {
-        UserModel
-            .findByIdAndUpdate(userId, options)
-            .lean()
-            .exec(function (err, result) {
-                if (err) {
+    this.changeBanStatus  = function (req, res, next) {
+        var session       = req.session || {};
+        var body          = req.body || {};
+        var userIdSession = session.userId;
+        var userId        = body.userId;
 
-                    return callback(err);
-                }
+        if (!userId || !validator.isMongoId(userId)) {
 
-                callback(null, result);
-            });
-    }
-
-    this.banUser = function (req, res, next) {
-        var body = req.body || {};
-
-        if (body.userId && validator.isMongoId(body.userId)) {
-            changeBanStatus(body.userId, {isBanned : true}, function(err, result) {
-                if (err) {
-
-                    return next(err);
-                }
-
-                res.status(200).send({success: 'profile is banned'});
-            })
-        } else {
-
-            res.status(200).send({fail: 'Wrong incoming data. Please try again'});
+            return res.status(200).send({fail: 'Wrong userId param'});
         }
-    };
 
-    this.unbanUser = function (req, res, next) {
-        var body = req.body || {};
+        if (userIdSession && validator.isMongoId(userIdSession) && userIdSession === userId) {
 
-        if (body.userId && validator.isMongoId(body.userId)) {
-            changeBanStatus(body.userId, {isBanned : false}, function(err, result) {
-                if (err) {
-
-                    return next(err);
-                }
-
-                res.status(200).send({success: 'profile is banned'});
-            })
-        } else {
-
-            res.status(200).send({fail: 'Wrong incoming data. Please try again'});
+            return res.status(200).send({fail: 'You can\'t ban yourself'});
         }
+
+        // change user's ban status
+        async.waterfall([
+            function (callback) {
+                UserModel
+                    .findOne({_id: ObjectId(userId)})
+                    .lean()
+                    .exec(function (err, user) {
+                        callback(err, user);
+                    })
+            },
+            function (user, callback) {
+                UserModel
+                    .findByIdAndUpdate(userId, {isBanned: !user.isBanned})
+                    .exec(function (err, result) {
+                        callback(err, result);
+                    });
+            }
+
+        ], function (err, result) {
+            if (err) {
+
+                return next(err);
+            }
+
+            res.status(200).send({success: 'User\'s isBanned status successfully changed'})
+        });
     };
 };
 

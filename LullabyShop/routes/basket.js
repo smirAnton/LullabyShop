@@ -1,17 +1,17 @@
 'use strict';
 
 var BasketHandler = require('../handlers/BasketHandler');
-var AuthHandler   = require('../handlers/AuthenticationHandler');
+var AuthHandler   = require('../handlers/AuthHandler');
 
-var express      = require('express');
-var router       = express.Router();
+var express       = require('express');
+var router        = express.Router();
 
 module.exports = function () {
     var handler  = new BasketHandler();
     var security = new AuthHandler();
 
-    router.post('/add',    security.forAll, handler.AddProductToBasket);
-    router.post('/remove', security.forAll, handler.RemoveProductFromBasket);
+    router.post('/add',    security.forAll, handler.addProductToBasket);
+    router.post('/remove', security.forAll, handler.removeProductFromBasket);
 
     return router;
 };

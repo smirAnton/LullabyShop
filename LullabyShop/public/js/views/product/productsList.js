@@ -12,18 +12,38 @@ define([
         el      : "#products",
         template: _.template(productListTemplate),
 
-        initialize: function () {
+        initialize: function (options) {
             var self = this;
+            var searchWord;
+            var categoryId;
+            var filter;
+            var count;
+            var page;
 
-            this.collection = new ProductCollection();
-            // listen reset event
-            this.collection.on('reset', function() {
+            options    = options       || {};
+            page       = options.page  || 1;
+            count      = options.count || 12;
+            categoryId = options.categoryId;
+            searchWord = options.searchWord;
+            filter     = options.filter;
+
+            this.collection = new ProductCollection({
+                reset     : true,
+                searchWord: searchWord,
+                categoryId: categoryId,
+                filter    : filter,
+                data: {
+                    page  : page,
+                    count : count
+                }
+            });
+
+            this.collection.on('sync', function() {
                 self.countProducts = self.collection.countProducts;
                 self.countPages    = self.collection.countPages;
-                self.render()}, this);
+                self.render();}, self.collection);
 
-            // listen sort event
-            this.collection.on('sort', function() {self.render()}, this);
+            this.collection.on('sort', function() {self.render()}, self.collection);
         },
 
         events: {

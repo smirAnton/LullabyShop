@@ -2,12 +2,12 @@
 
 define([
     'backbone',
+    'validator',
     'underscore',
-    'models/user',
     'text!templates/registration/registration.html'
-], function (Backbone, _, UserModel, registrationTemplate) {
+], function (Backbone, validator, _, registrationTemplate) {
     var View = Backbone.View.extend({
-        el: "#content",
+        el      : "#content",
         template: _.template(registrationTemplate),
 
         initialize: function () {
@@ -15,26 +15,21 @@ define([
         },
 
         events: {
-            'click #cancelBtn': 'onCancel',
-            'click #signUpBtn': 'onSignUp'
+            'click #registerBtn': 'onRegister',
+            'click #cancelBtn'  : 'onCancel'
         },
 
-        onCancel: function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-
-            Backbone.history.navigate('lullaby/shop', {trigger: true});
-        },
-
-        onSignUp: function (e) {
+        onRegister: function (e) {
+            var self = this;
             var confirmedPassword;
             var firstname;
+            var fields;
+            var userData;
             var password;
             var surname;
             var gender;
             var phone;
             var email;
-            var user;
 
             e.stopPropagation();
             e.preventDefault();
@@ -43,19 +38,31 @@ define([
             firstname         = this.$el.find('#firstname').val();
             password          = this.$el.find('#password').val();
             surname           = this.$el.find('#surname').val();
-            gender            = this.$el.find('#gender').val();
             email             = this.$el.find('#email').val();
             phone             = this.$el.find('#phone').val();
+            gender            = $('[name=gender]:checked').val();
 
             if (!confirmedPassword || !firstname || !password || !gender || !email || !phone) {
+
                 return alert('Please, fill all form\'s fields');
             }
 
             if (password !== confirmedPassword) {
+
                 return alert('Passwords not matched. Please try again')
             }
 
-            user = new UserModel({
+            if (!validator.validateEmail(email)) {
+
+                return alert('Nope...Please, provide email');
+            }
+
+            if (!validator.validatePhone(phone)) {
+
+                return alert('Nope...Please, provide phone number in format +38(XXX)XXX-XX-XX');
+            }
+
+            userData = {
                 confirmedPassword: confirmedPassword,
                 firstname        : firstname,
                 password         : password,
@@ -63,28 +70,49 @@ define([
                 gender           : gender,
                 email            : email,
                 phone            : phone
-            });
+            };
 
-            user.urlRoot = '/registration';
-
-            user.save(null, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-                        // save profile's email in local storage and global variable for further providing token's secret
-                        APP.userEmail = email;
-                        localStorage.setItem('userEmail', email);
-
-                        alert('You have successfully registered. Please activate your account');
-                        Backbone.history.navigate('lullaby/activate/choice', {trigger: true});
-                    }
+            $.ajax({
+                url    : '/register',
+                method : 'POST',
+                data   : userData,
+                success: function (response) {
+                    alert(response.success);
+                    Backbone.history.navigate('lullaby/activate/choice', {trigger: true});
                 },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function (xhr) {
+                    self.handleError(xhr);
                 }
             });
+        },
+
+        onCancel: function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            Backbone.history.navigate('lullaby/shop', {trigger: true});
+        },
+
+        handleError: function(xhr) {
+            switch (xhr.status) {
+                case 400: // passwords are not matched
+                    alert(xhr.responseJSON.fail);
+                    self.$el.find('#confirmedPassword').val('');
+                    self.$el.find('#password').val('');
+                    break;
+
+                case 409: // email already registered
+                    alert(xhr.responseJSON.fail);
+                    self.$el.find('#email').val('');
+                    break;
+
+                case 422: // user not fill all form's fields
+                    alert(xhr.responseJSON.fail);
+                    break;
+
+                default:
+                    break;
+            }
         },
 
         render: function () {

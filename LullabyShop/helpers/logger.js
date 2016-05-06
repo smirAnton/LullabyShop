@@ -7,12 +7,18 @@ module.exports = function (module) {
 
     return new winston.Logger({
         transports: [
+            new winston.transports.Console({
+                colorize: true,
+                level   : 'debug',
+                label   : path
+            }),
+
             new winston.transports.File({
                 filename: 'public/all-logs.log',
                 maxsize :'10000000', // 10 MB
                 maxFiles:'10',
                 colorize: true,
-                level   : 'error',
+                level   : 'debug',
                 label   : path
             })
         ]

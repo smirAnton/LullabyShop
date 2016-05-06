@@ -1,11 +1,17 @@
 var env    = process.env;
 var client = require('twilio')(env.ACCOUNT_SID, env.AUTH_TOKEN);
 
-var twilio = (function () {
+module.exports = function () {
 
     function sendSms (userPhone, tokenPhoneSecret, callback) {
+        var phoneNumber = userPhone
+                        .replace('(', '')
+                        .replace(')', '')
+                        .replace(/-/g, '')
+                        .replace('(', '');
+
         client.sendMessage({
-            to  : userPhone,
+            to  : phoneNumber,
             from: env.TWILIO_NUMBER,
             body: tokenPhoneSecret
         }, function (err, responseData) {
@@ -17,7 +23,5 @@ var twilio = (function () {
     return {
         sendSms: sendSms
     }
-}());
-
-module.exports = twilio;
+};
 

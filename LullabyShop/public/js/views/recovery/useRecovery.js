@@ -3,9 +3,8 @@
 define([
     'backbone',
     'underscore',
-    'models/user',
     'text!templates/recovery/useRecovery.html'
-], function (Backbone, _, UserModel, recoveryFormTemplate) {
+], function (Backbone, _, recoveryFormTemplate) {
     var View = Backbone.View.extend({
         el      : "#content",
         template: _.template(recoveryFormTemplate),
@@ -15,46 +14,51 @@ define([
         },
 
         events: {
-            'click #provideEmail': 'provideEmail'
+            'click #provideEmailBtn': 'onProvideEmail'
         },
 
-        provideEmail: function (e) {
+        onProvideEmail: function (e) {
+            var self = this;
             var userEmail;
-            var user;
 
             e.stopPropagation();
             e.preventDefault();
 
             userEmail = this.$el.find('#email').val();
 
-            if (!userEmail) {
+            if (!userEmail || !userEmail.trim().length) {
 
                 return alert('Please provide email');
             }
 
-            user = new UserModel({
-                email: userEmail
-            });
-
-            user.urlRoot = '/recovery';
-
-            user.save(null, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-                        // save in local storage and global variable userEmail
-                        APP.userEmail = userEmail;
-                        localStorage.setItem('userEmail', userEmail);
-
-                        Backbone.history.navigate('lullaby/recovery/choice', {trigger: true});
-                    }
+            $.ajax({
+                url    : '/recovery',
+                type   : 'POST',
+                data   : {email: userEmail},
+                success: function (response) {
+                    Backbone.history.navigate('lullaby/recovery/choice', {trigger: true});
                 },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function (xhr) {
+                    self.handleError(xhr);
                 }
             });
+        },
+
+        handleError: function(xhr) {
+            switch (xhr.status) {
+                case 404: // email is not registered
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/register', {trigger: true});
+                    break;
+
+                case 422: // email is not provided
+                    alert(xhr.responseJSON.fail);
+                    self.$el.find('#email').val('');
+                    break;
+
+                default:
+                    break;
+            }
         },
 
         render: function () {

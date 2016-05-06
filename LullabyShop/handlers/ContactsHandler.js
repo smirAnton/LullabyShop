@@ -1,8 +1,9 @@
 'use strict';
 
 var validator = require('validator');
-var mailer    = require('../helpers/mailer');
-var REGEXP    = require('../constants/regExp');
+
+var mailer    = require('../helpers/mailer')();
+var regExp    = require('../constants/regExp');
 
 var ContactHandler = function () {
 
@@ -18,7 +19,7 @@ var ContactHandler = function () {
             message = body.message;
         }
 
-        if (body.phone && body.phone.match(REGEXP.MOBILE_VALID)) {
+        if (body.phone && body.phone.match(regExp.PHONE)) {
             phone = body.phone;
         }
 

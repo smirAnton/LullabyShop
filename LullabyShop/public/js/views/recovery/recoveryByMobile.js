@@ -3,9 +3,8 @@
 define([
     'backbone',
     'underscore',
-    'models/user',
     'text!templates/recovery/recoveryByMobile.html'
-], function (Backbone, _, UserModel, recoveryTemplate) {
+], function (Backbone, _, recoveryTemplate) {
     var View = Backbone.View.extend({
         el      : "#content",
         template: _.template(recoveryTemplate),
@@ -15,53 +14,54 @@ define([
         },
 
         events: {
-            'click #recovery': 'recovery'
+            'click #provideSecretNumberBtn': 'onProvideSecretNumber'
         },
 
-        recovery : function(e) {
-            var userEmail;
-            var secret;
-            var user;
+        onProvideSecretNumber : function(e) {
+            var self = this;
+            var secretNumber;
 
             e.stopPropagation();
             e.preventDefault();
 
-            userEmail = localStorage.getItem('userEmail');
+            secretNumber = this.$el.find('#secretNumber').val();
 
-            if (!userEmail) {
-
-                return alert('Nope...you should registered first');
-            }
-
-            secret = this.$el.find('#secret').val();
-
-            if (!secret) {
+            if (!secretNumber) {
 
                 return alert('Please provide secret number');
             }
 
-            user = new UserModel({
-                secret: secret,
-                email : userEmail
-            });
-
-            user.urlRoot = '/recovery/mobile/secret';
-
-            user.save(null, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-
-                        alert('Please set new password');
-                        Backbone.history.navigate('lullaby/recovery/password', {trigger: true});
-                    }
+            $.ajax({
+                url    : '/recovery/mobile',
+                type   : 'POST',
+                data   : {secretNumber: secretNumber},
+                success: function (response) {
+                    alert(response.success);
+                    Backbone.history.navigate('#lullaby/recovery/password', {trigger: true});
                 },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function (xhr) {
+                    self.handleError(xhr);
                 }
             });
+        },
+
+        handleError: function(xhr) {
+            var self = this;
+
+            switch (xhr.status) {
+                case 403: // Wrong secret number
+                    alert(xhr.responseJSON.fail);
+                    self.$el.find('#secretNumber').val('');
+                    break;
+
+                case 422: // No secret number
+                    alert(xhr.responseJSON.fail);
+                    self.$el.find('#secretNumber').val('');
+                    break;
+
+                default:
+                    break;
+            }
         },
 
         render: function () {

@@ -3,9 +3,8 @@
 var CategoryModel = require('../models/Category');
 var ProductModel  = require('../models/Product');
 
-var validator = require('validator');
-var ObjectId = require('mongodb').ObjectID;
-var async = require('async');
+var validator     = require('validator');
+var ObjectId      = require('mongodb').ObjectID;
 
 var CategoryHandler = function () {
 
@@ -19,13 +18,12 @@ var CategoryHandler = function () {
                     return next(err);
                 }
 
-                if (categories) {
+                if (!categories) {
 
-                    res.status(200).send(categories);
-                } else {
-
-                    res.status(200).send({fail: 'Not found any category'});
+                    return res.status(404).send({fail: 'Not found'});
                 }
+
+                res.status(200).send(categories);
             });
     };
 
@@ -43,30 +41,6 @@ var CategoryHandler = function () {
             });
     };
 
-    this.countCategoryProducts = function (req, res, next) {
-        var categoryId = req.params.id;
-        var error;
-
-        if (categoryId && validator.isMongoId(categoryId)) {
-            CategoryModel
-                .find({_id: ObjectId(categoryId)})
-                .lean()
-                .exec(function (err, category) {
-                    if (err) {
-
-                        return next(err);
-                    }
-
-                    res.status(200).send({count: category[0].products.length});
-                });
-        } else {
-            error = new Error('Bad request');
-            error.status = 400;
-
-            return next(error);
-        }
-    };
-
     this.fetchByIdWithProducts = function (req, res, next) {
         var categoryId   = req.params.id;
         var aggregateObj = [{$match: {category: ObjectId(categoryId)}}];
@@ -74,112 +48,104 @@ var CategoryHandler = function () {
         var page         = parseInt(query.page) || 1;
         var limit        = parseInt(query.count) || 12;
         var skip         = (page - 1) * limit;
-        var error;
 
-        if (categoryId && validator.isMongoId(categoryId)) {
-            aggregateObj.push(
-                {$skip: skip},
-                {$limit: limit}
-            );
+        if (!categoryId || !validator.isMongoId(categoryId)) {
 
-            ProductModel
-                .aggregate(aggregateObj)
-                .exec(function (err, products) {
-                    if (err) {
-
-                        return next(err);
-                    }
-
-                    return res.status(200).send(products);
-                });
-        } else {
-            error = new Error('Bad request');
-            error.status = 400;
-
-            return next(error);
-        }
-    };
-
-    this.create = function (req, res, next) {
-        var body = req.body || {};
-        var title;
-
-        if (body.title && (typeof body.title === 'string') && body.title.trim().length) {
-            title = body.title;
+            return res.status(400).send({fail: 'Bad request'});
         }
 
-        if (title) {
-            new CategoryModel({title: title})
-                .save(function (err, result) {
-                    if (err) {
+        aggregateObj.push(
+            {$skip : skip},
+            {$limit: limit}
+        );
 
-                        return next(err);
-                    }
+        CategoryModel
+            .find({_id: ObjectId(categoryId)})
+            .lean()
+            .exec(function (err, category) {
 
-                    res.status(201).send({success: 'created'});
-                });
-        } else {
-
-            res.status(200).send({fail: 'Please provide category title'});
-        }
-    };
-
-    this.update = function (req, res, next) {
-        var categoryId = req.params.id;
-        var body = req.body || {};
-        var title;
-        var error;
-
-        if (categoryId && validator.isMongoId(categoryId)) {
-
-            if (body.title && (typeof body.title === 'string') && body.title.trim().length) {
-                title = body.title;
-            }
-
-            if (title) {
-                CategoryModel
-                    .findByIdAndUpdate(categoryId, {title: title}, {new: true})
-                    .exec(function (err, result) {
+                ProductModel
+                    .aggregate(aggregateObj)
+                    .exec(function (err, products) {
                         if (err) {
 
                             return next(err);
                         }
 
-                        res.status(200).send({success: 'updated'});
+                        products[0]       = products[0] || {};
+                        products[0].count = category[0].products.length;
+
+                        return res.status(200).send(products);
                     });
-            } else {
+            });
+    };
 
-                res.status(200).send({fail: 'Please provide new title'});
-            }
-        } else {
-            error = new Error('Bad request');
-            error.status = 400;
+    this.create = function (req, res, next) {
+        var body  = req.body || {};
+        var title = body.title;
 
-            return next(error);
+        if (!title || !(typeof body.title === 'string') || !body.title.trim().length) {
+
+            return res.status(422).send({fail: 'Nope...Please, provide category title'});
         }
+
+        new CategoryModel({title: title})
+            .save(function (err, result) {
+                if (err) {
+
+                    return next(err);
+                }
+
+                res.status(201).send({success: 'created'});
+            });
+    };
+
+    this.update = function (req, res, next) {
+        var categoryId = req.params.id;
+        var body       = req.body || {};
+        var title      = body.title;
+
+        if (!categoryId || !validator.isMongoId(categoryId)) {
+
+            return res.status(400).send({fail: 'Bad request'});
+        }
+
+        if (!title || !(typeof body.title === 'string') || !body.title.trim().length) {
+
+            return res.status(422).send({fail: 'Nope...Please, provide category title'});
+        }
+
+        CategoryModel
+            .findByIdAndUpdate(categoryId, {title: title}, {new: true})
+            .exec(function (err, result) {
+                if (err) {
+
+                    return next(err);
+                }
+
+                res.status(200).send({success: 'updated'});
+            });
+
     };
 
     this.remove = function (req, res, next) {
         var categoryId = req.params.id;
-        var error;
 
-        if (categoryId && validator.isMongoId(categoryId)) {
-            CategoryModel
-                .findByIdAndRemove(categoryId)
-                .exec(function (err, result) {
-                    if (err) {
+        if (!categoryId || !validator.isMongoId(categoryId)) {
 
-                        return next(err);
-                    }
-
-                    res.status(200).send({success: 'removed'});
-                });
-        } else {
-            error = new Error('Bad request');
-            error.status = 400;
-
-            return next(error);
+            return res.status(400).send({fail: 'Bad request'});
         }
+
+        CategoryModel
+            .findByIdAndRemove(categoryId)
+            .exec(function (err, result) {
+                if (err) {
+
+                    return next(err);
+                }
+
+                res.status(200).send({success: 'removed'});
+            });
     };
 };
 

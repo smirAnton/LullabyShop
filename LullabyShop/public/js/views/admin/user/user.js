@@ -18,24 +18,21 @@ define([
             users = new UserCollection();
             users.fetch({
                 success: function () {
-
                     self.collection = users;
                     self.render();
                 },
                 error: function (err, xhr) {
-
                     alert(xhr.statusText);
                 }
             });
         },
 
         events: {
-            'click #removeBtn': 'remove',
-            'click #banBtn'   : 'banUser',
-            'click #unbanBtn' : 'unbanUser'
+            'click #changeBanStatusBtn': 'onChangeBanStatus',
+            'click #removeUserBtn'     : 'onRemove'
         },
 
-        remove: function(e) {
+        onRemove: function(e) {
             var self = this;
             var userId;
             var user;
@@ -46,24 +43,27 @@ define([
             userId = $(e.currentTarget).data("id");
 
             if (!userId) {
-                return alert('Impossible to remove this user');
+
+                return alert('Impossible to remove this user. Absent userId');
             }
 
             user = self.collection.get(userId);
             user.destroy({
-                success: function () {
-                    alert('User has removed');
-
-                    self.initialize();
+                success: function (model, response) {
+                    if (response.fail) {
+                        alert(response.fail)
+                    } else {
+                        alert(response.success);
+                        self.initialize();
+                    }
                 },
                 error: function (err, xhr) {
-
                     alert(xhr.statusText);
                 }
             });
         },
 
-        banUser: function(e) {
+        onChangeBanStatus: function(e) {
             var self = this;
             var userId;
             var user;
@@ -74,47 +74,23 @@ define([
             userId = $(e.currentTarget).data("id");
 
             if (!userId) {
-                return alert('Impossible to ban this user');
+
+                return alert('Impossible to change ban status for this user. Absent userId');
             }
 
-            user = self.collection.get(userId);
-            user.save({isBanned: true}, {
-                success: function () {
-                    alert('User has banned');
-
-                    self.initialize();
+            $.ajax('admin/ban', {
+                type:'POST',
+                data: {userId: userId},
+                success: function(response) {
+                    if (response.fail) {
+                        alert(response.fail);
+                    } else {
+                        alert(response.success);
+                        self.initialize();
+                    }
                 },
-                error: function (err, xhr) {
-
-                    alert(xhr.statusText);
-                }
-            });
-        },
-
-        unbanUser: function(e) {
-            var self = this;
-            var userId;
-            var user;
-
-            e.stopPropagation();
-            e.preventDefault();
-
-            userId = $(e.currentTarget).data("id");
-
-            if (!userId) {
-                return alert('Impossible to ban this user');
-            }
-
-            user = self.collection.get(userId);
-            user.save({isBanned: false}, {
-                success: function () {
-                    alert('User has unbanned');
-
-                    self.initialize();
-                },
-                error: function (err, xhr) {
-
-                    alert(xhr.statusText);
+                error: function(xhr) {
+                    alert(xhr);
                 }
             });
         },

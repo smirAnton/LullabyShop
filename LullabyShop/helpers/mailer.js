@@ -5,7 +5,8 @@ var logger       = require('./logger')(module);
 var util         = require('util');
 var env          = process.env;
 
-var mailer = (function () {
+module.exports = function () {
+
     var sender = nodemailer.createTransport({
         service  : env.SERVICE,
         auth : {
@@ -114,6 +115,4 @@ var mailer = (function () {
         sendNewsletter     : sendNewsletter,
         sendReminder       : sendReminder
     }
-}());
-
-module.exports = mailer;
+};

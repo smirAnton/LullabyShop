@@ -1,6 +1,7 @@
 'use strict';
 
 var BlogModel = require('../models/Blog');
+
 var validator = require('validator');
 
 var BlogHandler = function () {

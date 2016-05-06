@@ -1,6 +1,6 @@
 'use strict';
 
-var generator = (function () {
+module.exports = function () {
 
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -38,6 +38,4 @@ var generator = (function () {
         generateProductCode: generateProductCode,
         generateOrderCode  : generateOrderCode
     }
-}());
-
-module.exports = generator;
+};

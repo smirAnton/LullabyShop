@@ -2,12 +2,13 @@
 
 define([
     'backbone',
+    'validator',
     'underscore',
     'models/user',
     'text!templates/profile/profile.html',
     'text!templates/profile/editProfile.html',
     'text!templates/recovery/setNewPassword.html'
-], function (Backbone, _, UserModel, profileTemplate, editProfileTemplate, setNewPasswordTemplate) {
+], function (Backbone, validator, _, UserModel, profileTemplate, editProfileTemplate, setNewPasswordTemplate) {
     var View = Backbone.View.extend({
         el      : "#content",
         template: _.template(profileTemplate),
@@ -16,24 +17,22 @@ define([
             var self = this;
             var userId;
             var user;
-            // get user id from local storage
-            userId = localStorage.getItem('userId');
 
+            userId = localStorage.getItem('userId');
             if (!userId) {
 
-                return alert('Nope...you should loggedIn first');
+                alert('You should login firstly');
+                return Backbone.history.navigate('#lullaby/login', {trigger: true});
             }
 
-            user = new UserModel({_id : userId});
-            self.model = user;
-
+            user = new UserModel({_id: userId});
             user.fetch({
-                success: function () {
+                success: function (response) {
+                    self.model = response;
                     self.render();
                 },
-
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function (err, xhr) {
+                    self.handleError(xhr);
                 }
             });
         },
@@ -41,12 +40,13 @@ define([
         events: {
             'click #changePasswordBtn': 'onChangePassword',
             'click #setNewPasswordBtn': 'onSetNewPassword',
-            'click #uploadAvatar'     : 'onUploadAvatar',
+            'click #uploadAvatarBtn'  : 'onUploadAvatar',
+            'click #cancelBtn'        : 'onCancel',
             'click #editBtn'          : 'onEdit',
             'click #saveBtn'          : 'onSave'
         },
 
-        onChangePassword: function(e) {
+        onChangePassword: function (e) {
             e.stopPropagation();
             e.preventDefault();
 
@@ -57,28 +57,18 @@ define([
         onSetNewPassword: function (e) {
             var self = this;
             var confirmedPassword;
-            var userEmail;
             var password;
-            var userId;
             var user;
 
             e.stopPropagation();
             e.preventDefault();
-
-            userEmail = localStorage.getItem('userEmail');
-            userId    = localStorage.getItem('userId');
-
-            if (!userEmail || !userId) {
-
-                return alert('Nope...you should login first');
-            }
 
             confirmedPassword = this.$el.find('#confirmedPassword').val();
             password          = this.$el.find('#password').val();
 
             if (!password || !confirmedPassword) {
 
-                return alert('Please fill all form\'s fields');
+                return alert('Please provide both passwords');
             }
 
             if (password !== confirmedPassword) {
@@ -86,24 +76,12 @@ define([
                 return alert('Password not matched');
             }
 
-            user = new UserModel({
-                password: password,
-                email   : userEmail
-            });
-
-            user.urlRoot = 'lullaby/user/';
-
-            user.save({_id: userId}, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-
-                        alert('You have been successfully set new password');
-                        self.template = _.template(profileTemplate);
-                        self.render();
-                    }
+            user = self.model;
+            user.save({password: password}, {
+                success: function (response) {
+                    alert(response.attributes.success);
+                    self.template = _.template(profileTemplate);
+                    self.render();
                 },
                 error: function (err, xhr) {
                     alert(xhr.statusText);
@@ -111,48 +89,59 @@ define([
             });
         },
 
-        onUploadAvatar : function(e) {
+        onUploadAvatar: function (e) {
             var self = this;
-            var avatar;
-            var user;
+            var formData;
+            var userFile;
 
             e.stopPropagation();
             e.preventDefault();
 
-            user = this.model;
-            // get photo from upload form
-            avatar = new FormData( $('form#upload').get(0) );
-            // save new user photo in db
-            $.ajax('lullaby/user/upload/' + user.attributes._id, {
-                type:'POST',
-                data: avatar,
-                processData: false,
-                contentType: false,
-                success: function() {
-                    self.template = _.template(profileTemplate);
-                    self.initialize();
-                },
-                error: function(xhr) {
-                    alert(xhr);
-                }
-            });
+            // get user's photo from form
+            userFile = ( $('#userAvatar')[0].files[0] );
+
+            if (validator.validateImage(userFile)) {
+                formData = new FormData();
+                formData.set('attachment', userFile);
+
+                $.ajax({
+                    url        : 'lullaby/user/upload',
+                    type       : 'POST',
+                    data       : formData,
+                    processData: false,
+                    contentType: false,
+                    success    : function (response) {
+                        self.template = _.template(profileTemplate);
+                        self.initialize();
+                    },
+                    error      : function (xhr) {
+                       self.handleError(xhr);
+                    }
+                });
+            }
+        },
+
+        onCancel: function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            this.template = _.template(profileTemplate);
+            this.render();
         },
 
         onEdit: function (e) {
             e.stopPropagation();
             e.preventDefault();
 
-            // change current on edit profile page template
             this.template = _.template(editProfileTemplate);
             this.render();
         },
 
-        onSave : function(e) {
+        onSave: function (e) {
             var self = this;
-            var updatedOptions;
-            var dayOfBirth;
             var firstname;
-            var password;
+            var userData;
+            var birthday;
             var surname;
             var street;
             var email;
@@ -163,26 +152,26 @@ define([
             e.stopPropagation();
             e.preventDefault();
 
-            user = self.model;
+            firstname = this.$el.find('#firstName').val();
+            birthday  = this.$el.find('#birthday').val();
+            surname   = this.$el.find('#surname').val();
+            street    = this.$el.find('#street').val();
+            email     = this.$el.find('#email').val();
+            phone     = this.$el.find('#phone').val();
+            city      = this.$el.find('#city').val();
 
-            dayOfBirth = this.$el.find('#dayOfBirth').val();
-            firstname  = this.$el.find('#firstName').val();
-            password   = this.$el.find('#pass').val();
-            surname    = this.$el.find('#surname').val();
-            street     = this.$el.find('#street').val();
-            email      = this.$el.find('#email').val();
-            phone      = this.$el.find('#phone').val();
-            city       = this.$el.find('#city').val();
+            if (!validator.validateEmail(email)) {
 
-            if (!email || !phone || !password) {
-
-                return alert('Required fields can\'t be empty');
+                return alert('Nope...Please, provide email');
             }
 
-            updatedOptions = {
+            if (!validator.validatePhone(phone)) {
+
+                return alert('Nope...Please, provide phone number');
+            }
+
+            userData = {
                 firstname: firstname,
-                password : password,
-                birthday : dayOfBirth,
                 surname  : surname,
                 street   : street,
                 email    : email,
@@ -190,8 +179,15 @@ define([
                 city     : city
             };
 
-            user.save(updatedOptions, {
-                success: function (response, xhr) {
+            if (validator.validateBirthday(birthday)) {
+
+                userData.birthday = birthday;
+            }
+
+
+            user = self.model;
+            user.save(userData, {
+                success: function (response) {
                     self.template = _.template(profileTemplate);
                     self.render();
                 },
@@ -201,8 +197,37 @@ define([
             });
         },
 
+        handleError: function (xhr) {
+            switch (xhr.status) {
+                case 400: // bad request
+                    alert(xhr.responseJSON.fail);
+                    break;
+
+                case 401: // user not authorized
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/login', {trigger: true});
+                    break;
+
+                case 403: // can not delete yourself (account)
+                    alert(xhr.responseJSON.fail);
+                    break;
+
+                case 404: // not found
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/shop', {trigger: true});
+                    break;
+
+                case 422: // wrong incoming data
+                    alert(xhr.responseJSON.fail);
+                    break;
+
+                default:
+                    break;
+            }
+        },
+
         render: function () {
-            this.$el.html(this.template({user : this.model.attributes}));
+            this.$el.html(this.template({user: this.model.attributes}));
 
             return this;
         }

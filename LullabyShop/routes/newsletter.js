@@ -1,7 +1,7 @@
 'use strict';
 
 var NewsletterHandler = require('../handlers/NewsletterHandler');
-var AuthHandler       = require('../handlers/AuthenticationHandler');
+var AuthHandler       = require('../handlers/AuthHandler');
 
 var express           = require('express');
 var router            = express.Router();

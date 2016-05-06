@@ -3,9 +3,8 @@
 define([
     'backbone',
     'underscore',
-    'models/user',
     'text!templates/activation/activationChoice.html'
-], function (Backbone, _, UserModel, activationTemplate) {
+], function (Backbone, _, activationTemplate) {
     var View = Backbone.View.extend({
         el      : "#content",
         template: _.template(activationTemplate),
@@ -15,80 +14,66 @@ define([
         },
 
         events: {
-            'click #activateByMobile': 'activateByMobile',
-            'click #activateByMail': 'activateByMail'
+            'click #activateByMobileBtn': 'onActivateByMobile',
+            'click #activateByMailBtn'  : 'onActivateByMail'
         },
 
-        activateByMobile: function (e) {
-            var userEmail;
-            var user;
-
+        onActivateByMobile: function (e) {
+            var self = this;
             e.stopPropagation();
             e.preventDefault();
 
-            userEmail = localStorage.getItem('userEmail');
-
-            if (!userEmail) {
-                return alert('Nope...you should registered first');
-            }
-
-            user = new UserModel({
-                email: userEmail
-            });
-
-            user.urlRoot = '/activate/mobile';
-
-            user.save(null, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-
-                        alert('Please check your mobile');
-                        Backbone.history.navigate('lullaby/activate/mobile', {trigger: true});
-                    }
+            $.ajax({
+                url    : '/activate/mobile',
+                type   :'GET',
+                success: function(response){
+                    alert(response.success);
+                    Backbone.history.navigate('#lullaby/activate/mobile', {trigger: true});
                 },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function(xhr){
+                    self.handleError(xhr);
                 }
             });
         },
 
-        activateByMail: function (e) {
-            var userEmail;
-            var user;
-
+        onActivateByMail: function (e) {
+            var self = this;
             e.stopPropagation();
             e.preventDefault();
 
-            userEmail = localStorage.getItem('userEmail');
-
-            if (!userEmail) {
-                return alert('Nope...you should registered first');
-            }
-
-            user = new UserModel({
-                email: userEmail
-            });
-
-            user.urlRoot = '/activate/mail';
-
-            user.save(null, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-
-                        alert('Please check your email');
-                        Backbone.history.navigate('lullaby/shop', {trigger: true});
-                    }
+            $.ajax({
+                url    : '/activate/mail',
+                type   :'GET',
+                success: function(response){
+                    alert(response.success);
+                    Backbone.history.navigate('#lullaby/shop', {trigger: true});
                 },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function(xhr){
+                    self.handleError(xhr);
                 }
             });
+        },
+
+        handleError: function(xhr) {
+            switch (xhr.status) {
+                case 403: // no user's data in session (login firstly)
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/login', {trigger: true});
+                    break;
+
+                case 404: // if user is not registered
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/register', {trigger: true});
+                    break;
+
+                case 409: // if user has already activated registration
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/login', {trigger: true});
+                    break;
+
+                default:
+                    break;
+            }
         },
 
         render: function () {

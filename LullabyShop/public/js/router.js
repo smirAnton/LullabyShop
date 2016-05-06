@@ -4,38 +4,39 @@ define(['backbone'], function (Backbone) {
     var Router = Backbone.Router.extend({
         view: null,
         routes: {
-            'lullaby/main'                     : 'main',
+            'lullaby/main': 'main',
             'lullaby/shop(/p=:page)(/c=:count)': 'shop',
-            'lullaby/help'                     : 'help',
-            'lullaby/chat'                     : 'chat',
-            'lullaby/about'                    : 'aboutUs',
-            'lullaby/login'                    : 'login',
-            'lullaby/register'                 : 'register',
-            'lullaby/profile'                  : 'profile',
-            'lullaby/contacts'                 : 'contacts',
-            'lullaby/checkout'                 : 'checkout',
+            'lullaby/help': 'help',
+            'lullaby/chat': 'chat',
+            'lullaby/about': 'aboutUs',
+            'lullaby/login': 'login',
+            'lullaby/register': 'register',
+            'lullaby/profile': 'profile',
+            'lullaby/contacts': 'contacts',
+            'lullaby/checkout': 'checkout',
             'lullaby/blog(/p=:page)(/c=:count)': 'blogList',
-            'lullaby/blog/:id'                 : 'blogDetails',
-            'lullaby/search/:word'             : 'search',
-            'lullaby/category/:id'             : 'productsCategory',
-            'lullaby/product/:id'              : 'productDetails',
-            'lullaby/activate/choice'          : 'activationChoice',
-            'lullaby/activate/mobile'          : 'activateByMobile',
-            'lullaby/activate/mail/:secret'    : 'activateByMail',
-            'lullaby/recovery'                 : 'recovery',
-            'lullaby/recovery/choice'          : 'recoveryChoice',
-            'lullaby/recovery/mobile'          : 'recoveryByMobile',
-            'lullaby/recovery/password'        : 'setNewPassword',
-            'lullaby/recovery/mail/:secret'    : 'recoveryByMail',
+            'lullaby/blog/:id': 'blogDetails',
+            'lullaby/search/:word(/p=:page)(/c=:count)': 'search',
+            'lullaby/categories/:query': 'filter',
+            'lullaby/category/:id(/p=:page)(/c=:count)': 'productsCategory',
+            'lullaby/product/:id': 'productDetails',
+            'lullaby/activate/choice': 'activationChoice',
+            'lullaby/activate/mobile': 'activateByMobile',
+            'lullaby/activate/mail/:secret': 'activateByMail',
+            'lullaby/recovery': 'recovery',
+            'lullaby/recovery/choice': 'recoveryChoice',
+            'lullaby/recovery/mobile': 'recoveryByMobile',
+            'lullaby/recovery/password': 'setNewPassword',
+            'lullaby/recovery/mail/:secret': 'recoveryByMail',
 
-            'lullaby/admin'                    : 'admin',
-            'lullaby/admin/chat'               : 'adminChat',
-            'lullaby/admin/blog'               : 'adminBlog',
-            'lullaby/admin/user'               : 'adminUser',
-            'lullaby/admin/product'            : 'adminProduct',
-            'lullaby/admin/category'           : 'adminCategory',
-            'lullaby/admin/reminder'           : 'adminReminder',
-            'lullaby/admin/newsletter'         : 'adminNewsletter',
+            'lullaby/admin': 'admin',
+            'lullaby/admin/chat': 'adminChat',
+            'lullaby/admin/blog': 'adminBlog',
+            'lullaby/admin/user': 'adminUser',
+            'lullaby/admin/product': 'adminProduct',
+            'lullaby/admin/category': 'adminCategory',
+            'lullaby/admin/reminder': 'adminReminder',
+            'lullaby/admin/newsletter': 'adminNewsletter',
 
             '*any': 'default'
         },
@@ -52,8 +53,9 @@ define(['backbone'], function (Backbone) {
             }
         },
 
-        shop: function () {
+        shop: function (page, count) {
             var self = this;
+            var options;
 
             if (!APP.mainView) {
 
@@ -66,8 +68,12 @@ define(['backbone'], function (Backbone) {
 
                         self.view.undelegateEvents();
                     }
+                    options = {
+                        page: page,
+                        count: count
+                    };
 
-                    self.view = new HomeView();
+                    self.view = new HomeView(options);
                     APP.homeView = self.view;
                 });
             }
@@ -131,6 +137,7 @@ define(['backbone'], function (Backbone) {
             APP.authorised = localStorage.getItem('loggedIn');
             var self = this;
 
+            console.log(APP);
             if (APP.authorised) {
 
                 Backbone.history.navigate('#lullaby/main', {trigger: true});
@@ -265,7 +272,7 @@ define(['backbone'], function (Backbone) {
             }
         },
 
-        search: function (word) {
+        search: function (word, page, count) {
             var self = this;
 
             if (!APP.homeView) {
@@ -273,18 +280,23 @@ define(['backbone'], function (Backbone) {
                 APP.nextView = Backbone.history.fragment;
                 Backbone.history.navigate('#lullaby/shop', {trigger: true});
             } else {
+                require(['views/product/productsList'], function (View) {
+                    var options = {
+                        searchWord: word,
+                        page      : page,
+                        count     : count
+                    };
 
-                require(['views/product/productsSearch'], function (Search) {
                     if (self.homeView) {
 
                         self.homeView.undelegateEvents();
                     }
-                    self.homeView = new Search(word);
+                    self.homeView = new View(options);
                 });
             }
         },
 
-        productsCategory: function (categoryId) {
+        filter: function (filter) {
             var self = this;
 
             if (!APP.homeView) {
@@ -292,12 +304,44 @@ define(['backbone'], function (Backbone) {
                 APP.nextView = Backbone.history.fragment;
                 Backbone.history.navigate('#lullaby/shop', {trigger: true});
             } else {
-                require(['views/product/productsCategory'], function (View) {
+                require(['views/product/productsList'], function (View) {
+                    var options = {
+                        filter: filter
+                    };
+
                     if (self.homeView) {
 
                         self.homeView.undelegateEvents();
                     }
-                    self.homeView = new View(categoryId);
+                    self.homeView = new View(options);
+                });
+            }
+        },
+
+        productsCategory: function (categoryId, page, count) {
+            var self = this;
+
+            if (!APP.homeView) {
+
+                APP.nextView = Backbone.history.fragment;
+                Backbone.history.navigate('#lullaby/shop', {trigger: true});
+            } else {
+                require(['views/product/productsList'], function (View) {
+                    var options;
+
+                    if (self.homeView) {
+
+                        self.homeView.undelegateEvents();
+                    }
+
+                    options = {
+                        categoryId: categoryId,
+                        count     : count,
+                        page      : page
+                    };
+
+
+                    self.homeView = new View(options);
                 });
             }
         },
@@ -321,16 +365,16 @@ define(['backbone'], function (Backbone) {
         },
 
         activationChoice: function () {
-            var self = this;
             APP.authorised = localStorage.getItem('loggedIn');
+            var self = this;
 
             if (APP.authorised) {
-
                 Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else if (!APP.mainView) {
 
+            } else if (!APP.mainView) {
                 APP.next = Backbone.history.fragment;
                 Backbone.history.navigate('#lullaby/main', {trigger: true});
+
             } else {
                 require(['views/activation/activationChoice'], function (ActivationChoiceView) {
                     if (self.view) {
@@ -342,16 +386,16 @@ define(['backbone'], function (Backbone) {
         },
 
         activateByMobile: function () {
-            var self = this;
             APP.authorised = localStorage.getItem('loggedIn');
+            var self = this;
 
             if (APP.authorised) {
-
                 Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else if (!APP.mainView) {
 
+            } else if (!APP.mainView) {
                 APP.next = Backbone.history.fragment;
                 Backbone.history.navigate('#lullaby/main', {trigger: true});
+
             } else {
                 require(['views/activation/activateByMobile'], function (ActivateByMobileView) {
                     if (self.view) {
@@ -363,16 +407,16 @@ define(['backbone'], function (Backbone) {
         },
 
         activateByMail: function (secret) {
-            var self = this;
             APP.authorised = localStorage.getItem('loggedIn');
+            var self = this;
 
             if (APP.authorised) {
-
                 Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else if (!APP.mainView) {
 
+            } else if (!APP.mainView) {
                 APP.next = Backbone.history.fragment;
                 Backbone.history.navigate('#lullaby/main', {trigger: true});
+
             } else {
                 require(['views/activation/activateByMail'], function (activateByMailView) {
                     if (self.view) {
@@ -496,7 +540,7 @@ define(['backbone'], function (Backbone) {
 
         admin: function () {
             APP.authorised = localStorage.getItem('loggedIn');
-            APP.isAdmin    = localStorage.getItem('isAdmin');
+            APP.isAdmin = localStorage.getItem('isAdmin');
 
             if (APP.mainView) {
 

@@ -2,48 +2,45 @@
 
 var Subscriber = require('../models/Subscribers');
 
-var validator  = require('validator');
+var validator = require('validator');
 
 var SubscriberHandler = function () {
 
     this.join = function (req, res, next) {
-        var body = req.body || {};
-        var email;
+        var body  = req.body || {};
+        var email = body.email;
 
-        if (body.email && (typeof body.email === 'string') &&  validator.isEmail(body.email)) {
-            email = body.email;
+        if (!email || !validator.isEmail(email)) {
+
+            return res.status(422).send({fail: 'Please provide email'})
         }
 
-        if (email) {
-            // Check if subscriber has already made subscribe
-            Subscriber
-                .findOne({email : email})
-                .lean()
-                .exec(function(err, subscriber) {
-                    if (err) {
 
-                        return next(err);
-                    }
+        Subscriber
+            .findOne({email: email})
+            .lean()
+            .exec(function (err, subscriber) {
+                if (err) {
 
-                    if (!subscriber) {
-                        // create new newsletter's subscriber
-                        new Subscriber({email: email})
-                            .save(function (err, result) {
-                                if (err) {
+                    return next(err);
+                }
 
-                                    return next(err);
-                                }
-                                res.status(201).send({success: 'You have successfully subscribed on Lullaby\'s newsletters'})
-                            });
-                    } else {
+                if (subscriber) {
 
-                        res.status(201).send({fail: 'Nope...You have already subscribed on Lullaby\'s newsletters'})
-                    }
-                });
-        } else {
+                    return res.status(409).send({fail: 'This email has already subscribed on Lullaby\'s newsletters'})
+                }
 
-            res.status(200).send({fail: 'Nope...Please provide email'})
-        }
+                new Subscriber({email: email})
+                    .save(function (err, result) {
+                        if (err) {
+
+                            return next(err);
+                        }
+                        res.status(201).send({success: 'You have successfully subscribed on Lullaby\'s newsletters'})
+                    });
+
+            });
+
     };
 };
 

@@ -2,15 +2,11 @@
 
 define([
     'backbone',
+    'validator',
     'underscore',
-    'models/user',
     'text!templates/footer/footer.html'
-
-], function (Backbone, _, UserModel, footerTemplate) {
-    var FooterView;
-
-    // define footer view
-    FooterView = Backbone.View.extend({
+], function (Backbone, validator, _, footerTemplate) {
+    var View = Backbone.View.extend({
         el      : "#footer",
         template: _.template(footerTemplate),
 
@@ -19,45 +15,53 @@ define([
         },
 
         events: {
-            'click #join': 'join'
+            'click #joinBtn': 'onJoin'
         },
 
-        join : function(e) {
+        onJoin: function (e) {
+            var self = this;
             var email;
-            var user;
 
             e.stopPropagation();
             e.preventDefault();
-            // get profile input data
+
             email = this.$el.find('#email').val();
 
-            if (email) {
-                // create profile and set him email for transferring to server side
-                user = new UserModel({
-                    email : email
-                });
+            if (!validator.validateEmail(email)) {
 
-                user.urlRoot = 'lullaby/subscriber/join';
+                return alert('Please provide email');
+            }
 
-                user.save(null, {
-                    success: function (response, xhr) {
-                        if (response.attributes.fail) {
+            $.ajax({
+                url    : '/lullaby/subscriber/join',
+                method : 'POST',
+                data   : {email: email},
+                success: function (response) {
+                    alert(response.success);
+                    self.$el.find('#email').val('');
+                },
+                error  : function (xhr) {
+                    self.handleError(xhr);
+                }
+            });
+        },
 
-                            // inform profile if some fails
-                            alert(response.attributes.fail);
-                        } else {
+        handleError: function(xhr) {
+            var self = this;
 
-                            // inform profile of leaving message result
-                            alert(response.attributes.success);
-                            Backbone.history.navigate('lullaby/shop', {trigger: true});
-                        }
-                    },
-                    error  : function (err, xhr) {
-                        alert('Some error');
-                    }
-                });
-            } else {
-                alert('Please provide email');
+            switch (xhr.status) {
+                case 409: // email already subscribed
+                    alert(xhr.responseJSON.fail);
+                    self.$el.find('#email').val('');
+                    break;
+
+                case 422: // user did not provide email
+                    alert(xhr.responseJSON.fail);
+                    self.$el.find('#email').val('');
+                    break;
+
+                default:
+                    break;
             }
         },
 
@@ -68,7 +72,7 @@ define([
         }
     });
 
-    return FooterView;
+    return View;
 });
 
 

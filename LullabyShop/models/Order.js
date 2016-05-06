@@ -2,7 +2,7 @@
 
 var mongoose  = require('mongoose');
 var TABLE     = require('../constants/dbTables');
-var generator = require('../helpers/generator');
+var generator = require('../helpers/generator')();
 
 module.exports = (function () {
     var Schema   = mongoose.Schema;

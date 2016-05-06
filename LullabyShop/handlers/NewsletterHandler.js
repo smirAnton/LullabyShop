@@ -5,7 +5,7 @@ var NewsletterModel = require('../models/Newsletter');
 
 var validator       = require('validator');
 var ObjectId        = require('mongodb').ObjectID;
-var mailer          = require('../helpers/mailer');
+var mailer          = require('../helpers/mailer')();
 var async           = require('async');
 
 var NewsletterHandler = function () {

@@ -1,6 +1,6 @@
 'use strict';
 
-var AuthHandler = require('../handlers/AuthenticationHandler');
+var AuthHandler = require('../handlers/AuthHandler');
 var BlogHandler = require('../handlers/BlogHandler');
 
 var express     = require('express');

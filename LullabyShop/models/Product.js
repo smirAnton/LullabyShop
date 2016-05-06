@@ -1,8 +1,9 @@
 'use strict';
 
 var TABLE     = require('../constants/dbTables');
+var generator = require('../helpers/generator')();
+
 var mongoose  = require('mongoose');
-var generator = require('../helpers/generator');
 
 module.exports = (function () {
     var Schema   = mongoose.Schema;

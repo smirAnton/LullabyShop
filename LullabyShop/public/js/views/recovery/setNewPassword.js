@@ -3,11 +3,10 @@
 define([
     'backbone',
     'underscore',
-    'models/user',
     'text!templates/recovery/setNewPassword.html'
-], function (Backbone, _, UserModel, setNewPasswordTemplate) {
+], function (Backbone, _, setNewPasswordTemplate) {
     var View = Backbone.View.extend({
-        el: "#content",
+        el      : "#content",
         template: _.template(setNewPasswordTemplate),
 
         initialize: function () {
@@ -15,23 +14,18 @@ define([
         },
 
         events: {
-            'click #setNewPasswordBtn': 'onSetNewPassword'
+            'click #setNewPasswordBtn': 'onSetNewPassword',
+            'click #cancelBtn'        : 'onCancel'
         },
 
         onSetNewPassword: function (e) {
+            var self = this;
             var confirmedPassword;
-            var userEmail;
             var password;
-            var user;
 
             e.stopPropagation();
             e.preventDefault();
 
-            userEmail = localStorage.getItem('userEmail');
-
-            if (!userEmail) {
-                return alert('Nope...you should registered first');
-            }
 
             confirmedPassword = this.$el.find('#confirmedPassword').val();
             password          = this.$el.find('#password').val();
@@ -42,32 +36,51 @@ define([
             }
 
             if (password !== confirmedPassword) {
+                self.$el.find('#confirmedPassword').val('');
+                self.$el.find('#password').val('');
 
                 return alert('Password not matched');
             }
 
-            user = new UserModel({
-                password: password,
-                email   : userEmail
-            });
-
-            user.urlRoot = '/recovery/password';
-
-            user.save(null, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-
-                        alert('You have been successfully set new password');
-                        Backbone.history.navigate('lullaby/login', {trigger: true});
-                    }
+            $.ajax({
+                url    : '/recovery/password',
+                type   :'POST',
+                data   : {password: password},
+                success: function(response){
+                    alert(response.success);
+                    Backbone.history.navigate('#lullaby/login', {trigger: true})
                 },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function(xhr){
+                    self.handleError(xhr);
                 }
             });
+        },
+
+        onCancel: function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            Backbone.history.navigate('#lullaby/shop', {trigger: true});
+        },
+
+        handleError: function(xhr) {
+            var self = this;
+
+            switch (xhr.status) {
+                case 403: // No email
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/recovery', {trigger: true});
+                    break;
+
+                case 422: // not provided new password
+                    alert(xhr.responseJSON.fail);
+                    self.$el.find('#confirmedPassword').val('');
+                    self.$el.find('#password').val('');
+                    break;
+
+                default:
+                    break;
+            }
         },
 
         render: function () {

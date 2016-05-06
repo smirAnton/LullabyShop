@@ -8,9 +8,9 @@ module.exports = (function () {
     var ObjectId = Schema.Types.ObjectId;
 
     var UserSchema = new Schema({
-            email     : {type: String,  required: true, unique: true},
-            phone     : {type: String,  required: true, unique: true},
-            password  : {type: String,  required: true, unique: false},
+            email     : {type: String,  required: true,  unique: true},
+            phone     : {type: String,  required: true,  unique: false},
+            password  : {type: String,  required: true,  unique: false},
             firstname : {type: String,  required: false, unique: false},
             surname   : {type: String,  required: false, unique: false},
             gender    : {type: String,  required: false, unique: false},

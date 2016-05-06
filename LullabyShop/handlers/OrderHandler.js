@@ -6,8 +6,8 @@ var UserModel  = require('../models/User');
 var validator  = require('validator');
 var ObjectId   = require('mongodb').ObjectID;
 var async      = require('async');
-var REGEX      = require('../constants/regExp');
-var mailer     = require('../helpers/mailer');
+var regExp     = require('../constants/regExp');
+var mailer     = require('../helpers/mailer')();
 
 var OrderHandler = function () {
 
@@ -109,7 +109,7 @@ var OrderHandler = function () {
             email = body.userEmail;
         }
 
-        if (body.userPhone && body.userPhone.match(REGEX.MOBILE_VALID)) {
+        if (body.userPhone && body.userPhone.match(regExp.PHONE)) {
             phone = body.userPhone;
         }
 

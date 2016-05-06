@@ -31,10 +31,7 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'mongodb connection error:'));
 
 db.once('connected', function callback() {
-    var server;
-    var port;
     var app;
-    var io;
 
     app = express();
 
@@ -61,44 +58,6 @@ db.once('connected', function callback() {
         store            : new SessionStore({mongooseConnection: db})
     }));
 
-    require('./routes/index')(app);
-
-    port = parseInt(env.PORT) || 3000;
-
-    server = http.createServer(app).listen(port);
-
-    io = socketio.listen(server);
-    io.on('connection', function (socket) {
-        logger.info('New customer connected (id=' + socket.id + ')');
-
-        socket.on('start', function (userId) {
-            if (!global.clients[userId]) {
-
-                global.clients[userId] = socket;
-                socket._id = userId;
-            }
-        });
-
-        socket.on('message', function (data, callback) {
-            socket.broadcast.emit('message', {message: data.message});
-
-            return callback({message: data.message, label: true});
-        });
-
-        socket.on('disconnect', function () {
-            logger.info('Customer disconnected (id=' + socket._id + ')');
-
-            global.clients[socket._id] = undefined;
-        });
-    });
-
-    server.on('listening', function() {
-        logger.info('Listening on http://localhost:' + port + '/');
-    });
-
-    server.on('error', function(err) {
-        logger.error(err);
-        process.exit(1);
-    });
+    return app;
 });
 

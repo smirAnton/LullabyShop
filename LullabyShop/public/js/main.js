@@ -1,6 +1,5 @@
 'use strict';
 
-// define global variable for temporary data saving
 var APP = APP || {};
 
 require.config({
@@ -16,7 +15,8 @@ require.config({
         collections      : './collections',
         views            : './views',
         templates        : '../templates',
-        constants        : './constants/constants'
+        constants        : './constants/magicNumbers',
+        validator        : './helpers/validator'
     },
     shim: {
         'socketio': {

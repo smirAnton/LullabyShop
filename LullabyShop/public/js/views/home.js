@@ -3,19 +3,23 @@
 define([
     'backbone',
     'underscore',
+    'collections/products',
     'views/search/search',
     'views/order/orderMenu',
     'views/product/productsList',
     'views/category/categoryList',
     'views/auth/authMenu',
     'text!templates/home.html'
-], function (Backbone, _, SearchView, OrderMenuView, ProductListView, CategoriesView, AuthMenuView, homeTemplate) {
+], function (Backbone, _, ProductCollection, SearchView, OrderMenuView, ProductListView, CategoriesView, AuthMenuView, homeTemplate) {
     var View = Backbone.View.extend({
             el      : "#content",
             template: _.template(homeTemplate),
 
-            initialize: function () {
+            initialize: function (options) {
                 var next = APP.nextView;
+                var collection;
+                var count;
+                var page;
 
                 this.render();
 
@@ -44,10 +48,11 @@ define([
                 this.authMenuView = new AuthMenuView();
 
                 if (next) {
-
                     delete APP.nextView;
                     Backbone.history.navigate(next, {trigger: true});
+
                 } else {
+
                     if (this.productView) {
                         this.productView.undelegateEvents()
                     }

@@ -1,7 +1,7 @@
 'use strict';
 
 var CommentHandler = require('../handlers/CommentHandler');
-var AuthHandler    = require('../handlers/AuthenticationHandler');
+var AuthHandler    = require('../handlers/AuthHandler');
 
 var express        = require('express');
 var router         = express.Router();

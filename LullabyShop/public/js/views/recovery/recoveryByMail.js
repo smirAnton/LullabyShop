@@ -1,34 +1,40 @@
 'use strict';
 
 define([
-    'backbone',
-    'underscore',
-    'models/user'
-], function (Backbone, _, UserModel) {
+    'backbone'
+], function (Backbone) {
     var View = Backbone.View.extend({
 
         initialize: function (secret) {
-            var user = new UserModel({
-                secret: secret
-            });
+            var self = this;
 
-            user.urlRoot = '/activate/mail/secret';
-
-            user.save(null, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-
-                        alert('Please set new password');
-                        Backbone.history.navigate('lullaby/recovery/password', {trigger: true});
-                    }
+            $.ajax({
+                url    : '/recovery/mail/' + secret,
+                method : 'GET',
+                success: function (response) {
+                    alert(response.success);
+                    Backbone.history.navigate('#lullaby/recovery/password', {trigger: true});
                 },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function (xhr) {
+                    self.handleError(xhr);
                 }
             });
+        },
+
+        handleError: function(xhr) {
+            switch (xhr.status) {
+                case 400: // Wrong secret link
+                    alert(xhr.responseJSON.fail);
+                    break;
+
+                case 403: // No secret number
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('$lullaby/shop', {trigger: true});
+                    break;
+
+                default:
+                    break;
+            }
         }
     });
 

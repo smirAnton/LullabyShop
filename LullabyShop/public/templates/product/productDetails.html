@@ -15,7 +15,7 @@
             <p>when an unknown printer took a galley of type and scrambled it to make</p>
             <div class="price">
                 <span class="text">Price:</span>
-                <span class="price-new"><%= product.price %> UAH </span><span class="price-old"><%= product.price + 200 %> UAH</span>
+                <span class="price-new"><%= product.price %> UAH </span><span class="price-old"><%= product.price + Math.ceil(product.price*0.1) %> UAH</span>
             </div>
             <div class="price">
                 <span class="text">Delivery:</span>

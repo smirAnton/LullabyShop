@@ -2,7 +2,7 @@
 
 var crypto = require('crypto');
 
-var coder = (function () {
+module.exports = function () {
 
     function encryptPassword(password) {
         var encryptPassword;
@@ -18,6 +18,4 @@ var coder = (function () {
     return {
         encryptPassword: encryptPassword
     }
-}());
-
-module.exports = coder;
+};

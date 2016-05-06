@@ -8,7 +8,7 @@ module.exports = (function () {
     var ObjectId = Schema.Types.ObjectId;
 
     var CategorySchema = new Schema({
-            title   :  {type: String, unique: true, required: true},
+            title   :  {type: String,   unique: true,   required: true},
             products: [{type: ObjectId, ref: 'product', default: null}]
 
         }, {collection: TABLE.CATEGORIES}

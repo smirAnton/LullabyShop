@@ -4,22 +4,22 @@ var multiparty = require('multiparty');
 var gm         = require('gm');
 var fs         = require('fs');
 
-var imager = (function () {
+module.exports = function () {
 
     // template to upload and resize image to necessary dimensions
-    function uploadAndResizeImage(req, folderPathToSave, dimensions, callback) {
+    function uploadAndResizeImage(req, pathToSaveImage, imageDimensions, callback) {
         var form = new multiparty.Form();
 
         form.parse(req, function (err, field, files) {
             var image;
             var path;
             // grab image
-            image = files.upload[0];
+            image = files.attachment[0];
             // define updated file path
-            path = folderPathToSave + image.originalFilename;
+            path = pathToSaveImage + image.originalFilename;
             // resize and save image
             gm(image.path)
-                .resize(dimensions.width, dimensions.height)
+                .resize(imageDimensions.width, imageDimensions.height)
                 .write(path, function (err, result) {
                     if (err) {
 
@@ -40,7 +40,7 @@ var imager = (function () {
             var path;
 
             // grub image
-            image = files.images[0];
+            image = files.attachment[0];
             fs.readFile(image.path, function (err, data) {
 
                 // define folder to save image
@@ -97,8 +97,6 @@ var imager = (function () {
         uploadBlogPicture   : uploadBlogPicture,
         uploadUserAvatar    : uploadUserAvatar
     }
-}());
-
-module.exports = imager;
+};
 
 

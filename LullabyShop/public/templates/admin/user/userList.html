@@ -42,9 +42,8 @@
                                     <td><%= user.isBanned %></td>
                                     <td>
                                         <div class="registration_form">
-                                            <input type="submit" value="Ban" id="banBtn" data-id="<%= user._id %>">
-                                            <input type="submit" value="Unban" id="unbanBtn" data-id="<%= user._id %>">
-                                            <input type="submit" value="Remove" id="removeBtn" data-id="<%= user._id %>">
+                                            <input type="submit" value="Change ban status" id="changeBanStatusBtn" data-id="<%= user._id %>">
+                                            <input type="submit" value="Remove" id="removeUserBtn" data-id="<%= user._id %>">
                                         </div>
                                     </td>
                                 </tr>

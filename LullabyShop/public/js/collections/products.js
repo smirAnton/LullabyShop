@@ -2,12 +2,10 @@
 
 define([
     'backbone',
-    'constants',
     'models/product'
-], function(Backbone, Constant, ProductModel){
+], function(Backbone, ProductModel){
     var Products = Backbone.Collection.extend({
         model     : ProductModel,
-        url       : '/lullaby/product',
         sortKey   : 'id',
 
         comparator: function(product) {
@@ -20,29 +18,32 @@ define([
         },
 
         initialize: function(options){
-            var paginationData = (options && options.data) || {};
             var self = this;
-            var product;
 
-            this.page  = paginationData.page  || Constant.FIRST_PAGE;
-            this.count = paginationData.count || Constant.AMOUNT_OF_PRODUCTS_PER_PAGE;
+            options         = options       || {};
+            this.page       = options.page  || 1;
+            this.count      = options.count || 12;
 
-             //find out amount of pages with products
-            product = new ProductModel();
-            product.urlRoot = 'lullaby/product/count';
-            product.fetch({
-                success: function(response) {
-                    self.countProducts = response.attributes.amount;
-                    self.countPages    = Math.ceil(self.countProducts / Constant.AMOUNT_OF_PRODUCTS_PER_PAGE);
-                },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
-                }
-            });
+            if (options.categoryId) {
+
+                this.url = '/lullaby/category/' + options.categoryId;
+            } else if (options.searchWord){
+
+                this.url = '/lullaby/product/search/' + options.searchWord;
+            } else if (options.filter){
+
+                this.url = '/lullaby/product/filter/' + options.filter;
+            } else {
+
+                this.url = '/lullaby/product';
+            }
 
             this.fetchData(this.page, this.count, {
-                success: function (model, xhr, options) {},
-                error  : function (model, xhr, options) {
+                success: function (collection, xhr, options) {
+                    self.countProducts = collection.models[0].attributes.count;
+                    self.countPages    = Math.ceil(self.countProducts / 12);
+                },
+                error  : function (err, xhr, options) {
                     alert(xhr.statusText);
                 }
             });
@@ -80,10 +81,10 @@ define([
             }
 
             this.fetchData(page, this.count, {
-                success: function (model, xhr, options) {
+                success: function (collection, xhr, options) {
                     self.page = page;
                 },
-                error  : function (model, xhr, options) {
+                error  : function (err, xhr, options) {
                     alert(xhr.statusText);
                 }
             });
@@ -96,10 +97,10 @@ define([
             page = page || 1;
 
             this.fetchData(page, this.count, {
-                success: function (model, xhr, options) {
+                success: function (collection, xhr, options) {
                     self.page = page;
                 },
-                error  : function (model, xhr, options) {
+                error  : function (err, xhr, options) {
                     alert(xhr.statusText);
                 }
             });
@@ -107,17 +108,20 @@ define([
 
         goToPage: function(pageNumber){
             var self = this;
-            var page = pageNumber;
+            var page;
 
-            if (page > this.countPages || page < 0) {
+            if (pageNumber > this.countPages || pageNumber < 0) {
+
                 return alert('Not found such page');
             }
 
+            page = pageNumber;
+
             this.fetchData(page, this.count, {
-                success: function (model, xhr, options) {
+                success: function (collection, xhr, options) {
                     self.page = page;
                 },
-                error  : function (model, xhr, options) {
+                error  : function (err, xhr, options) {
                     alert(xhr.statusText);
                 }
             });

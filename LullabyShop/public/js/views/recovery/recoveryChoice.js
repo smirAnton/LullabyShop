@@ -15,80 +15,58 @@ define([
         },
 
         events: {
-            'click #recoveryByMobile': 'recoveryByMobile',
-            'click #recoveryByMail'  : 'recoveryByMail'
+            'click #recoveryByMobileBtn': 'recoveryByMobile',
+            'click #recoveryByMailBtn'  : 'recoveryByMail'
         },
 
         recoveryByMobile: function (e) {
-            var userEmail;
-            var user;
+            var self = this;
 
             e.stopPropagation();
             e.preventDefault();
 
-            userEmail = localStorage.getItem('userEmail');
-
-            if (!userEmail) {
-                return alert('Nope...you should registered first');
-            }
-
-            user = new UserModel({
-                email: userEmail
-            });
-
-            user.urlRoot = '/recovery/mobile';
-
-            user.save(null, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-
-                        alert('Please check your mobile');
-                        Backbone.history.navigate('lullaby/recovery/mobile', {trigger: true});
-                    }
+            $.ajax({
+                url    : '/recovery/mobile',
+                type   :'GET',
+                success: function(response){
+                    alert(response.success);
+                    Backbone.history.navigate('#lullaby/recovery/mobile', {trigger: true})
                 },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function(xhr){
+                    self.handleError(xhr);
                 }
             });
         },
 
         recoveryByMail: function (e) {
-            var userEmail;
-            var user;
+            var self = this;
 
             e.stopPropagation();
             e.preventDefault();
 
-            userEmail = localStorage.getItem('userEmail');
-
-            if (!userEmail) {
-                return alert('Nope...you should registered first');
-            }
-
-            user = new UserModel({
-                email: userEmail
-            });
-
-            user.urlRoot = '/recovery/mail';
-
-            user.save(null, {
-                success: function (response, xhr) {
-                    if (response.attributes.fail) {
-
-                        alert(response.attributes.fail);
-                    } else {
-
-                        alert('Please check your email');
-                        Backbone.history.navigate('lullaby/shop', {trigger: true});
-                    }
+            $.ajax({
+                url    : '/recovery/mail',
+                type   :'GET',
+                success: function(response){
+                    alert(response.success);
+                    Backbone.history.navigate('#lullaby/shop', {trigger: true})
                 },
-                error: function (err, xhr) {
-                    alert('Some error');
+                error  : function(xhr){
+                    self.handleError(xhr);
                 }
             });
+        },
+
+        handleError: function(xhr) {
+            switch (xhr.status) {
+                case 404: // email is not provided
+                    alert(xhr.responseJSON.fail);
+                    Backbone.history.navigate('#lullaby/recovery', {trigger: true});
+                    break;
+
+                default:
+                    break;
+            }
         },
 
         render: function () {

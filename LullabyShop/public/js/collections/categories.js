@@ -6,7 +6,7 @@ define([
 ], function(Backbone, Category){
     var Categories = Backbone.Collection.extend({
         model: Category,
-        url: '/lullaby/category'
+        url  : '/lullaby/category'
     });
 
     return Categories;

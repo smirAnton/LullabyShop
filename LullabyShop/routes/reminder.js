@@ -1,7 +1,7 @@
 'use strict';
 
 var ReminderHandler = require('../handlers/ReminderHandler');
-var AuthHandler       = require('../handlers/AuthenticationHandler');
+var AuthHandler       = require('../handlers/AuthHandler');
 
 var express           = require('express');
 var router            = express.Router();

@@ -13,7 +13,7 @@ define([
         el      : "#content-holder",
         template: _.template(mainTemplate),
 
-        initialize: function () {
+        initialize: function (options) {
             var next = APP.next;
 
             this.render();
@@ -39,7 +39,7 @@ define([
                     this.homeView.undelegateEvents()
                 }
 
-                this.homeView = new HomeView();
+                this.homeView = new HomeView(options);
             }
         },
 

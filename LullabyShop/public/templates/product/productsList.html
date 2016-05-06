@@ -6,11 +6,6 @@
         }
         return results;
     }
-
-    console.log(countProducts);
-    console.log(countPages);
-
-
 %>
 <div class="container">
     <div class="col-md-9 w_content">
@@ -31,6 +26,16 @@
             <%
                 var productsJson = products.toJSON();
                 var partsForFourProducts = chunks(productsJson, 4);
+
+                if (!countProducts) {
+
+            %>
+            <div class="grids_of_4">
+                <p style="text-align:center"><img src="images/defaults/product_404.png"></p>
+            </div>
+
+            <%
+                } else {
                 _.each(partsForFourProducts, function(partOfProducts) {
             %>
             <div class="grids_of_4">
@@ -55,10 +60,10 @@
                 </div>
                 <% }); %>
             </div>
-            <% }); %>
+            <% });} %>
         </div>
     </div>
-    <nav>
+    <nav style="text-align:right">
         <ul class="pagination">
             <li class="page-item">
                 <a id="prevBtn" class="page-link" href="#" aria-label="Previous">

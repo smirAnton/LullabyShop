@@ -14,14 +14,15 @@ define(['backbone', 'underscore', 'router', 'socketio'], function (Backbone, _, 
 
         socket.connect();
 
+        // get session data
         $.ajax({
-            url : '/check',
+            url : '/session',
             type:'GET',
-            success: function(success){
-                var sessionData   = success;
+            success: function(sessionData){
+                localStorage.clear();
 
                 if (sessionData.loggedIn) {
-                    APP.authorised = sessionData.loggedIn;
+                    APP.authorised = true;
                     APP.userId     = sessionData.userId;
 
                     localStorage.setItem('loggedIn', APP.authorised);
@@ -29,7 +30,7 @@ define(['backbone', 'underscore', 'router', 'socketio'], function (Backbone, _, 
                 }
 
                 if (sessionData.isAdmin) {
-
+                    APP.isAdmin    = true;
                     localStorage.setItem('isAdmin', APP.isAdmin);
                 }
 
@@ -37,10 +38,8 @@ define(['backbone', 'underscore', 'router', 'socketio'], function (Backbone, _, 
                 localStorage.setItem('userFirstname', APP.userFirstname);
 
                 if (sessionData.basket) {
-
                     localStorage.setItem('basket', JSON.stringify(sessionData.basket));
                 } else {
-
                     localStorage.setItem('basket', JSON.stringify([]));
                 }
             },
