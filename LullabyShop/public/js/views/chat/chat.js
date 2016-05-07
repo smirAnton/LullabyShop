@@ -8,12 +8,12 @@ define([
     'text!templates/chat/chat.html'
 ], function (socketio, Backbone, _, UserModel, chatTemplate) {
     var View = Backbone.View.extend({
-        el: "#content",
+        el      : "#content",
         template: _.template(chatTemplate),
 
         initialize: function () {
             var self = this;
-            var userId = localStorage.getItem('userId');
+            var userFirstname = localStorage.getItem('userFirstname');
             var io;
 
             if (!APP.io) {
@@ -22,7 +22,7 @@ define([
                 io = APP.io;
             }
 
-            APP.io.emit('start', userId);
+            APP.io.emit('start',userFirstname);
 
             APP.io.on('message', this.appendMessage);
 

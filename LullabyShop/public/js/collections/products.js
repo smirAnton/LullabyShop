@@ -20,9 +20,9 @@ define([
         initialize: function(options){
             var self = this;
 
-            options         = options       || {};
-            this.page       = options.page  || 1;
-            this.count      = options.count || 12;
+            options    = options       || {};
+            this.page  = options.page  || 1;
+            this.count = options.count || 12;
 
             if (options.categoryId) {
 

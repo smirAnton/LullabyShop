@@ -18,4 +18,5 @@ define(
             // image validation
             MAX_SIZE                   : 300000 // 300KB
         }
-    });
+    }
+);

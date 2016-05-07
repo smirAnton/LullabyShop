@@ -8,12 +8,20 @@ module.exports = function(server) {
     io.on('connection', function (socket) {
         logger.info('New customer connected (id=' + socket.id + ')');
 
-        socket.on('start', function (userId) {
-            if (!global.clients[userId]) {
+        socket.on('start', function (userFirstname, callback) {
+            if (!global.clients[socket.id]) {
 
-                global.clients[userId] = socket;
-                socket._id = userId;
+                global.clients[socket.id] = socket;
+                socket.userFirstname = userFirstname;
+            } else {
+
+                socket.userFirstname = userFirstname;
             }
+
+            logger.info('New customer connected (name='
+                + socket.userFirstname
+                + ', connected time='
+                + new Date().toLocaleTimeString() + ');');
         });
 
         socket.on('message', function (data, callback) {

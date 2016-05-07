@@ -1,14 +1,14 @@
 'use strict';
 
 var mongoose = require('mongoose');
-var socketio = require('socket.io');
 var logger   = require('./helpers/logger')(module);
 var http     = require('http');
-var env            = process.env || 'development';
+var env      = process.env || 'development';
 var db;
 
 // for chat clients
-global.clients = {};
+global.clients       = {};
+global.isAdminOnline = false;
 
 require('./config/' + env.NODE_ENV);
 

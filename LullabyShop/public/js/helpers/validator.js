@@ -48,4 +48,5 @@ define(
             validatePhone   : validatePhone,
             validateImage   : validateImage
         }
-    });
+    }
+);

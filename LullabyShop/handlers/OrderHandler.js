@@ -1,13 +1,16 @@
 'use strict';
 
 var OrderModel = require('../models/Order');
-var UserModel  = require('../models/User');
+var ProductModel = require('../models/Product');
+var UserModel = require('../models/User');
 
-var validator  = require('validator');
-var ObjectId   = require('mongodb').ObjectID;
-var async      = require('async');
-var regExp     = require('../constants/regExp');
-var mailer     = require('../helpers/mailer')();
+var validator = require('../helpers/validator')();
+var ObjectId = require('mongodb').ObjectID;
+var async = require('async');
+
+var regExp = require('../constants/regExp');
+var mailer = require('../helpers/mailer')();
+
 
 var OrderHandler = function () {
 
@@ -21,303 +24,188 @@ var OrderHandler = function () {
                     return next(err);
                 }
 
-                if (orders) {
+                if (!orders) {
 
-                    res.status(200).send(orders);
-                } else {
-
-                    res.status(200).send({fail : 'Not found any order'});
+                    return res.status(404).send({fail: 'Not found'});
                 }
+
+                res.status(200).send(orders);
             });
     };
 
     this.count = function (req, res, next) {
         OrderModel
-            .find({})
-            .lean()
-            .count(function (err, amount) {
+            .count({}, function (err, count) {
                 if (err) {
 
                     return next(err);
                 }
 
-                res.status(200).send({amount : amount});
+                res.status(200).send({count: count});
             });
     };
 
     this.fetchById = function (req, res, next) {
         var orderId = req.params.id;
-        var error;
 
-        if (orderId && validator.isMongoId(orderId)) {
-            OrderModel
-                .findById(orderId)
-                .exec(function (err, order) {
-                    if (err) {
+        if (!validator.isId(orderId)) {
 
-                        return next(err);
-                    }
-
-                    if (order) {
-
-                        res.status(200).send(order);
-                    } else {
-
-                        res.status(200).send({fail : 'Not found such order'});
-                    }
-                });
-        } else {
-            error = new Error('Bad request');
-            error.status = 400;
-
-            return next(error);
+            return res.status(400).send({fail: 'Bad request'});
         }
+
+        OrderModel
+            .find({_id: ObjectId(orderId)})
+            .exec(function (err, order) {
+                if (err) {
+
+                    return next(err);
+                }
+
+                if (!order) {
+
+                    return res.status(404).send({fail: 'Not found'});
+
+                }
+
+                res.status(200).send(order);
+            });
     };
 
     this.create = function (req, res, next) {
-        var body = req.body || {};
-        var firstname;
-        var totalSum;
-        var products;
-        var surname;
-        var userId;
-        var phone;
-        var email;
+        var session   = req.session || {};
+        var body      = req.body || {};
+        var userId    = session.userId;
+        var firstname = body.firstname;
+        var products  = body.products;
+        var surname   = body.surname;
+        var email     = body.email;
+        var phone     = body.phone;
+        var orderOptions;
         var order;
 
-        if (body.userId && validator.isMongoId(body.userId)) {
-            userId = body.userId;
+        if (!validator.isFirstname(firstname) ||
+            !validator.isProducts(products)   ||
+            !validator.isSurname(surname)     ||
+            !validator.isEmail(email)         ||
+            !validator.isPhone(phone)) {
+
+            return res.status(422).send({fail: 'Please fill all form\'s fields'});
         }
 
-        if (body.products && Array.isArray(body.products)) {
-            products = body.products;
-        }
+        calculateTotalSum(products, function (err, totalSum) {
+            if (err) {
 
-        if (body.totalSum && parseInt(body.totalSum) > 0) {
-            totalSum = body.totalSum;
-        }
+                return next(err);
+            }
 
-        if (body.userFirstname && (typeof body.userFirstname === 'string') && body.userFirstname.trim().length) {
-            firstname = body.userFirstname;
-        }
+            orderOptions = {
+                firstname: firstname,
+                totalSum : totalSum,
+                products : products,
+                surname  : surname,
+                email    : email,
+                phone    : phone
+            };
 
-        if (body.userSurname && (typeof body.userSurname === 'string') && body.userSurname.trim().length) {
-            surname = body.userSurname;
-        }
+            if (validator.isId(userId)) {
+                orderOptions.user = userId;
+            }
 
-        if (body.userEmail && validator.isEmail(body.userEmail)) {
-            email = body.userEmail;
-        }
+            order = new OrderModel(orderOptions);
 
-        if (body.userPhone && body.userPhone.match(regExp.PHONE)) {
-            phone = body.userPhone;
-        }
-
-        if (totalSum && products && firstname && surname && phone && email) {
-
-            // if logged user has made purchase
-            if (userId) {
-                order = new OrderModel({
-                    firstname: firstname,
-                    totalSum : totalSum,
-                    products : products,
-                    surname  : surname,
-                    email    : email,
-                    phone    : phone,
-                    user     : userId
-                });
-
-                async.parallel([
-                    function (callback) {
-                        order.save(function (err, result) {
-                            return callback(err, result)
-                        });
-                    },
-                    function (callback) {
-                        UserModel
-                            .findByIdAndUpdate(userId, {$push: {orders: order._id}})
-                            .exec(function (err, result) {
-                                return callback(err, result);
-                            });
-                    },
-                    function (callback) {
-                        mailer.sendOrderLetter({
-                            email: email,
-                            order: order.orderCode}, function (err, result) {
-                                return callback(err, result);
-                            });
-                    }
-                ], function (err, result) {
-                    if (err) {
-
-                        return next(err);
-                    }
-                    res.status(201).send({success: 'created'});
-                });
-            } else {
-                // for anonymous user
-                order = new OrderModel({
-                    firstname: firstname,
-                    totalSum: totalSum,
-                    products: products,
-                    surname: surname,
-                    email: email,
-                    phone: phone
-                });
-
-                async.parallel([
-                        function (callback) {
-                            order.save(function (err, result) {
-                                return callback(err, result)
-                            });
-                        },
-                        function (callback) {
-                            mailer.sendOrderLetter({
-                                email: email,
-                                order: order.orderCode
-                            }, function (err, result) {
-                                return callback(err, result);
-                            });
-                        }],
-                    function (err, result) {
-                        if (err) {
-
-                            return next(err);
-                        }
-                        res.status(201).send({success: 'created'});
+            async.parallel([
+                function (callback) {
+                    order.save(function (err, result) {
+                        return callback(err, result)
                     });
-            }
-        } else {
-
-            res.status(200).send({fail: 'Please fill all form\'s fields'});
-        }
-    };
-
-    this.update = function(req, res, next) {
-        var orderId = req.params.id;
-        var body = req.body || {};
-        var deliveryInfo;
-        var products;
-        var totalSum;
-        var error;
-
-        if (orderId && validator.isMongoId(orderId)) {
-
-            if (body.deliveryInfo && (typeof body.deliveryInfo === 'string') && body.deliveryInfo.trim().length) {
-                deliveryInfo = body.deliveryInfo;
-            }
-
-            if (body.totalSum && parseInt(body.totalSum) > 0) {
-                totalSum = body.totalSum;
-            }
-
-            if (body.products && Array.isArray(body.products)) {
-                products = body.products;
-            }
-
-            if (deliveryInfo || totalSum || products) {
-                OrderModel
-                    .findByIdAndUpdate(orderId, body, {new: true})
-                    .exec(function (err, result) {
-                    if (err) {
-
-                        return next(err);
-                    }
-
-                    res.status(200).send({success : 'Updated'});
-                });
-            } else {
-
-                res.status(200).send({fail : 'Wrong incoming data. Please try again'});
-            }
-        } else {
-            error = new Error('Bad request');
-            error.status = 400;
-
-            return next(error);
-        }
-    };
-
-    this.remove = function(req, res, next) {
-        var orderId = req.params.id;
-        var error;
-
-        if (orderId && validator.isMongoId(orderId)) {
-            async.waterfall([
-                    // delete order from orders
-                    function (callback) {
-                        OrderModel
-                            .findByIdAndRemove(orderId)
-                            .exec(function (err, result) {
-                                return callback(err, result);
-                            });
-                    },
-                    // delete order from profile's orders
-                    function (callback) {
+                },
+                function (callback) {
+                    if (userId) {
                         UserModel
-                            .update({}, {$pull: {orders: ObjectId(orderId)}})
+                            .update({_id: ObjectId(userId)}, {$push: {orders: order._id}})
                             .exec(function (err, result) {
                                 return callback(err, result);
                             });
-                    }],
-
-                function (err, result) {
-                    if (err) {
-
-                        return next(err);
+                    } else {
+                        return callback(null);
                     }
-                    res.status(200).send({success : 'removed'});
+                },
+                function (callback) {
+                    mailer.sendOrderLetter({
+                        email: email,
+                        order: order.orderCode
+                    }, function (err, result) {
+                        return callback(err, result);
+                    });
                 }
-            );
-        } else {
-            error = new Error('Bad request');
-            error.status = 400;
+            ], function (err, result) {
+                if (err) {
 
-            return next(err);
-        }
+                    return next(err);
+                }
+                res.status(201).send({success: 'Thank you for shopping. Please check email with order number'});
+            });
+        });
     };
 
-    this.search = function(req, res, next) {
-        var body = req.body || {};
-        var shipmentDate;
-        var pattern;
+    this.remove = function (req, res, next) {
+        var orderId = req.params.id;
 
-        if (body.createdDate  && validator.isDate(body.createdDate)) {
-            shipmentDate = body.createdDate;
+        if (!validator.isId(orderId)) {
+
+            return res.status(400).send({fail: 'Bad request'});
         }
+        async.waterfall([
+                function (callback) {
+                    OrderModel
+                        .remove({_id: ObjectId(orderId)}, function (err, result) {
+                            return callback(err, order);
+                        });
+                },
+                function (callback) {
+                    UserModel
+                        .update({}, {$pull: {orders: ObjectId(orderId)}})
+                        .exec(function (err, result) {
+                            return callback(err, result);
+                        });
+                }],
 
-        if (shipmentDate) {
-            // define regular expression for search
-            pattern = new RegExp(shipmentDate, 'i');
+            function (err, result) {
+                if (err) {
 
-            OrderModel
-                .aggregate(
-                    [{
-                        $match: {shipmentDate: {$regex: pattern} }
-                    }, {
-                        $unwind : {path: '$product', preserveNullAndEmptyArrays: true}
-                    }, {
-                        $lookup: {from: 'products', foreignField: '_id', localField: 'products', as: 'products'}
-                    }, {
-                        $project: {_id: 1, totalPrice: 1, shipmentDate: 1, products: {$arrayElemAt:['$product', 0]}}
-                    }, {
-                        $group: {_id: {_id: '$_id', totalPrice: '$totalPrice', shipmentDate: '$shipmentDate'}, products: {$push: {_id: '$product._id', title: '$product.title', price: '$product.price', production: '$product.production'}}}
-                    }, {
-                        $project: {_id: '$_id._id', totalPrice: '$_id.totalPrice', shipmentDate: '$_id.shipmentDate', products: 1}
-                    }])
-                .exec(function (err, searchingResult) {
-                    if (err) {
+                    return next(err);
+                }
+                res.status(200).send({success: 'removed'});
+            }
+        );
+    };
 
-                        return next(err);
+    function calculateTotalSum(products, callback) {
+        var totalSum = 0;
+
+        ProductModel
+            .find({_id: {$in: products}}, {_id: 1, price: 1}, function (err, productsFromDb) {
+                var barrier = products.length;
+                var limit = productsFromDb.length;
+                var index;
+                var step;
+
+                if (err) {
+
+                    return callback(err);
+                }
+
+                for (step = barrier - 1; step >= 0; step -= 1) {
+                    for (index = limit - 1; index >= 0; index -= 1) {
+                        if (products[step] == productsFromDb[index]._id) {
+                            totalSum += productsFromDb[index].price;
+                        }
                     }
+                }
 
-                    res.status(200).send(searchingResult);
-                });
-        } else {
-
-            res.status(200).send({fail : 'Wrong incoming data. Please try again'});
-        }
-    };
+                return callback(null, totalSum);
+            });
+    }
 };
 
 module.exports = OrderHandler;

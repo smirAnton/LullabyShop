@@ -9,7 +9,7 @@ define([
     'text!templates/order/orderForm.html'
 ], function (Backbone, _, UserModel, OrderModel, orderDetailsTemplate, orderFormTemplate) {
     var View = Backbone.View.extend({
-        el      : "#content",
+        el: "#content",
         template: _.template(orderDetailsTemplate),
 
         initialize: function () {
@@ -25,7 +25,7 @@ define([
             'click #makeOrderBtn'              : 'onMakeOrder'
         },
 
-        onRemoveProductFromBasket: function(e) {
+        onRemoveProductFromBasket: function (e) {
             var self = this;
             var removeIndex;
             var transfer;
@@ -36,19 +36,23 @@ define([
             e.preventDefault();
 
             productId = $(e.currentTarget).data("id");
-            basket    = JSON.parse(localStorage.getItem('basket'));
+            basket = JSON.parse(localStorage.getItem('basket'));
 
             // define remove product index in basket's array
             removeIndex = basket
-                .map(function(product) { return product._id; })
+                .map(function (product) {
+                    return product._id;
+                })
                 .indexOf(productId);
 
             // remove product from req.session basket
             transfer = new UserModel();
             transfer.urlRoot = 'lullaby/basket/remove';
             transfer.save({removeIndex: removeIndex}, {
-                success: function(success) {},
-                error  : function (error) {}
+                success: function (success) {
+                },
+                error: function (error) {
+                }
             });
 
             // remove product from user's basket
@@ -61,14 +65,14 @@ define([
             this.render();
         },
 
-        onContinueToBasket: function(e) {
+        onContinueToBasket: function (e) {
             e.stopPropagation();
             e.preventDefault();
 
             Backbone.history.navigate('#lyllaby/shop', {trigger: true});
         },
 
-        onShowOrderForm: function(e) {
+        onShowOrderForm: function (e) {
             var self = this;
             var userId;
             var user;
@@ -81,7 +85,7 @@ define([
             if (userId) {
                 user = new UserModel({_id: userId});
                 user.fetch({
-                    success: function() {
+                    success: function () {
                         self.basket = user.attributes;
                         self.template = _.template(orderFormTemplate);
                         self.render();
@@ -96,13 +100,10 @@ define([
             }
         },
 
-        onMakeOrder: function(e) {
-            var self = this;
-            var totalSum = 0;
-            var firstname;
+        onMakeOrder: function (e) {
             var products = [];
+            var firstname;
             var surname;
-            var userId;
             var basket;
             var order;
             var phone;
@@ -117,40 +118,31 @@ define([
             phone     = this.$el.find('#phone').val();
 
             if (!firstname || !surname || !email || !phone) {
+
                 return alert('Please fill all form\'s fields');
             }
 
-            // calculate order total sum and add to products array every product's id from basket
             basket = JSON.parse(localStorage.getItem('basket'));
-            _.each(basket, function(product) {
-                totalSum += product.price;
+            _.each(basket, function (product) {
                 products.push(product._id);
             });
 
-            this.basket = basket;
+            this.baket = basket;
 
             order = new OrderModel({
-                userFirstname: firstname,
-                userSurname  : surname,
-                userEmail    : email,
-                userPhone    : phone,
-                totalSum     : totalSum,
-                products     : products,
-                userId       : localStorage.getItem('userId')
+                firstname: firstname,
+                products : products,
+                surname  : surname,
+                email    : email,
+                phone    : phone
             });
 
             order.save(null, {
-                success: function(response, xhr) {
-                    if (response.attributes.fail) {
+                success: function (response, xhr) {
+                    localStorage.setItem('basket', JSON.stringify([]));
 
-                        alert(response.attributes.fail);
-                    } else {
-                        // clean user's basket
-                        localStorage.setItem('basket', JSON.stringify([]));
-
-                        alert('Thank you for shopping. Please check email with order number');
-                        Backbone.history.navigate('lullaby/shop', {trigger: true});
-                    }
+                    alert(xhr.success);
+                    Backbone.history.navigate('lullaby/shop', {trigger: true});
                 },
                 error: function (err, xhr) {
                     alert(xhr.statusText);
