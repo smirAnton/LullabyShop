@@ -12,6 +12,7 @@ var logger         = require('./helpers/logger')(module);
 var path           = require('path');
 var http           = require('http');
 var env            = process.env || 'development';
+var db;
 
 // for chat clients
 global.clients = {};
@@ -19,14 +20,12 @@ global.clients = {};
 require('./config/' + env.NODE_ENV);
 
 // Define connection with db
-mongoose.connect(
-    env.DB_PLATFORM +
-    env.DB_USER + ':' +
-    env.DB_PASS +
-    env.DB_HOST + ':' +
-    env.DB_PORT + '/' +
-    env.DB_NAME);
-var db = mongoose.connection;
+mongoose.connect(env.DB_HOST, env.DB_NAME, env.DB_PORT, {
+    user: env.DB_USER,
+    pass: env.DB_PASS
+});
+
+db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'mongodb connection error:'));
 

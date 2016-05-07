@@ -1,8 +1,7 @@
 'use strict';
 
 // Mongoose configuration
-process.env.DB_PLATFORM   = 'mongodb://';
-process.env.DB_HOST       = '@ds013270.mlab.com';
+process.env.DB_HOST       = 'ds013270.mlab.com';
 process.env.DB_NAME       = 'lullaby';
 process.env.DB_PORT       = '13270';
 process.env.DB_USER       = 'smiranton';
