@@ -4,36 +4,18 @@ var expressSession = require('express-session');
 var SessionStore   = require('connect-mongo/es5')(expressSession);
 var cookieParser   = require('cookie-parser');
 var consolidate    = require('consolidate');
+var compression    = require('compression');
 var bodyParser     = require('body-parser');
-var mongoose       = require('mongoose');
-var socketio       = require('socket.io');
 var express        = require('express');
-var logger         = require('./helpers/logger')(module);
+var helmet         = require('helmet');
 var path           = require('path');
-var http           = require('http');
 var env            = process.env || 'development';
 
-// for chat clients
-global.clients = {};
+module.exports =  function(db) {
+    var app = express();
 
-require('./config/' + env.NODE_ENV);
-
-// Define connection with db
-mongoose.connect(
-    env.DB_PLATFORM +
-    env.DB_USER + ':' +
-    env.DB_PASS +
-    env.DB_HOST + ':' +
-    env.DB_PORT + '/' +
-    env.DB_NAME);
-var db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'mongodb connection error:'));
-
-db.once('connected', function callback() {
-    var app;
-
-    app = express();
+    app.use(helmet());
+    app.use(compression());
 
     app.engine('html', consolidate.underscore);
     app.set('view engine', 'html');
@@ -59,5 +41,5 @@ db.once('connected', function callback() {
     }));
 
     return app;
-});
+};
 
