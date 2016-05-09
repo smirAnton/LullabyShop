@@ -39,11 +39,12 @@
                                     <td><%= user.email %></td>
                                     <td><%= new Date(user.birthday).toDateString() %></td>
                                     <td><%= new Date(user.lastVisit).toDateString() %></td>
-                                    <td><%= user.isBanned %></td>
+                                    <td id="banStatus"><%= user.isBanned %></td>
+
                                     <td>
                                         <div class="registration_form">
                                             <input type="submit" value="Change ban status" id="changeBanStatusBtn" data-id="<%= user._id %>">
-                                            <input type="submit" value="Remove" id="removeUserBtn" data-id="<%= user._id %>">
+                                            <input type="submit" value="Remove"            id="removeUserBtn" data-id="<%= user._id %>">
                                         </div>
                                     </td>
                                 </tr>

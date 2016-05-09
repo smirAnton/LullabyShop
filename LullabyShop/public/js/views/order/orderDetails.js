@@ -9,7 +9,7 @@ define([
     'text!templates/order/orderForm.html'
 ], function (Backbone, _, UserModel, OrderModel, orderDetailsTemplate, orderFormTemplate) {
     var View = Backbone.View.extend({
-        el: "#content",
+        el      : "#content",
         template: _.template(orderDetailsTemplate),
 
         initialize: function () {
@@ -28,7 +28,6 @@ define([
         onRemoveProductFromBasket: function (e) {
             var self = this;
             var removeIndex;
-            var transfer;
             var productId;
             var basket;
 
@@ -36,33 +35,29 @@ define([
             e.preventDefault();
 
             productId = $(e.currentTarget).data("id");
-            basket = JSON.parse(localStorage.getItem('basket'));
+            basket    = JSON.parse(localStorage.getItem('basket'));
 
             // define remove product index in basket's array
             removeIndex = basket
-                .map(function (product) {
-                    return product._id;
-                })
+                .map(function (product) { return product._id; })
                 .indexOf(productId);
 
-            // remove product from req.session basket
-            transfer = new UserModel();
-            transfer.urlRoot = 'lullaby/basket/remove';
-            transfer.save({removeIndex: removeIndex}, {
-                success: function (success) {
+            $.ajax({
+                url    : '/lullaby/basket/remove',
+                type   : 'POST',
+                data   : {removeIndex: removeIndex},
+                success: function(response) {
+                    basket.splice(removeIndex, 1);
+
+                    localStorage.setItem('basket', JSON.stringify(basket));
+
+                    self.basket = basket;
+                    self.render();
                 },
-                error: function (error) {
+                error  : function(err, xhr) {
+                    self.handleError(xhr);
                 }
             });
-
-            // remove product from user's basket
-            basket.splice(removeIndex, 1);
-
-            // ste updated basket to local storage
-            localStorage.setItem('basket', JSON.stringify(basket));
-
-            this.basket = basket;
-            this.render();
         },
 
         onContinueToBasket: function (e) {
@@ -80,13 +75,13 @@ define([
             e.stopPropagation();
             e.preventDefault();
 
-            userId = localStorage['userId'];
+            userId = localStorage.getItem('userId');
 
             if (userId) {
                 user = new UserModel({_id: userId});
                 user.fetch({
                     success: function () {
-                        self.basket = user.attributes;
+                        self.userData = user.attributes;
                         self.template = _.template(orderFormTemplate);
                         self.render();
                     },
@@ -101,6 +96,7 @@ define([
         },
 
         onMakeOrder: function (e) {
+            var self     = this;
             var products = [];
             var firstname;
             var surname;
@@ -127,8 +123,6 @@ define([
                 products.push(product._id);
             });
 
-            this.baket = basket;
-
             order = new OrderModel({
                 firstname: firstname,
                 products : products,
@@ -145,13 +139,31 @@ define([
                     Backbone.history.navigate('lullaby/shop', {trigger: true});
                 },
                 error: function (err, xhr) {
-                    alert(xhr.statusText);
+                    self.handleError(xhr);
                 }
             });
         },
 
+        handleError: function (xhr) {
+            switch (xhr.status) {
+                case 400: // basket is empty (nothing to delete)
+                    alert(xhr.responseJSON.fail);
+                    break;
+
+                case 422: // no product to add in basket
+                    alert(xhr.responseJSON.fail);
+                    break;
+
+                default:
+                    break;
+            }
+        },
+
         render: function () {
-            this.$el.html(this.template({basket: this.basket}));
+            this.$el.html(this.template({
+                basket: this.basket,
+                user  : this.userData})
+            );
 
             return this;
         }

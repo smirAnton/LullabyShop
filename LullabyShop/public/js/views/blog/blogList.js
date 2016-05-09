@@ -2,25 +2,38 @@
 
 define([
     'backbone',
+    'constants',
     'underscore',
     'collections/blogs',
     'text!templates/blog/blogList.html'
-], function (Backbone, _, BlogCollection, blogListTemplate) {
+], function (Backbone, constant, _, BlogCollection, blogListTemplate) {
     var View = Backbone.View.extend({
         el      : "#content",
         template: _.template(blogListTemplate),
 
-        initialize: function () {
+        initialize: function (options) {
             var self = this;
+            var count;
+            var page;
 
-            this.collection = new BlogCollection();
-            // listen reset event
-            this.collection.on('reset', function() {
-                self.countBlogs = self.collection.countBlogs;
-                self.countPages = self.collection.countPages;
-                self.render()}, this);
-            // listen sort event
-            this.collection.on('sort', function() {self.render()}, this);
+            options = options       || {};
+            page    = options.page  || constant.FIRST_PAGE;
+            count   = options.count || constant.AMOUNT_OF_TOPICS_PER_PAGE;
+
+            this.collection = new BlogCollection({
+                reset     : true,
+                data: {
+                    page  : page,
+                    count : count
+                }
+            });
+
+            this.collection.on('sync', function() {
+                self.countTopics = self.collection.countTopics;
+                self.countPages  = self.collection.countPages;
+                self.render();}, self.collection);
+
+            this.collection.on('sort', function() {self.render()}, self.collection);
         },
 
         events: {
@@ -70,7 +83,11 @@ define([
         },
 
         render: function () {
-            this.$el.html(this.template({blogs : this.collection.toJSON(), count: this.countPages}));
+            this.$el.html(this.template({
+                countPages : this.countPages,
+                blogs      : this.collection.toJSON(),
+                count      : this.countPages
+            }));
 
             return this;
         }

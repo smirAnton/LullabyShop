@@ -3,7 +3,9 @@
 var CategoryModel = require('../models/Category');
 var ProductModel  = require('../models/Product');
 
-var validator     = require('validator');
+var validator     = require('../helpers/validator')();
+var constant      = require('../constants/magicNumbers');
+
 var ObjectId      = require('mongodb').ObjectID;
 
 var CategoryHandler = function () {
@@ -44,12 +46,12 @@ var CategoryHandler = function () {
     this.fetchByIdWithProducts = function (req, res, next) {
         var categoryId   = req.params.id;
         var aggregateObj = [{$match: {category: ObjectId(categoryId)}}];
-        var query        = req.query || {};
-        var page         = parseInt(query.page) || 1;
-        var limit        = parseInt(query.count) || 12;
+        var query        = req.query             || {};
+        var page         = parseInt(query.page)  || constant.FIRST_PAGE;
+        var limit        = parseInt(query.count) || constant.AMOUNT_OF_PRODUCTS_PER_PAGE;
         var skip         = (page - 1) * limit;
 
-        if (!categoryId || !validator.isMongoId(categoryId)) {
+        if (!validator.isId(categoryId)) {
 
             return res.status(400).send({fail: 'Bad request'});
         }
@@ -84,19 +86,19 @@ var CategoryHandler = function () {
         var body  = req.body || {};
         var title = body.title;
 
-        if (!title || !(typeof body.title === 'string') || !body.title.trim().length) {
+        if (!validator.isEmptyString(title)) {
 
-            return res.status(422).send({fail: 'Nope...Please, provide category title'});
+            return res.status(422).send({fail: 'Please, provide category title'});
         }
 
         new CategoryModel({title: title})
-            .save(function (err, result) {
+            .save(function (err, createdCategory) {
                 if (err) {
 
                     return next(err);
                 }
 
-                res.status(201).send({success: 'created'});
+                res.status(201).send({success: 'Ctaegory successfully created'});
             });
     };
 
@@ -105,14 +107,14 @@ var CategoryHandler = function () {
         var body       = req.body || {};
         var title      = body.title;
 
-        if (!categoryId || !validator.isMongoId(categoryId)) {
+        if (!validator.isId(categoryId)) {
 
             return res.status(400).send({fail: 'Bad request'});
         }
 
-        if (!title || !(typeof body.title === 'string') || !body.title.trim().length) {
+        if (!validator.isEmptyString(title)) {
 
-            return res.status(422).send({fail: 'Nope...Please, provide category title'});
+            return res.status(422).send({fail: 'Please, provide category title'});
         }
 
         CategoryModel
@@ -123,15 +125,14 @@ var CategoryHandler = function () {
                     return next(err);
                 }
 
-                res.status(200).send({success: 'updated'});
+                res.status(200).send({success: 'Category successfully updated'});
             });
-
     };
 
     this.remove = function (req, res, next) {
         var categoryId = req.params.id;
 
-        if (!categoryId || !validator.isMongoId(categoryId)) {
+        if (!validator.isId(categoryId)) {
 
             return res.status(400).send({fail: 'Bad request'});
         }
@@ -144,7 +145,7 @@ var CategoryHandler = function () {
                     return next(err);
                 }
 
-                res.status(200).send({success: 'removed'});
+                res.status(200).send({success: 'Category successfully removed'});
             });
     };
 };

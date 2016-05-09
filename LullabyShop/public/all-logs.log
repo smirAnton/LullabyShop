@@ -211,3 +211,275 @@
 {"level":"info","message":"New customer connected (id=/#keCFDqbLab02kbPCAAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T12:58:12.985Z"}
 {"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T13:00:53.024Z"}
 {"level":"info","message":"New customer connected (id=/#oAjUf3fiL3YRtguqAAAE)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T13:00:54.114Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T18:43:29.766Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T18:47:00.689Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T18:51:05.405Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T18:51:48.006Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T18:52:29.144Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T18:58:43.180Z"}
+{"level":"info","message":"New customer connected (id=/#rTG_yKlo0Vc8CUxbAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T18:58:45.731Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T18:59:53.399Z"}
+{"level":"info","message":"New customer connected (id=/#YXGGe4YCRhuYDF4kAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T18:59:53.435Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T19:00:04.353Z"}
+{"level":"info","message":"New customer connected (id=/#pMXkFcFXgkbV7WSGAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:00:04.388Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T19:01:12.899Z"}
+{"level":"info","message":"New customer connected (id=/#qMGpQM-qvMReUKCWAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:01:13.842Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:01:45.759Z"}
+{"level":"info","message":"New customer connected (id=/#kO_5eqnO96x15_iLAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:01:46.312Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T19:17:00.096Z"}
+{"level":"info","message":"New customer connected (id=/#AQp-hLSZdGXuusLmAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:17:00.132Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:19:58.255Z"}
+{"level":"info","message":"New customer connected (id=/#At2YjDuhPbNmEDWDAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:19:58.757Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T19:26:25.186Z"}
+{"level":"info","message":"New customer connected (id=/#efBWsS7YU8-j1kbfAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:26:25.223Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-07T19:38:59.027Z"}
+{"level":"info","message":"New customer connected (id=/#qlQrDJSkQ2Y4WlLeAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:38:59.075Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-07T19:40:04.188Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T10:56:33.103Z"}
+{"level":"info","message":"New customer connected (id=/#rqAO2NQWTPmrpOspAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T10:56:41.040Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T10:58:07.870Z"}
+{"level":"info","message":"New customer connected (id=/#wTfm4ClegLurUw8ZAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T10:58:08.723Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T10:59:54.707Z"}
+{"level":"info","message":"New customer connected (id=/#lh5OecWky1S6uXRmAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T10:59:55.373Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:08:38.398Z"}
+{"level":"info","message":"New customer connected (id=/#PRuu4fhUkzvoUHilAAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:08:39.244Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:09:06.414Z"}
+{"level":"info","message":"New customer connected (id=/#ncmWgxT5_S6bjPmJAAAE)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:09:07.281Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:12:51.624Z"}
+{"level":"info","message":"New customer connected (id=/#OnUgoxbSyG7x0oNGAAAF)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:12:52.319Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:13:18.147Z"}
+{"level":"info","message":"New customer connected (id=/#ptny786dCXOr0iLzAAAG)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:13:18.687Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:13:41.268Z"}
+{"level":"info","message":"New customer connected (id=/#Vhnq2HV53FZQYEKlAAAH)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:13:42.186Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:14:00.122Z"}
+{"level":"info","message":"New customer connected (id=/#PAfBNU3W26a9TvuiAAAI)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:14:00.491Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:14:44.588Z"}
+{"level":"info","message":"New customer connected (id=/#cxNeVrs6aF42Ncm6AAAJ)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:14:45.303Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:15:23.733Z"}
+{"level":"info","message":"New customer connected (id=/#LJ7Jva2rYnR5cjF1AAAK)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:15:24.429Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:24:10.861Z"}
+{"level":"info","message":"New customer connected (id=/#OD_YyRj8XiHgCsTtAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:24:10.908Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:24:13.841Z"}
+{"level":"info","message":"New customer connected (id=/#_aTD_sdWTUHZR4C0AAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:24:14.739Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:26:52.828Z"}
+{"level":"info","message":"New customer connected (id=/#_du2RPDw17hCD_tgAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:26:53.385Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:27:23.063Z"}
+{"level":"info","message":"New customer connected (id=/#QQILglxfUtx8DwKwAAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:27:23.933Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:29:22.085Z"}
+{"level":"info","message":"New customer connected (id=/#7vBfjVo-Xd24O63AAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:29:22.125Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:29:25.366Z"}
+{"level":"info","message":"New customer connected (id=/#YYf4jefDoMCHlJqsAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:29:26.052Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:30:13.383Z"}
+{"level":"info","message":"New customer connected (id=/#r7CeR8YmgBBjKzS8AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:30:13.431Z"}
+{"level":"info","message":"New customer connected (id=/#51WBhZrxX9reoUf7AAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:30:14.289Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:31:38.419Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:32:47.635Z"}
+{"level":"info","message":"New customer connected (id=/#POwWfft7G9uAE1sEAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:32:48.556Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:33:33.732Z"}
+{"level":"info","message":"New customer connected (id=/#DbsSk97doKosKa2wAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:33:33.786Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:35:08.140Z"}
+{"level":"info","message":"New customer connected (id=/#c8UvCj_lIdgqhrwSAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:35:08.492Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:36:00.152Z"}
+{"level":"info","message":"New customer connected (id=/#OP1fijx7GQV1JSspAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:36:00.249Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:37:29.189Z"}
+{"level":"info","message":"New customer connected (id=/#Ktu6GhH2Ju965uELAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:37:31.342Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:38:50.297Z"}
+{"level":"info","message":"New customer connected (id=/#AM5BhzZIy0_I9NOEAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:38:50.343Z"}
+{"level":"info","message":"New customer connected (id=/#lgA_oMpO4ZETwNaqAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:38:51.135Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:40:15.330Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:41:00.850Z"}
+{"level":"info","message":"New customer connected (id=/#cBDeYkXGVaoRsoV1AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:41:00.921Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:41:01.010Z"}
+{"level":"info","message":"New customer connected (id=/#r6KqC0-YP7JdYTYOAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:41:02.240Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:43:02.971Z"}
+{"level":"info","message":"New customer connected (id=/#8xJtOPa7qXiUNGtvAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:43:03.775Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:43:38.123Z"}
+{"level":"info","message":"New customer connected (id=/#ctCI4rvUuRkV_0maAAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:43:38.810Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:45:41.369Z"}
+{"level":"info","message":"New customer connected (id=/#mK19vVkDLEgKkoSKAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:45:42.380Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:47:37.750Z"}
+{"level":"info","message":"New customer connected (id=/#Ghri3fhp2DE2OdrNAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:47:38.147Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:49:01.026Z"}
+{"level":"info","message":"New customer connected (id=/#bWwOJnOmpafuHMfpAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:49:01.071Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:49:02.993Z"}
+{"level":"info","message":"New customer connected (id=/#L_ewfUmlFXYk2iuUAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:49:03.806Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:49:58.276Z"}
+{"level":"info","message":"New customer connected (id=/#FmGJdTNhKR63nonZAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:49:59.766Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:50:30.683Z"}
+{"level":"info","message":"New customer connected (id=/#Noc33uSHGPHD882pAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:50:30.729Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:52:25.662Z"}
+{"level":"info","message":"New customer connected (id=/#TPbMeePsx6RGcMdjAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:52:25.740Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:53:40.019Z"}
+{"level":"info","message":"New customer connected (id=/#t5-nrN4yUCudKehXAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:53:40.084Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:56:33.992Z"}
+{"level":"info","message":"New customer connected (id=/#4haR2zl64eaxW9avAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:56:34.046Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:56:34.095Z"}
+{"level":"info","message":"New customer connected (id=/#tLiHEqcMsXMmiN2hAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:56:34.947Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:57:25.362Z"}
+{"level":"info","message":"New customer connected (id=/#sJelTB8HtNORZVZEAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:57:25.400Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:58:10.477Z"}
+{"level":"info","message":"New customer connected (id=/#yLtYjkapRNdl7Zq4AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:58:10.518Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T11:59:16.596Z"}
+{"level":"info","message":"New customer connected (id=/#zxpVsTMutpNRU8iyAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T11:59:16.638Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:00:40.858Z"}
+{"level":"info","message":"New customer connected (id=/#y5ILgnat53dhMPR4AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:00:40.910Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:00:40.993Z"}
+{"level":"info","message":"New customer connected (id=/#JfJdnARFIvVZEjSCAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:00:41.896Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:01:13.954Z"}
+{"level":"info","message":"New customer connected (id=/#ENiqmME0F6rp_K3OAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:01:13.988Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:01:23.928Z"}
+{"level":"info","message":"New customer connected (id=/#4WonpPV9erz9dmE-AAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:01:24.659Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:02:49.882Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:04:18.573Z"}
+{"level":"info","message":"New customer connected (id=/#bUsrKjK8TousaEzEAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:04:23.035Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:05:10.982Z"}
+{"level":"info","message":"New customer connected (id=/#cCMn7Hm7mQU0Us30AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:05:12.159Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:06:22.452Z"}
+{"level":"info","message":"New customer connected (id=/#T8F-D9TOsKgqpqF_AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:06:22.494Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:08:15.320Z"}
+{"level":"info","message":"New customer connected (id=/#l8AvYsMgLpM42gaOAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:08:16.632Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:10:13.869Z"}
+{"level":"info","message":"New customer connected (id=/#K2ZG2ztpKjfQcprJAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:10:13.967Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:13:55.042Z"}
+{"level":"info","message":"New customer connected (id=/#5RGYTTgbz1BzaiidAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:13:55.084Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:15:30.362Z"}
+{"level":"info","message":"New customer connected (id=/#9dMR11kshqmFFVmUAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:15:31.019Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:16:51.747Z"}
+{"level":"info","message":"New customer connected (id=/#oc0UT-U2CiaHr-mRAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:16:51.794Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:20:50.302Z"}
+{"level":"info","message":"New customer connected (id=/#E9-VmPkBhjOSzSakAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:20:50.339Z"}
+{"level":"info","message":"New customer connected (id=/#ooqjeigeEOgD08fhAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:20:56.139Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:21:22.532Z"}
+{"level":"info","message":"New customer connected (id=/#n-7cjR_AtdpZEC6-AAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:21:23.185Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:21:36.052Z"}
+{"level":"info","message":"New customer connected (id=/#XmVMBPIqypnDrIqYAAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:21:36.981Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:52:31.962Z"}
+{"level":"info","message":"New customer connected (id=/#HfBX791VRUNKta9MAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:52:32.599Z"}
+{"level":"info","message":"New customer connected (id=/#5OrbXyqJD_muWm7xAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:52:35.074Z"}
+{"level":"info","message":"New customer connected (id=/#FVcR7m0fbRz-cglsAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:52:36.487Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:54:18.232Z"}
+{"level":"info","message":"New customer connected (id=/#uOa1JqD_CUNVkOC3AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:54:18.331Z"}
+{"level":"info","message":"New customer connected (id=/#oda5HdVb5MMUzvVUAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:54:18.362Z"}
+{"level":"info","message":"New customer connected (id=/#xrDLm8cLH8o74r20AAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:54:18.725Z"}
+{"level":"info","message":"New customer connected (id=/#8NcNOrCHeQxoj49mAAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:54:21.085Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:54:21.648Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:54:22.443Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:54:23.252Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T12:58:22.317Z"}
+{"level":"info","message":"New customer connected (id=/#4zMAkng4N9OHl1T9AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T12:58:26.641Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T13:42:46.754Z"}
+{"level":"info","message":"New customer connected (id=/#vXvcvEK2vmZUrn8wAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:42:46.789Z"}
+{"level":"info","message":"New customer connected (id=/#d2mlusGdtEL7-CW0AAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:42:52.491Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:45:15.495Z"}
+{"level":"info","message":"New customer connected (id=/#5tlOAY1UBeae7fCkAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:45:15.811Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:45:57.762Z"}
+{"level":"info","message":"New customer connected (id=/#Kzc_UdTOuNz7sFgPAAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:45:58.039Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:46:58.718Z"}
+{"level":"info","message":"New customer connected (id=/#9arlONPxtJ3HuSeFAAAE)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:46:59.200Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:48:16.874Z"}
+{"level":"info","message":"New customer connected (id=/#BHyw9Xxtv8XChPYVAAAF)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:48:17.378Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T13:57:05.898Z"}
+{"level":"info","message":"New customer connected (id=/#E8b1DohXcZRvV-eKAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:57:09.527Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T13:58:33.052Z"}
+{"level":"info","message":"New customer connected (id=/#YbpBsI4_jZ6Ld3lPAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T13:58:33.833Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T14:18:35.989Z"}
+{"level":"info","message":"New customer connected (id=/#4e-x_85myFHp22peAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:18:40.876Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:22:03.629Z"}
+{"level":"info","message":"New customer connected (id=/#pnxsmzC4WcYynjrSAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:22:04.168Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:22:31.311Z"}
+{"level":"info","message":"New customer connected (id=/#vRiykM0Mtek4Q8axAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:22:31.813Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T14:30:18.918Z"}
+{"level":"info","message":"New customer connected (id=/#8GauVrrveitHaPHpAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:30:19.731Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T14:30:55.211Z"}
+{"level":"info","message":"New customer connected (id=/#3qFfzI2twLWQ2XVjAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:30:55.250Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T14:31:44.305Z"}
+{"level":"info","message":"New customer connected (id=/#0HSq3um3LLogU3mgAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:31:44.389Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:31:52.401Z"}
+{"level":"info","message":"New customer connected (id=/#VoFj02_VJnBkw_ruAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:31:53.233Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T14:32:45.363Z"}
+{"level":"info","message":"New customer connected (id=/#wGCxueEUhNoYFzFfAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:32:45.393Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:34:43.826Z"}
+{"level":"info","message":"New customer connected (id=/#4J3lDE5OwK_tsHmmAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:34:44.417Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T14:39:29.768Z"}
+{"level":"info","message":"New customer connected (id=/#wx-dlCZ_YnTRsa_HAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:39:32.594Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:39:40.551Z"}
+{"level":"info","message":"New customer connected (id=/#K3ZktoscsQHCSjugAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:39:41.395Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T14:53:30.082Z"}
+{"level":"info","message":"New customer connected (id=/#fNXimFijBepfdVw9AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:53:30.126Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:56:58.512Z"}
+{"level":"info","message":"New customer connected (id=/#eANqy2LEcZpwpSBDAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:56:59.091Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T14:58:08.059Z"}
+{"level":"info","message":"New customer connected (id=/#7uFlP75m1VTmxCARAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:58:08.627Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:58:14.579Z"}
+{"level":"info","message":"New customer connected (id=/#V0ilAxEA5I2tc-UyAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:58:15.460Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:59:25.520Z"}
+{"level":"info","message":"New customer connected (id=/#ZzA1zQGPjhtWvnaeAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T14:59:26.408Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:00:51.666Z"}
+{"level":"info","message":"New customer connected (id=/#4DOZpryQegeOErF6AAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:00:52.354Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:05:01.792Z"}
+{"level":"info","message":"New customer connected (id=/#vG3OTh3osU_BEwijAAAE)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:05:02.539Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T15:06:12.762Z"}
+{"level":"info","message":"New customer connected (id=/#i2luuY4GAQYGntuxAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:06:12.813Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:06:14.532Z"}
+{"level":"info","message":"New customer connected (id=/#Y_o6Nr6NJpaEAlXcAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:06:15.275Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T15:07:22.922Z"}
+{"level":"info","message":"New customer connected (id=/#TWXbbKFkmtsc2LtlAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:07:23.911Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:08:10.073Z"}
+{"level":"info","message":"New customer connected (id=/#7G7Dw17F2025jBEiAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:08:10.855Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T15:09:06.244Z"}
+{"level":"info","message":"New customer connected (id=/#3sRSCN2S_fRRDWtxAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:09:06.283Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:11:01.068Z"}
+{"level":"info","message":"New customer connected (id=/#nr13pXu-s4eGvbvbAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:11:01.840Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:11:24.498Z"}
+{"level":"info","message":"New customer connected (id=/#vRfKbP9pq8Ac6kIqAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:11:25.315Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:12:50.310Z"}
+{"level":"info","message":"New customer connected (id=/#5Ept_iVKrcHW2hp1AAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:12:50.769Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:14:37.894Z"}
+{"level":"info","message":"New customer connected (id=/#rT2VGfpl7lsBgLBAAAAE)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:14:38.726Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:15:36.235Z"}
+{"level":"info","message":"New customer connected (id=/#zWyZ3xkTYDVuNWK4AAAF)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:15:37.147Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:17:42.679Z"}
+{"level":"info","message":"New customer connected (id=/#l7oWzLGHxnX1gN1KAAAG)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:17:43.391Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:17:52.080Z"}
+{"level":"info","message":"New customer connected (id=/#fzgkLKZQWNnWh2KuAAAH)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:17:52.771Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:22:05.813Z"}
+{"level":"info","message":"New customer connected (id=/#10rMezMSgWxfrC2CAAAI)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:22:06.627Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:22:25.407Z"}
+{"level":"info","message":"New customer connected (id=/#iY0K05mBBdrU5XRJAAAJ)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:22:26.307Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:22:38.964Z"}
+{"level":"info","message":"New customer connected (id=/#-Ew0uhduSf9DnTQ0AAAK)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:22:39.699Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:22:44.966Z"}
+{"level":"info","message":"New customer connected (id=/#mZ9kOgef0h_osQJ7AAAL)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:22:46.007Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:23:16.578Z"}
+{"level":"info","message":"New customer connected (id=/#2jFD-M27slB75NMBAAAM)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:23:17.319Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:23:38.020Z"}
+{"level":"info","message":"New customer connected (id=/#3pmTwOxEMRIG4DBOAAAN)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:23:38.803Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T15:24:18.909Z"}
+{"level":"info","message":"New customer connected (id=/#icjnb4lRqcQCR9HWAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:24:23.071Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:24:48.417Z"}
+{"level":"info","message":"New customer connected (id=/#5JRQeByG1ZMc7E7RAAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:24:49.142Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:24:59.690Z"}
+{"level":"info","message":"New customer connected (id=/#6vmNADv3AKdhFQXCAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:25:00.380Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T15:25:41.405Z"}
+{"level":"info","message":"New customer connected (id=/#4D64FCoVeFwtVCU1AAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:25:41.449Z"}
+{"level":"info","message":"New customer connected (id=/#AWA1Yokxs4JDI-y1AAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:25:42.444Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:25:56.568Z"}
+{"level":"info","message":"New customer connected (id=/#qfLaxFpcFTzMlg9yAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:25:57.293Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:26:04.881Z"}
+{"level":"info","message":"New customer connected (id=/#h9CU9_2jrcy_p-7xAAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:26:05.692Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:27:06.426Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:27:11.356Z"}
+{"level":"info","message":"New customer connected (id=/#KLvXz5uMfWGXudvAAAAE)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:27:11.881Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:28:22.622Z"}
+{"level":"info","message":"New customer connected (id=/#TrBIu1A0vXQoXP6SAAAF)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:28:23.330Z"}
+{"level":"info","message":"Listening on http://localhost:3000/","label":"LullabyShop\\server.js","timestamp":"2016-05-09T15:29:09.953Z"}
+{"level":"info","message":"New customer connected (id=/#FMAoNc5Du7R9QALLAAAA)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:10.017Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:13.412Z"}
+{"level":"info","message":"New customer connected (id=/#R-EPjQtfuxDL2dM1AAAB)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:14.532Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:22.087Z"}
+{"level":"info","message":"New customer connected (id=/#J8i6pzygImiyGwuCAAAC)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:22.801Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:28.105Z"}
+{"level":"info","message":"New customer connected (id=/#KckB7cx3Ki7nsxQAAAAD)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:28.839Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:36.586Z"}
+{"level":"info","message":"New customer connected (id=/#0SNJzyL8ZSAD4f-aAAAE)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:37.139Z"}
+{"level":"info","message":"Customer disconnected (id=undefined)","label":"LullabyShop\\socketio.js","timestamp":"2016-05-09T15:29:53.399Z"}

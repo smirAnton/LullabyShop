@@ -1,15 +1,14 @@
 'use strict';
 
-var OrderModel = require('../models/Order');
 var ProductModel = require('../models/Product');
-var UserModel = require('../models/User');
+var OrderModel   = require('../models/Order');
+var UserModel    = require('../models/User');
 
-var validator = require('../helpers/validator')();
-var ObjectId = require('mongodb').ObjectID;
-var async = require('async');
+var ObjectId     = require('mongodb').ObjectID;
+var async        = require('async');
 
-var regExp = require('../constants/regExp');
-var mailer = require('../helpers/mailer')();
+var validator    = require('../helpers/validator')();
+var mailer       = require('../helpers/mailer')();
 
 
 var OrderHandler = function () {
@@ -64,7 +63,6 @@ var OrderHandler = function () {
                 if (!order) {
 
                     return res.status(404).send({fail: 'Not found'});
-
                 }
 
                 res.status(200).send(order);
@@ -116,6 +114,7 @@ var OrderHandler = function () {
             async.parallel([
                 function (callback) {
                     order.save(function (err, result) {
+
                         return callback(err, result)
                     });
                 },
@@ -124,9 +123,11 @@ var OrderHandler = function () {
                         UserModel
                             .update({_id: ObjectId(userId)}, {$push: {orders: order._id}})
                             .exec(function (err, result) {
+
                                 return callback(err, result);
                             });
                     } else {
+
                         return callback(null);
                     }
                 },
@@ -135,6 +136,7 @@ var OrderHandler = function () {
                         email: email,
                         order: order.orderCode
                     }, function (err, result) {
+
                         return callback(err, result);
                     });
                 }
@@ -143,7 +145,8 @@ var OrderHandler = function () {
 
                     return next(err);
                 }
-                res.status(201).send({success: 'Thank you for shopping. Please check email with order number'});
+
+                res.status(201).send({success: 'Thank you for shopping. Please check email, we provided your order number'});
             });
         });
     };
@@ -155,29 +158,43 @@ var OrderHandler = function () {
 
             return res.status(400).send({fail: 'Bad request'});
         }
-        async.waterfall([
+
+        isRegisteredUserOrder(orderId, function(err, result) {
+            if (err) {
+
+                return next(err);
+            }
+
+            async.parallel([
                 function (callback) {
                     OrderModel
-                        .remove({_id: ObjectId(orderId)}, function (err, result) {
+                        .remove({_id: ObjectId(orderId)}, function (err, order) {
+
                             return callback(err, order);
                         });
                 },
                 function (callback) {
-                    UserModel
-                        .update({}, {$pull: {orders: ObjectId(orderId)}})
-                        .exec(function (err, result) {
-                            return callback(err, result);
-                        });
-                }],
+                    if (result) {
+                        UserModel
+                            .update({}, {$pull: {orders: ObjectId(orderId)}})
+                            .exec(function (err, user) {
 
-            function (err, result) {
+                                return callback(err, user);
+                            });
+                    } else {
+
+                        return callback(null);
+                    }
+                }
+            ], function (err, result) {
                 if (err) {
 
                     return next(err);
                 }
-                res.status(200).send({success: 'removed'});
-            }
-        );
+
+                res.status(200).send({success: 'Order successfully removed'});
+            });
+        });
     };
 
     function calculateTotalSum(products, callback) {
@@ -205,6 +222,21 @@ var OrderHandler = function () {
 
                 return callback(null, totalSum);
             });
+    }
+
+    function isRegisteredUserOrder(orderId, callback) {
+        OrderModel
+            .find({_id: ObjectId(orderId)}, {__v: 0})
+            .lean()
+            .exec(function(err, order) {
+                if (err) {
+
+                    return callback(err);
+                }
+
+                order[0] = order[0]  || {};
+                return order[0].user ? callback(null, true) : callback(null, false);
+            })
     }
 };
 

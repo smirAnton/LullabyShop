@@ -11,6 +11,7 @@ define([
 
         initialize: function () {
             var self = this;
+
             this.basket = JSON.parse(localStorage.getItem('basket')) || [];
 
             this.render();

@@ -14,24 +14,20 @@ define(['backbone', 'underscore', 'router', 'socketio'], function (Backbone, _, 
 
         socket.connect();
 
-        // get session data
         $.ajax({
             url : '/session',
             type:'GET',
-            success: function(sessionData){
+            success: function(sessionData, xhr){
+                console.log(sessionData);
                 localStorage.clear();
 
                 if (sessionData.loggedIn) {
-                    APP.authorised = true;
-                    APP.userId     = sessionData.userId;
-
-                    localStorage.setItem('loggedIn', APP.authorised);
-                    localStorage.setItem('userId',   APP.userId);
+                    localStorage.setItem('loggedIn', true);
+                    localStorage.setItem('userId',   sessionData.userId);
                 }
 
                 if (sessionData.isAdmin) {
-                    APP.isAdmin    = true;
-                    localStorage.setItem('isAdmin', APP.isAdmin);
+                    localStorage.setItem('isAdmin', true);
                 }
 
                 APP.userFirstname = sessionData.userName || 'Anonymous';
@@ -39,11 +35,14 @@ define(['backbone', 'underscore', 'router', 'socketio'], function (Backbone, _, 
 
                 if (sessionData.basket) {
                     localStorage.setItem('basket', JSON.stringify(sessionData.basket));
+                    console.log(localStorage.getItem('basket'));
                 } else {
                     localStorage.setItem('basket', JSON.stringify([]));
                 }
             },
-            error: function(error){}
+            error: function(err, xhr){
+                alert(xhr.statusText);
+            }
         });
     }
 

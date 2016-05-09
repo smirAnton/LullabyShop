@@ -5,14 +5,44 @@ var regExp    = require('../constants/regExp');
 
 module.exports = function (module) {
 
+    function isEmptyString(str) {
+
+        return str && (typeof str === 'string') && str.trim().length;
+    }
+
     function isFirstname(firstname) {
 
-        return firstname && (typeof firstname === 'string') && firstname.trim().length;
+        return isEmptyString(firstname);
     }
 
     function isSurname(surname) {
 
-        return surname && (typeof surname === 'string') && surname.trim().length;
+        return isEmptyString(surname);
+    }
+
+    function isStreet(street) {
+
+        return isEmptyString(street);
+    }
+
+    function isCity(city) {
+
+        return isEmptyString(city);
+    }
+
+    function isGender(gender) {
+
+        return isEmptyString(gender);
+    }
+
+    function isPassword(password) {
+
+        return isEmptyString(password);
+    }
+
+    function isBirthday(birthday) {
+
+        return birthday && validator.isDate(birthday);
     }
 
     function isEmail(email) {
@@ -35,14 +65,30 @@ module.exports = function (module) {
         return id && validator.isMongoId(id);
     }
 
+    function isEmptyBasket(basket) {
 
+        return basket && Array.isArray(basket) && basket.length;
+    }
+
+    function isBoolean(value) {
+
+        return value && validator.isBoolean(value);
+    }
 
     return {
-        isFirstname: isFirstname,
-        isProducts : isProducts,
-        isSurname  : isSurname,
-        isEmail    : isEmail,
-        isPhone    : isPhone,
-        isId       : isId
+        isEmptyBasket: isEmptyBasket,
+        isEmptyString: isEmptyString,
+        isFirstname  : isFirstname,
+        isPassword   : isPassword,
+        isBirthday   : isBirthday,
+        isProducts   : isProducts,
+        isBoolean    : isBoolean,
+        isSurname    : isSurname,
+        isGender     : isGender,
+        isStreet     : isStreet,
+        isEmail      : isEmail,
+        isPhone      : isPhone,
+        isCity       : isCity,
+        isId         : isId
     }
 };

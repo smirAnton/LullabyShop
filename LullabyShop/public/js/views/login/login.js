@@ -40,7 +40,7 @@ define([
 
             if (!validator.validateEmail(email)) {
 
-                return alert('Nope...Please, provide email');
+                return alert('Please, provide email');
             }
 
             userData = {

@@ -2,9 +2,8 @@
 
 var UserModel  = require('../models/User');
 
-var validator  = require('validator');
+var validator  = require('../helpers/validator')();
 
-var regExp     = require('../constants/regExp');
 var imager     = require('../helpers/imager')();
 var coder      = require('../helpers/coder')();
 
@@ -31,7 +30,7 @@ var UserHandler = function () {
 
     this.count = function (req, res, next) {
         UserModel
-            .find({}, {_v: 0})
+            .find({})
             .lean()
             .count(function (err, amount) {
                 if (err) {
@@ -39,14 +38,14 @@ var UserHandler = function () {
                     return next(err);
                 }
 
-                res.status(200).send({amount: amount});
+                res.status(200).send({count: amount});
             });
     };
 
     this.fetchByIdWithOrders = function (req, res, next) {
         var userId = req.params.id;
 
-        if (!userId || !validator.isMongoId(userId)) {
+        if (!validator.isId(userId)) {
 
             return res.status(400).send({fail: 'Bad request'});
         }
@@ -67,70 +66,40 @@ var UserHandler = function () {
 
                 res.status(200).send(user);
             });
-
     };
 
     this.update = function (req, res, next) {
-        var userId = req.params.id;
-        var body   = req.body || {};
-        var firstname;
-        var password;
-        var birthday;
-        var surname;
-        var gender;
-        var street;
-        var phone;
-        var email;
-        var city;
+        var userId    = req.params.id;
+        var body      = req.body || {};
+        var firstname = body.firstname;
+        var password  = body.password;
+        var birthday  = body.birthday;
+        var surname   = body.surname;
+        var gender    = body.gender;
+        var street    = body.street;
+        var phone     = body.phone;
+        var email     = body.email;
+        var city      = body.city;
 
-        if (!userId || !validator.isMongoId(userId)) {
+        if (!validator.isId(userId)) {
 
             return res.status(400).send({fail: 'Bad request'});
         }
 
-        if (body.firstname && (typeof body.firstname === 'string') && body.firstname.trim().length) {
-            firstname = body.firstname;
-        }
-
-        if (body.surname && (typeof body.surname === 'string') && body.surname.trim().length) {
-            surname = body.surname;
-        }
-
-        if (body.email && (typeof body.email === 'string') && validator.isEmail(body.email)) {
-            email = body.email;
-        }
-
-        if (body.phone && (typeof body.phone === 'string') && body.phone.match(regExp.MOBILE_VALID)) {
-            phone = body.phone;
-        }
-
-        if (body.password && (typeof body.password === 'string') && body.password.trim().length) {
-            password = body.password;
-        }
-
-        if (body.gender && (typeof body.gender === 'string') && body.gender.trim().length) {
-            gender = body.gender;
-        }
-
-        if (body.city && (typeof body.city === 'string') && body.city.trim().length) {
-            city = body.city;
-        }
-
-        if (body.street && (typeof body.street === 'string') && body.street.trim().length) {
-            street = body.street;
-        }
-
-        if (body.birthday && (typeof body.street === 'string') && body.birthday.trim().length) {
-            birthday = body.birthday;
-        }
-
-        if (!firstname && !surname && !email && !phone && !password && !gender && !city && !street && !birthday) {
+        if (!validator.isFirstname(firstname) &&
+            !validator.isBirthday(birthday)   &&
+            !validator.isPassword(password)   &&
+            !validator.isSurname(surname)     &&
+            !validator.isGender(gender)       &&
+            !validator.isStreet(street)       &&
+            !validator.isEmail(email)         &&
+            !validator.isPhone(phone)         &&
+            !validator.isCity(city)) {
 
             return res.status(422).send({fail: 'Wrong incoming data'});
         }
 
         if (password) {
-
             body.password = coder.encryptPassword(password);
         }
 
@@ -144,7 +113,6 @@ var UserHandler = function () {
 
                 res.status(200).send({success: 'Successfully updated'});
             });
-
     };
 
     this.uploadAvatar = function (req, res, next) {
@@ -152,7 +120,7 @@ var UserHandler = function () {
         var userId  = session.userId;
         var imagePath;
 
-        if (!userId) {
+        if (!validator.isId(userId)) {
 
             return res.status(401).send({fail: 'User not authorized'});
         }
@@ -180,18 +148,18 @@ var UserHandler = function () {
     };
 
     this.remove = function (req, res, next) {
-        var session           = req.session || {};
-        var userId            = req.params.id;
-        var userIdFromSession = session.userId;
+        var session       = req.session || {};
+        var userId        = req.params.id;
+        var sessionUserId = session.userId;
 
-        if (!userId || !validator.isMongoId(userId)) {
+        if (!validator.isId(userId)) {
 
             return res.status(400).send({fail: 'Bad request'});
         }
 
-        if (!userIdFromSession || !validator.isMongoId(userIdFromSession) || (userIdFromSession === userId)) {
+        if (!validator.isId(sessionUserId) || sessionUserId === userId) {
 
-            return res.status(403).send({fail: 'You can\'t delete your account'});
+            return res.status(403).send({fail: 'You can\'t ban admin'});
         }
 
         UserModel

@@ -78,44 +78,30 @@ define([
         },
 
         onAddProduct: function(e) {
+            var self = this;
             var productId;
             var product;
+            var basket;
 
             e.stopPropagation();
             e.preventDefault();
 
             productId = $(e.currentTarget).data("id");
+            product   = this.collection.get(productId);
 
-            product = new ProductModel({_id: productId});
-            product.fetch({
-                success: function() {
-                    var transfer;
-                    var basket;
-
-                    // check if basket created in local storage
-                    if (_.isNull(localStorage.getItem('basket'))) {
-
-                        localStorage.setItem('basket', JSON.stringify([]));
-                    }
-
-                    // add new product to basket
-                    basket = JSON.parse(localStorage.getItem('basket'));
+            $.ajax({
+                url : '/lullaby/basket/add',
+                type: 'POST',
+                data: {product: JSON.stringify(product)},
+                success: function(response, xhr) {
+                    basket = JSON.parse(localStorage.getItem('basket')) || [];
                     basket.push(product);
-
-                    // save selected product in req.session basket
-                    transfer = new ProductModel();
-                    transfer.urlRoot = 'lullaby/basket/add';
-                    transfer.save({product: product}, {
-                        success: function(success) {},
-                        error  : function (error) {}
-                    });
 
                     localStorage.setItem('basket', JSON.stringify(basket));
 
-                    // trigger add product event
                     APP.channel.trigger('addProductToBasket');
                 },
-                error: function (err, xhr) {
+                error: function(err, xhr) {
                     alert(xhr.statusText);
                 }
             });

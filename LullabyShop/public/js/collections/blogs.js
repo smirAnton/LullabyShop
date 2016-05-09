@@ -4,7 +4,7 @@ define([
     'backbone',
     'constants',
     'models/blog'
-], function(Backbone, Constant, BlogModel){
+], function(Backbone, constant, BlogModel){
     var Blogs = Backbone.Collection.extend({
         model  : BlogModel,
         url    : '/lullaby/blog',
@@ -20,28 +20,18 @@ define([
         },
 
         initialize: function(options){
-            var paginationData = (options && options.data) || {};
             var self = this;
-            var blog;
 
-            this.page  = paginationData.page  || Constant.FIRST_PAGE_WITH_TOPICS;
-            this.count = paginationData.count || Constant.AMOUNT_OF_TOPICS_PER_PAGE;
-
-            blog = new BlogModel();
-            blog.urlRoot = 'lullaby/blog/count';
-            blog.fetch({
-                success: function(response) {
-                    self.countBlogs = response.attributes.amount;
-                    self.countPages = Math.ceil(self.countBlogs / Constant.AMOUNT_OF_TOPICS_PER_PAGE);
-                },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
-                }
-            });
+            options    = options       || {};
+            this.page  = options.page  || constant.FIRST_PAGE;
+            this.count = options.count || constant.AMOUNT_OF_TOPICS_PER_PAGE;
 
             this.fetchData(this.page, this.count, {
-                success: function (model, xhr, options) {},
-                error  : function (model, xhr, options) {
+                success: function (collection, xhr, options) {
+                    self.countTopics = collection.models[0].attributes.count;
+                    self.countPages  = Math.ceil(self.countTopics / constant.AMOUNT_OF_TOPICS_PER_PAGE);
+                },
+                error  : function (err, xhr, options) {
                     alert(xhr.statusText);
                 }
             });
@@ -106,11 +96,14 @@ define([
 
         goToPage: function(pageNumber){
             var self = this;
-            var page = pageNumber;
+            var page;
 
-            if (page > this.countPages || page < 0) {
+            if (pageNumber > this.countPages || pageNumber < 0) {
+
                 return alert('Not found such page');
             }
+
+            page = pageNumber;
 
             this.fetchData(page, this.count, {
                 success: function (model, xhr, options) {
