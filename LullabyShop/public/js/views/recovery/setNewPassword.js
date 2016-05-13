@@ -5,7 +5,8 @@ define([
     'underscore',
     'text!templates/recovery/setNewPassword.html'
 ], function (Backbone, _, setNewPasswordTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(setNewPasswordTemplate),
 
@@ -19,27 +20,27 @@ define([
         },
 
         onSetNewPassword: function (e) {
-            var self = this;
+            var $confirmedPassword = this.$el.find('#confirmedPassword');
+            var $password          = this.$el.find('#password');
             var confirmedPassword;
             var password;
 
             e.stopPropagation();
             e.preventDefault();
 
-
-            confirmedPassword = this.$el.find('#confirmedPassword').val();
-            password          = this.$el.find('#password').val();
+            confirmedPassword = $confirmedPassword.val();
+            password          = $password.val();
 
             if (!password || !confirmedPassword) {
 
-                return alert('Please fill all form\'s fields');
+                return APP.notification('Please, provide two passwords');
             }
 
             if (password !== confirmedPassword) {
-                self.$el.find('#confirmedPassword').val('');
-                self.$el.find('#password').val('');
+                $confirmedPassword.val('');
+                $password.val('');
 
-                return alert('Password not matched');
+                return APP.notification('Password not matched');
             }
 
             $.ajax({
@@ -47,40 +48,19 @@ define([
                 type   :'POST',
                 data   : {password: password},
                 success: function(response){
-                    alert(response.success);
-                    Backbone.history.navigate('#lullaby/login', {trigger: true})
+                    APP.notification(response.success);
+                    APP.navigate('#lullaby/login');
                 },
-                error  : function(xhr){
-                    self.handleError(xhr);
+                error  : function(err){
+                    APP.handleError(err);
                 }
             });
         },
 
         onCancel: function(e) {
-            e.stopPropagation();
             e.preventDefault();
 
-            Backbone.history.navigate('#lullaby/shop', {trigger: true});
-        },
-
-        handleError: function(xhr) {
-            var self = this;
-
-            switch (xhr.status) {
-                case 403: // No email
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/recovery', {trigger: true});
-                    break;
-
-                case 422: // not provided new password
-                    alert(xhr.responseJSON.fail);
-                    self.$el.find('#confirmedPassword').val('');
-                    self.$el.find('#password').val('');
-                    break;
-
-                default:
-                    break;
-            }
+            APP.navigate('#lullaby/shop');
         },
 
         render: function () {
@@ -89,6 +69,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

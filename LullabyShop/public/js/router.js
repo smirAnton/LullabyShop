@@ -1,7 +1,12 @@
 'use strict';
 
 define(['backbone'], function (Backbone) {
-    var Router = Backbone.Router.extend({
+    APP = APP || {};
+    APP.navigate = function(url) {
+        Backbone.history.navigate(url, {trigger: true});
+    };
+
+    return Backbone.Router.extend({
         view: null,
         routes: {
             'lullaby/main': 'main',
@@ -134,17 +139,15 @@ define(['backbone'], function (Backbone) {
         },
 
         login: function () {
-            APP.authorised = localStorage.getItem('loggedIn');
             var self = this;
 
-            console.log(APP);
-            if (APP.authorised) {
+            if (APP.loggedIn) {
+                APP.navigate('#lullaby/main');
 
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
             } else if (!APP.mainView) {
-
                 APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
+                APP.navigate('#lullaby/main');
+
             } else {
                 require(['views/login/login'], function (View) {
                     if (self.view) {
@@ -157,16 +160,15 @@ define(['backbone'], function (Backbone) {
         },
 
         register: function () {
-            APP.authorised = localStorage.getItem('loggedIn');
             var self = this;
 
-            if (APP.authorised) {
+            if (APP.loggedIn) {
+                APP.navigate('#lullaby/main');
 
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
             } else if (!APP.mainView) {
-
                 APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
+                APP.navigate('#lullaby/main');
+
             } else {
                 require(['views/registration/registration'], function (View) {
                     if (self.view) {
@@ -179,23 +181,22 @@ define(['backbone'], function (Backbone) {
         },
 
         profile: function () {
-            APP.authorised = localStorage.getItem('loggedIn');
             var self = this;
 
-            if (!APP.authorised) {
+            if (!APP.loggedIn) {
+                APP.navigate('#lullaby/login');
 
-                Backbone.history.navigate('#lullaby/login', {trigger: true});
             } else if (!APP.mainView) {
-
                 APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
+                APP.navigate('#lullaby/main');
+
             } else {
-                require(['views/profile/profile'], function (UserProfileView) {
+                require(['views/profile/profile'], function (View) {
                     if (self.view) {
 
                         self.view.undelegateEvents();
                     }
-                    self.view = new UserProfileView();
+                    self.view = new View();
                 });
             }
         },
@@ -204,9 +205,9 @@ define(['backbone'], function (Backbone) {
             var self = this;
 
             if (!APP.mainView) {
-
                 APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
+                APP.navigate('#lullaby/main');
+
             } else {
                 require(['views/contacts/contacts'], function (View) {
                     if (self.view) {
@@ -222,16 +223,16 @@ define(['backbone'], function (Backbone) {
             var self = this;
 
             if (!APP.mainView) {
-
                 APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
+                APP.navigate('#lullaby/main');
+
             } else {
-                require(['views/order/orderDetails'], function (OrderView) {
+                require(['views/order/orderDetails'], function (View) {
                     if (self.view) {
 
                         self.view.undelegateEvents();
                     }
-                    self.view = new OrderView();
+                    self.view = new View();
                 })
             }
         },
@@ -240,16 +241,16 @@ define(['backbone'], function (Backbone) {
             var self = this;
 
             if (!APP.mainView) {
-
                 APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
+                APP.navigate('#lullaby/main');
+
             } else {
-                require(['views/blog/blogList'], function (BlogView) {
+                require(['views/blog/blogList'], function (View) {
                     if (self.view) {
 
                         self.view.undelegateEvents();
                     }
-                    self.view = new BlogView(page, count);
+                    self.view = new View(page, count);
                 })
             }
         },
@@ -722,6 +723,4 @@ define(['backbone'], function (Backbone) {
             Backbone.history.navigate('#lullaby/main', {trigger: true});
         }
     });
-
-    return Router;
 });

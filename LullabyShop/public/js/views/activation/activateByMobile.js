@@ -5,7 +5,8 @@ define([
     'underscore',
     'text!templates/activation/activateByMobile.html'
 ], function (Backbone, _, activationTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(activationTemplate),
 
@@ -18,7 +19,6 @@ define([
         },
 
         onActivate : function(e) {
-            var self = this;
             var secret;
 
             e.stopPropagation();
@@ -35,31 +35,13 @@ define([
                 type   : 'POST',
                 data   : {secret: secret},
                 success: function (response) {
-                    alert(response.success);
-                    Backbone.history.navigate('#lullaby/login', {trigger: true});
+                    APP.notification(response.success);
+                    APP.navigate('#lullaby/login');
                 },
-                error  : function (xhr) {
-                    self.handleError(xhr)
+                error  : function (err) {
+                    APP.handleError(err)
                 }
             });
-        },
-
-        handleError: function(xhr) {
-            var self = this;
-            switch (xhr.status) {
-                case 404: // if user is not registered
-                    alert(xhr.responseJSON.fail);
-                    self.$el.find('#secret').val('');
-                    break;
-
-                case 422: // if user has already activated registration
-                    alert(xhr.responseJSON.fail);
-                    self.$el.find('#secret').val('');
-                    break;
-
-                default:
-                    break;
-            }
         },
 
         render: function () {
@@ -68,6 +50,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

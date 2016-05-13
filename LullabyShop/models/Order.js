@@ -1,7 +1,8 @@
 'use strict';
 
 var mongoose  = require('mongoose');
-var TABLE     = require('../constants/dbTables');
+
+var table     = require('../constants/dbTables');
 var generator = require('../helpers/generator')();
 
 module.exports = (function () {
@@ -19,7 +20,7 @@ module.exports = (function () {
             user        :  {type: ObjectId, default: null, ref: 'user'},
             products    : [{type: ObjectId, default: null, ref: 'product'}]
 
-        }, {collection: TABLE.ORDERS}
+        }, {collection: table.ORDERS}
     );
 
     return mongoose.model('order', OrderSchema);

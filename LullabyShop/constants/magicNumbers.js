@@ -2,7 +2,7 @@
 
 module.exports = Object.freeze({
 
-    // for topics pagination
+    // for pagination
     AMOUNT_OF_PRODUCTS_PER_PAGE: 4,
     AMOUNT_OF_TOPICS_PER_PAGE  : 4,
     FIRST_PAGE                 : 1,

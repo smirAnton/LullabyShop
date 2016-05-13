@@ -2,11 +2,12 @@
 
 define([
     'backbone',
+    'jquery',
     'constants',
     'underscore',
     'collections/blogs',
     'text!templates/blog/blogList.html'
-], function (Backbone, constant, _, BlogCollection, blogListTemplate) {
+], function (Backbone, $, constant, _, BlogCollection, blogListTemplate) {
     var View = Backbone.View.extend({
         el      : "#content",
         template: _.template(blogListTemplate),
@@ -15,6 +16,9 @@ define([
             var self = this;
             var count;
             var page;
+
+            console.log($( "#datepicker" ));
+            $( "#datepicker" ).datepicker();
 
             options = options       || {};
             page    = options.page  || constant.FIRST_PAGE;

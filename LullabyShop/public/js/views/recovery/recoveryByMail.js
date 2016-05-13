@@ -1,42 +1,20 @@
 'use strict';
 
-define([
-    'backbone'
-], function (Backbone) {
-    var View = Backbone.View.extend({
+define(['backbone'], function (Backbone) {
 
+    return Backbone.View.extend({
         initialize: function (secret) {
-            var self = this;
-
             $.ajax({
                 url    : '/recovery/mail/' + secret,
-                method : 'GET',
+                type   : 'GET',
                 success: function (response) {
-                    alert(response.success);
-                    Backbone.history.navigate('#lullaby/recovery/password', {trigger: true});
+                    APP.notification(response.success);
+                    APP.navigate('#lullaby/recovery/password');
                 },
-                error  : function (xhr) {
-                    self.handleError(xhr);
+                error  : function (err) {
+                    APP.handleError(err);
                 }
             });
-        },
-
-        handleError: function(xhr) {
-            switch (xhr.status) {
-                case 400: // Wrong secret link
-                    alert(xhr.responseJSON.fail);
-                    break;
-
-                case 403: // No secret number
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('$lullaby/shop', {trigger: true});
-                    break;
-
-                default:
-                    break;
-            }
         }
     });
-
-    return View;
 });

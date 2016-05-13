@@ -12,7 +12,7 @@ module.exports = function () {
         var result      = [];
         var index;
 
-        for (index = 63; index >= 0; index -= 1) {
+        for (index = 59; index >= 0; index -= 1) {
             result.push(secretChars[getRandomInt(0, barrier - 1)]);
         }
 

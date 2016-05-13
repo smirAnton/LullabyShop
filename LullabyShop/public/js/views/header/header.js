@@ -5,7 +5,8 @@ define([
     'underscore',
     'text!templates/header/header.html'
 ], function (Backbone, _, headerTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#header",
         template: _.template(headerTemplate),
 
@@ -18,16 +19,12 @@ define([
         },
 
         onLogout: function (e) {
-            var self = this;
-
-            e.stopPropagation();
             e.preventDefault();
 
-            APP.authorised = localStorage.getItem('loggedIn');
-            if (!APP.authorised) {
-
-                return alert('You should firstly login');
-            }
+            //if (!APP.session.loggedIn) {
+            //
+            //    return APP.notification('You should firstly login');
+            //}
 
             $.ajax({
                 url    : '/logout',
@@ -39,27 +36,15 @@ define([
                         delete APP.mainView;
                     }
 
-                    localStorage.clear();
+                    delete APP.session;
 
-                    alert(response.success);
+                    APP.notification(response.success);
                     Backbone.history.navigate('#lullaby/shop', {trigger: true});
                 },
-                error  : function(xhr){
-                    self.handleError(xhr);
+                error  : function(err){
+                    APP.handleError(err);
                 }
             });
-        },
-
-        handleError: function(xhr) {
-            switch (xhr.status) {
-                case 401: // if email already subscribed
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/login', {trigger: true});
-                    break;
-
-                default:
-                    break;
-            }
         },
 
         render: function () {
@@ -68,8 +53,6 @@ define([
             return this;
         }
     });
-
-    return View;
 });
 
 

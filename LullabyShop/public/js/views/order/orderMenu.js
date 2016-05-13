@@ -5,19 +5,18 @@ define([
     'underscore',
     'text!templates/order/orderMenu.html'
 ], function (Backbone, _, orderMenuTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#orderMenu",
         template: _.template(orderMenuTemplate),
 
         initialize: function () {
             var self = this;
-
-            this.basket = JSON.parse(localStorage.getItem('basket')) || [];
+            this.basket = APP.session.basket;
 
             this.render();
 
-            // listen user's event - add new product to basket
-            APP.channel.on('addProductToBasket', function() {
+            APP.channel.on('addProductToBasket', function () {
                 self.initialize();
             });
         },
@@ -28,8 +27,6 @@ define([
             return this;
         }
     });
-
-    return View;
 });
 
 

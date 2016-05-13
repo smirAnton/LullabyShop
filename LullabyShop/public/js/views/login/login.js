@@ -6,21 +6,29 @@ define([
     'underscore',
     'text!templates/login/login.html'
 ], function (Backbone, validator, _, loginTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : '#content',
         template: _.template(loginTemplate),
 
         initialize: function () {
+            APP.session = APP.session || {};
+
             this.render();
         },
 
         events: {
-            'click #loginBtn': 'onLogin',
-            'click #cancelBtn': 'onCancel'
+            'click #cancelBtn': 'onCancel',
+            'click #loginBtn' : 'onLogin'
+        },
+
+        onCancel: function (e) {
+            e.preventDefault();
+
+            APP.navigate('lullaby/shop');
         },
 
         onLogin: function (e) {
-            var self = this;
             var rememberMe;
             var password;
             var userData;
@@ -38,9 +46,9 @@ define([
                 return alert('Please, fill all form\'s fields');
             }
 
-            if (!validator.validateEmail(email)) {
+            if (!validator.isEmail(email)) {
 
-                return alert('Please, provide email');
+                return alert('Wrong email, please try again');
             }
 
             userData = {
@@ -51,70 +59,22 @@ define([
 
             $.ajax({
                 url    : '/login',
-                method : 'POST',
+                type   : 'POST',
                 data   : userData,
-                success: function (response) {
-                    var userFirstname;
-                    var isAdmin;
-                    var userId;
+                success: function (user) {
+                    APP.loggedIn         = true;
+                    APP.session.username = user.firstname;
+                    APP.session.isAdmin  = user.isAdmin;
+                    APP.session.userId   = user._id;
+                    APP.session.email    = user.email;
 
-                    userFirstname = response.firstname;
-                    isAdmin       = response.isAdmin;
-                    userId        = response._id;
-
-                    if (response.isAdmin) {
-                        localStorage.setItem('isAdmin', isAdmin);
-                    }
-
-                    localStorage.setItem('userFirstname', userFirstname);
-                    localStorage.setItem('loggedIn',      'true');
-                    localStorage.setItem('userId',        userId);
-
-                    alert('Welcome to Lullaby\'s store');
-                    Backbone.history.navigate('lullaby/shop', {trigger: true});
+                    APP.notification('Welcome to Lullaby\'s store');
+                    APP.navigate('lullaby/shop');
                 },
-                error : function (xhr) {
-                    self.handleError(xhr);
+                error : function (err) {
+                    APP.handleError(err);
                 }
             });
-        },
-
-        onCancel: function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-
-            Backbone.history.navigate('lullaby/shop', {trigger: true});
-        },
-
-        handleError: function(xhr) {
-            switch (xhr.status) {
-                case 400: // wrong password
-                    alert(xhr.responseJSON.fail);
-                    self.$el.find('#password').val('');
-                    break;
-
-                case 401: // account is not activated
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/activate/choice', {trigger: true});
-                    break;
-
-                case 403: // user is banned
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/shop', {trigger: true});
-                    break;
-
-                case 404: // account is not registered
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/register', {trigger: true});
-                    break;
-
-                case 422: // user not fill all form's fields
-                    alert(xhr.responseJSON.fail);
-                    break;
-
-                default:
-                    break;
-            }
         },
 
         render: function () {
@@ -123,6 +83,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

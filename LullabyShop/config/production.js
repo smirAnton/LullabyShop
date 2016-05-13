@@ -11,10 +11,10 @@ process.env.DB_PASS       = 'fynjy236395';
 process.env.PORT          = 3000;
 
 //Mail
-process.env.PASSWORD      = 'fynjy236395';
+process.env.DESTINATION   = 'smiranton.kiev@gmail.com';
 process.env.SERVICE       = 'Gmail';
-process.env.FROM          = 'messanger.kiev@gmail.com';
-process.env.TO            = 'smiranton.kiev@gmail.com';
+process.env.USER          = 'messanger.kiev@gmail.com';
+process.env.PASSWORD      = 'fynjy236395';
 
 //Twilio
 process.env.TWILIO_NUMBER = '+12013899088';

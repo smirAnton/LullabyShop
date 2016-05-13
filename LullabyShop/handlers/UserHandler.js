@@ -1,11 +1,10 @@
 'use strict';
 
-var UserModel  = require('../models/User');
+var UserModel = require('../models/User');
 
-var validator  = require('../helpers/validator')();
-
-var imager     = require('../helpers/imager')();
-var coder      = require('../helpers/coder')();
+var validator = require('../helpers/validator')();
+var imager    = require('../helpers/imager')();
+var coder     = require('../helpers/coder')();
 
 var UserHandler = function () {
 
@@ -172,6 +171,46 @@ var UserHandler = function () {
                 }
 
                 res.status(200).send({success: 'User successfully removed'});
+            });
+    };
+
+    this.changeBanStatus  = function (req, res, next) {
+        var userId        = req.params.id;
+        var session       = req.session || {};
+        var sessionUserId = session.userId;
+
+        if (!validator.isId(userId)) {
+
+            return res.status(400).send({fail: 'Unknown user'});
+        }
+
+        if (!validator.isId(sessionUserId) || sessionUserId === userId) {
+
+            return res.status(400).send({fail: 'You can\'t ban admin'});
+        }
+
+        UserModel
+            .findById(userId)
+            .lean()
+            .exec(function(err, user) {
+                if (err) {
+
+                    return next(err);
+                }
+
+                UserModel
+                    .findByIdAndUpdate(userId, {isBanned: !user.isBanned})
+                    .exec(function (err, updatedUser) {
+                        var responseAnswer;
+
+                        if (err) {
+
+                            return next(err);
+                        }
+
+                        responseAnswer = updatedUser.isBanned ? 'User is unbanned' : 'User is banned';
+                        res.status(200).send({success: responseAnswer})
+                    });
             });
     };
 };

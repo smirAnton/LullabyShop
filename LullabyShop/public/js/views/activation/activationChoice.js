@@ -5,7 +5,8 @@ define([
     'underscore',
     'text!templates/activation/activationChoice.html'
 ], function (Backbone, _, activationTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(activationTemplate),
 
@@ -19,7 +20,6 @@ define([
         },
 
         onActivateByMobile: function (e) {
-            var self = this;
             e.stopPropagation();
             e.preventDefault();
 
@@ -27,17 +27,16 @@ define([
                 url    : '/activate/mobile',
                 type   :'GET',
                 success: function(response){
-                    alert(response.success);
-                    Backbone.history.navigate('#lullaby/activate/mobile', {trigger: true});
+                    APP.notification(response.success);
+                    APP.navigate('#lullaby/activate/mobile');
                 },
-                error  : function(xhr){
-                    self.handleError(xhr);
+                error  : function(err){
+                    APP.handleError(err);
                 }
             });
         },
 
         onActivateByMail: function (e) {
-            var self = this;
             e.stopPropagation();
             e.preventDefault();
 
@@ -45,35 +44,13 @@ define([
                 url    : '/activate/mail',
                 type   :'GET',
                 success: function(response){
-                    alert(response.success);
-                    Backbone.history.navigate('#lullaby/shop', {trigger: true});
+                    APP.notification(response.success);
+                    APP.navigate('#lullaby/shop');
                 },
-                error  : function(xhr){
-                    self.handleError(xhr);
+                error  : function(err){
+                    APP.handleError(err);
                 }
             });
-        },
-
-        handleError: function(xhr) {
-            switch (xhr.status) {
-                case 403: // no user's data in session (login firstly)
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/login', {trigger: true});
-                    break;
-
-                case 404: // if user is not registered
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/register', {trigger: true});
-                    break;
-
-                case 409: // if user has already activated registration
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/login', {trigger: true});
-                    break;
-
-                default:
-                    break;
-            }
         },
 
         render: function () {
@@ -82,6 +59,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

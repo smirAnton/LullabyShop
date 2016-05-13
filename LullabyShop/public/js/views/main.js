@@ -9,7 +9,8 @@ define([
     'views/home',
     'text!templates/main.html'
 ], function (Backbone, _, UserModel, HeaderView, FooterView, HomeView, mainTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content-holder",
         template: _.template(mainTemplate),
 
@@ -49,6 +50,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

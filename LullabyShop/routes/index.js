@@ -13,10 +13,8 @@ module.exports = function (app) {
     var authRoute       = require('../routes/auth')();
     var blogRoute       = require('../routes/blog')();
     var userRoute       = require('../routes/user')();
-    var adminRoute      = require('../routes/admin')();
 
     app.use('/',                   authRoute);
-    app.use('/admin',              adminRoute);
     app.use('/lullaby/user',       userRoute);
     app.use('/lullaby/blog',       blogRoute);
     app.use('/lullaby/order',      orderRoute);

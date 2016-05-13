@@ -6,7 +6,8 @@ define([
     'models/user',
     'text!templates/recovery/recoveryChoice.html'
 ], function (Backbone, _, UserModel, recoveryChoiceTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(recoveryChoiceTemplate),
 
@@ -20,53 +21,21 @@ define([
         },
 
         recoveryByMobile: function (e) {
-            var self = this;
+            var navigateUrl = '#lullaby/recovery/mobile';
+            var ajaxUrl     = '/recovery/mobile';
 
-            e.stopPropagation();
             e.preventDefault();
 
-            $.ajax({
-                url    : '/recovery/mobile',
-                type   :'GET',
-                success: function(response){
-                    alert(response.success);
-                    Backbone.history.navigate('#lullaby/recovery/mobile', {trigger: true})
-                },
-                error  : function(xhr){
-                    self.handleError(xhr);
-                }
-            });
+            sendAjax(ajaxUrl, navigateUrl);
         },
 
         recoveryByMail: function (e) {
-            var self = this;
+            var navigateUrl = '#lullaby/shop';
+            var ajaxUrl     = '/recovery/mail';
 
-            e.stopPropagation();
             e.preventDefault();
 
-            $.ajax({
-                url    : '/recovery/mail',
-                type   :'GET',
-                success: function(response){
-                    alert(response.success);
-                    Backbone.history.navigate('#lullaby/shop', {trigger: true})
-                },
-                error  : function(xhr){
-                    self.handleError(xhr);
-                }
-            });
-        },
-
-        handleError: function(xhr) {
-            switch (xhr.status) {
-                case 404: // email is not provided
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/recovery', {trigger: true});
-                    break;
-
-                default:
-                    break;
-            }
+            sendAjax(ajaxUrl, navigateUrl);
         },
 
         render: function () {
@@ -76,5 +45,17 @@ define([
         }
     });
 
-    return View;
+    function sendAjax(ajaxUrl, navigateUrl) {
+        $.ajax({
+            url    : ajaxUrl,
+            type   :'GET',
+            success: function(response){
+                APP.notification(response.success);
+                APP.navigate(navigateUrl);
+            },
+            error  : function(err){
+                APP.handleError(err);
+            }
+        });
+    }
 });

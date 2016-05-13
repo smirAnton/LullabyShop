@@ -6,7 +6,8 @@ define([
     'collections/users',
     'text!templates/admin/user/userList.html'
 ], function (Backbone, _, UserCollection, userListTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(userListTemplate),
 
@@ -16,8 +17,8 @@ define([
 
             users = new UserCollection();
             users.fetch({
-                success: function (users) {
-                    self.collection = users;
+                success: function (collection) {
+                    self.collection = collection.toJSON();
                     self.render();
                 },
                 error: function (err, xhr) {
@@ -34,7 +35,6 @@ define([
         onChangeBanStatus: function(e) {
             var self = this;
             var userId;
-            var user;
 
             e.stopPropagation();
             e.preventDefault();
@@ -46,9 +46,8 @@ define([
             }
 
             $.ajax({
-                url    : '/admin/ban',
-                type   :'POST',
-                data   : {userId: userId},
+                url    : '/lullaby/user/ban/' + userId,
+                type   :'GET',
                 success: function(response, xhr) {
                     alert(response.success);
                     self.initialize()
@@ -110,11 +109,9 @@ define([
         },
 
         render: function () {
-            this.$el.html(this.template({users: this.collection.toJSON()}));
+            this.$el.html(this.template({users: this.collection}));
 
             return this;
         }
     });
-
-    return View;
 });

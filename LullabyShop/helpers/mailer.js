@@ -6,24 +6,23 @@ var util         = require('util');
 var env          = process.env;
 
 module.exports = function () {
-
     var sender = nodemailer.createTransport({
-        service  : env.SERVICE,
-        auth : {
-            user : env.FROM,
-            pass : env.PASSWORD
+        service : env.SERVICE,
+        auth: {
+            user: env.USER,
+            pass: env.PASSWORD
         }
     });
 
     function sendContactsMessage(userData, callback) {
+        var date    = new Date();
+        var subject = 'Customer\'s message from lullaby store (dated from '
+            + date.toDateString() + ',  at: ' + date.toTimeString() + ')';
+
         var mailOptions = {
-            from    : env.FROM,
-            to      : env.TO,
-            subject : util.format('Customer\'s message from lullaby store (dated from %s)',
-                            new Date()
-                                .toISOString()
-                                .replace(/T/, ' ')
-                                .replace(/\..+/, '')),
+            from    : env.USER,
+            to      : env.USER,
+            subject : subject,
 
             text    : util.format('From: %s\r\nPhone: %s\r\nEmail: %s\r\nMessage: %s',
                             userData.name,

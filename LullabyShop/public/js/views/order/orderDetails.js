@@ -13,7 +13,7 @@ define([
         template: _.template(orderDetailsTemplate),
 
         initialize: function () {
-            this.basket = JSON.parse(localStorage.getItem('basket')) || [];
+            this.basket = APP.session.basket;
 
             this.render();
         },
@@ -35,7 +35,7 @@ define([
             e.preventDefault();
 
             productId = $(e.currentTarget).data("id");
-            basket    = JSON.parse(localStorage.getItem('basket'));
+            basket = APP.session.basket;
 
             // define remove product index in basket's array
             removeIndex = basket
@@ -45,17 +45,16 @@ define([
             $.ajax({
                 url    : '/lullaby/basket/remove',
                 type   : 'POST',
-                data   : {removeIndex: removeIndex},
+                data   : {removeIndex: removeIndex, products: basket},
                 success: function(response) {
                     basket.splice(removeIndex, 1);
 
-                    localStorage.setItem('basket', JSON.stringify(basket));
-
-                    self.basket = basket;
+                    APP.session.basket = basket;
+                    self.basket        = basket;
                     self.render();
                 },
-                error  : function(err, xhr) {
-                    self.handleError(xhr);
+                error  : function(err) {
+                    APP.handleError(err);
                 }
             });
         },

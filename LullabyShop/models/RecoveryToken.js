@@ -1,18 +1,19 @@
 'use strict';
 
-var TABLE    = require('../constants/dbTables');
-var mongoose = require('mongoose');
+var mongoose  = require('mongoose');
+
+var tableName = require('../constants/dbTables');
 
 module.exports = (function () {
     var Schema = mongoose.Schema;
 
-    var ForgetTokenSchema = new Schema({
-            userEmail   : {type: String, unique: false, required: true},
-            emailSecret : {type: String, unique: true,  required: true},
-            phoneSecret : {type: Number, unique: false, required: true}
+    var recoveryTokenSchema = new Schema({
+            email      : {type: String, required: true},
+            phoneSecret: {type: String, required: true, unique: true},
+            emailSecret: {type: String, required: true, unique: true}
 
-        }, {collection: TABLE.RECOVERY_TOKENS}
+        }, {collection: tableName.RECOVERY_TOKENS}
     );
 
-    return mongoose.model('forgetToken', ForgetTokenSchema);
+    return mongoose.model('recoveryToken', recoveryTokenSchema);
 }());

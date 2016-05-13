@@ -4,14 +4,13 @@ var ActivateTokenModel = require('../models/ActivateToken');
 var RecoveryTokenModel = require('../models/RecoveryToken');
 var UserModel          = require('../models/User');
 
-var validator          = require('validator');
+var validator          = require('../helpers/validator')();
 var async              = require('async');
 
 var cookieLifeTime     = require('../constants/magicNumbers');
 var generator          = require('../helpers/generator')();
 var twilio             = require('../helpers/twilio')();
 var logger             = require('../helpers/logger')(module);
-var regExp             = require('../constants/regExp');
 var mailer             = require('../helpers/mailer')();
 var coder              = require('../helpers/coder')();
 
@@ -40,81 +39,66 @@ var AuthenticationHandler = function () {
         res.status(200).send(session);
     };
 
-    function findUserByEmail(userEmail, callback) {
-        UserModel
-            .findOne({email: userEmail})
+    // authentication
+    function findModelByEmail(Model, email, callback) {
+        Model
+            .findOne({email: email})
             .lean()
-            .exec(function (err, user) {
+            .exec(function (err, model) {
                 if (err) {
 
                     return callback(err);
                 }
 
-                return callback(null, user);
+                return callback(null, model);
             })
     }
 
     this.login = function (req, res, next) {
-        var body = req.body || {};
-        var encryptPassword;
-        var userPassword;
-        var rememberMe;
-        var userEmail;
+        var body       = req.body || {};
+        var rememberMe = body.rememberMe;
+        var password   = body.password;
+        var email      = body.email;
 
-        if (body.email && validator.isEmail(body.email)) {
-            userEmail = body.email;
+        if (!validator.isEmail(email) || !validator.isPassword(password)) {
+
+            return res.status(400).send({fail: 'Please, provide email and password'});
         }
 
-        if (body.password && (typeof body.password === 'string') && body.password.trim().length) {
-            userPassword = body.password;
-        }
-
-        if (body.rememberMe) {
-            rememberMe = body.rememberMe;
-        }
-
-        // validate user's incoming data
-        if (!userEmail || !userPassword) {
-
-            return res.status(422).send({fail: 'Nope...Please, provide email and password'});
-        }
-
-        findUserByEmail(userEmail, function (err, user) {
+        findModelByEmail(UserModel, email, function (err, user) {
             if (err) {
 
                 return next(err);
             }
-            // check if email already registered
+
             if (!user) {
 
-                return res.status(404).send({fail: 'Email is not registered. Please, register'});
+                return res.status(402).send({fail: 'Email is not registered. Please, register'});
             }
-            // check if user is banned
+
+            if (user.password !== coder.encryptPassword(password)) {
+
+                return res.status(400).send({fail: 'Wrong password. Please try again'});
+            }
+
             if (user.isBanned) {
 
-                return res.status(403).send({fail: 'Sorry, you have been banning'});
+                return res.status(403).send({fail: 'Sorry, you are banned'});
             }
-            // check if user activate registration
-            ActivateTokenModel
-                .findOne({userEmail: userEmail}, {__v: 0})
-                .lean()
-                .exec(function (err, token) {
+
+            findModelByEmail (ActivateTokenModel, email, function (err, token) {
                     if (err) {
 
                         return next(err);
                     }
-                    // check if confirmed registration
-                    if (token) {
-                        // add to session userEmail
-                        req.session.userEmail = userEmail;
 
-                        return res.status(401).send({fail: 'Account is not activated. Please, activate'});
+                    if (token) {
+                        req.session.email = email;
+
+                        return res.status(406).send({fail: 'Account is not activated. Please, activate'});
                     }
 
-                    // encrypt profile inserted password
-                    encryptPassword = coder.encryptPassword(userPassword);
-
-                    if (user.password !== encryptPassword) {
+                    if (user.password !== coder.encryptPassword(password)) {
 
                         return res.status(400).send({fail: 'Wrong password...Please, try again'});
                     }
@@ -122,79 +106,51 @@ var AuthenticationHandler = function () {
                     if (rememberMe) {
                         req.session.cookie.maxAge = cookieLifeTime.ONE_MONTH;
                         req.session.rememberMe = true;
-
                     } else {
                         req.session.cookie.expires = false;
-
                     }
-
-                    if (user.isAdmin) {
-                        req.session.isAdmin = true;
-                    }
-
-                    delete user.password;
-
                     // add to session user data
                     req.session.loggedIn  = true;
-                    req.session.userName  = user.firstname;
-                    req.session.userEmail = user.email;
-                    req.session.userPhone = user.phone;
+                    req.session.firstname = user.firstname;
+                    req.session.isAdmin   = user.isAdmin;
                     req.session.userId    = user._id;
+                    req.session.email     = user.email;
+                    req.session.phone     = user.phone;
+
+                    delete user.password;
 
                     return res.status(200).send(user);
                 })
         });
-
     };
 
     this.register = function (req, res, next) {
-        var body = req.body || {};
-        var confirmedPassword;
-        var firstname;
-        var password;
-        var surname;
-        var gender;
-        var phone;
-        var email;
+        var body              = req.body || {};
+        var confirmedPassword = body.confirmedPassword;
+        var firstname         = body.firstname;
+        var password          = body.password;
+        var surname           = body.surname;
+        var gender            = body.gender;
+        var phone             = body.phone;
+        var email             = body.email;
 
-        if (body.email && (typeof body.email === 'string') && validator.isEmail(body.email)) {
-            email = body.email;
+        if (!validator.isPassword(confirmedPassword) ||
+            !validator.isFirstname(firstname)        ||
+            !validator.isPassword(password)          ||
+            !validator.isSurname(surname)            ||
+            !validator.isGender(gender)              ||
+            !validator.isPhone(phone)                ||
+            !validator.isEmail(email)) {
+
+            return res.status(400).send({fail: 'Please provide correct personal data'});
         }
 
-        if (body.password && (typeof body.password === 'string') && body.password.trim().length) {
-            password = body.password;
+        if (password !== confirmedPassword) {
+
+            return res.status(400).send({fail: 'Passwords are not matched. Please, try again'});
         }
 
-        if (body.confirmedPassword && (typeof body.confirmedPassword === 'string') && body.confirmedPassword.trim().length) {
-            confirmedPassword = body.confirmedPassword;
-        }
-
-        if (body.phone && body.phone.match(regExp.PHONE)) {
-            phone = body.phone;
-        }
-
-        if (body.firstname && (typeof body.firstname === 'string') && body.firstname.trim().length) {
-            firstname = body.firstname;
-        }
-
-        if (body.surname && (typeof body.firstname === 'string') && body.surname.trim().length) {
-            surname = body.surname;
-        }
-
-        if (body.gender) {
-            gender = body.gender;
-        }
-
-        if (!email || !password || !confirmedPassword || !gender || !surname || !firstname || !phone) {
-
-            return res.status(422).send({fail: 'Please provide correct data'});
-        }
-
-        findUserByEmail(email, function (err, user) {
-            var encryptPassword;
-            var activationToken;
-            var newUser;
-
+        findModelByEmail(UserModel, email, function (err, user) {
             if (err) {
 
                 return next(err);
@@ -202,43 +158,31 @@ var AuthenticationHandler = function () {
             // check if email is already registered
             if (user) {
 
-                return res.status(409).send({fail: 'This email is already registered. Please provide another one'});
+                return res.status(400).send({fail: 'This email is already registered. Please provide another one'});
             }
-            // check if passwords are matched
-            if (password !== confirmedPassword) {
 
-                return res.status(400).send({fail: 'Passwords are not matched. Please, try again'});
-            }
-            // encrypt password provided by user to compare with pass in db
-            encryptPassword = coder.encryptPassword(password);
-
-            newUser = new UserModel({
-                firstname: firstname,
-                password : encryptPassword,
-                surname  : surname,
-                gender   : gender,
-                phone    : phone,
-                email    : email
-            });
-
-            activationToken = new ActivateTokenModel({
-                emailSecret: generator.generateEmailSecret(),
-                phoneSecret: generator.generatePhoneSecret(),
-                userEmail  : email
-            });
-
-            // add to session user data
-            req.session.userEmail = email;
-            req.session.userPhone = phone;
+            // add to session user email
+            req.session.email = email;
 
             async.parallel([
                 function (callback) {
-                    newUser.save(function (err, result) {
+                    new UserModel({
+                        firstname: firstname,
+                        password : coder.encryptPassword(password),
+                        surname  : surname,
+                        gender   : gender,
+                        phone    : phone,
+                        email    : email
+                    }).save(function (err, result) {
                         return callback(err, result);
                     });
                 },
                 function (callback) {
-                    activationToken.save(function (err, result) {
+                    new ActivateTokenModel({
+                        emailSecret: generator.generateEmailSecret(),
+                        phoneSecret: generator.generatePhoneSecret(),
+                        email      : email
+                    }).save(function (err, result) {
                         return callback(err, result);
                     });
                 }
@@ -254,33 +198,33 @@ var AuthenticationHandler = function () {
     };
 
     this.logout = function (req, res, next) {
-        var session   = req.session || {};
-        var userEmail = session.userEmail;
-        var userId    = session.userId;
+        var session = req.session || {};
+        var userId  = session.userId;
+        var email   = session.email;
 
-        if (!userId || !userEmail || !validator.isMongoId(userId) || !validator.isEmail(userEmail)) {
+        if (!validator.isId(userId) || !validator.isEmail(email)) {
 
             return res.status(401).send({fail: 'You should login firstly'});
         }
 
         UserModel
-            .update(
-                {email: userEmail},
-                {$set : {lastVisit: new Date()}},
+            .update({email: email}, {$set : {lastVisit: new Date()}},
                 function (err, updatedUser) {
                     if (err) {
 
                         return next(err);
                     }
+
                     req.session.destroy();
                     res.status(200).send({success: 'You have successfully logged out'});
-                });
+                }
+            );
     };
 
     this.activateRegistrationByEmail = function (req, res, next) {
         var secret = req.params.secret;
 
-        if (!secret || !(typeof secret === 'string') || !secret.trim().length) {
+        if (!validator.isEmailSecret(secret)) {
 
             return res.status(400).send({fail: 'Wrong secret. Please, click on link in email'});
         }
@@ -296,7 +240,7 @@ var AuthenticationHandler = function () {
 
                 if (!token) {
 
-                    return res.status(404).send({fail: 'Account has already activated'});
+                    return res.status(403).send({fail: 'Account already activated'});
                 }
 
                 ActivateTokenModel
@@ -312,27 +256,36 @@ var AuthenticationHandler = function () {
     };
 
     this.activateRegistrationByMobile = function (req, res, next) {
-        var body   = req.body || {};
-        var secret = body.secret;
+        var session = req.session || {};
+        var body    = req.body    || {};
+        var secret  = body.secret;
+        var email   = session.email;
 
-        if (!secret || !(typeof secret === 'string') || !secret.trim().length) {
+        if (!validator.isPhoneSecret(secret)) {
 
-            return res.status(422).send({fail: 'Please, provide secret number'});
+            return res.status(400).send({fail: 'Please, provide secret number from sms'});
         }
 
-        ActivateTokenModel
-            .findOne({phoneSecret: secret})
-            .lean()
-            .exec(function (err, token) {
-                if (err) {
+        if (!validator.isEmail(email)) {
 
-                    return next(err);
-                }
+            return res.status(401).send({fail: 'Please, login first'});
+        }
 
-                if (!token) {
+        findModelByEmail(ActivateTokenModel, email, function (err, token) {
+            if (err) {
 
-                    return res.status(404).send({fail: 'Wrong secret number. Please, provide number in sms'});
-                }
+                return next(err);
+            }
+
+            if (!token) {
+
+                return res.status(403).send({fail: 'Account already activated'});
+            }
+
+            if (token.phoneSecret !== secret) {
+
+                return res.status(400).send({fail: 'Wrong secret. Please check sms and provide number'});
+            }
 
                 ActivateTokenModel
                     .remove({phoneSecret: secret}, function (err, result) {
@@ -347,19 +300,15 @@ var AuthenticationHandler = function () {
     };
 
     this.provideActivationSecretToMobile = function (req, res, next) {
-        var session   = req.session || {};
-        var userEmail = session.userEmail;
-        var userPhone = session.userPhone;
+        var session = req.session || {};
+        var email   = session.email;
 
-        if (!userEmail || !validator.isEmail(userEmail) || !userPhone || !userPhone.match(regExp.MOBILE_VALID)) {
+        if (!validator.isEmail(email)) {
 
             return res.status(403).send({fail: 'Please, login firstly'});
         }
-        // check user in db
-        UserModel
-            .findOne({email: userEmail}, {__v: 0})
-            .lean()
-            .exec(function (err, user) {
+
+        findModelByEmail(UserModel, email, function (err, user) {
                 if (err) {
 
                     return next(err);
@@ -367,13 +316,10 @@ var AuthenticationHandler = function () {
 
                 if (!user) {
 
-                    return res.status(404).send({fail: 'Please, register firstly'});
+                    return res.status(402).send({fail: 'Please, register firstly'});
                 }
                 // check activation token
-                ActivateTokenModel
-                    .findOne({userEmail: userEmail}, {__v: 0})
-                    .lean()
-                    .exec(function (err, token) {
+                findModelByEmail(ActivateTokenModel, email, function (err, token) {
                         if (err) {
 
                             return next(err);
@@ -381,7 +327,7 @@ var AuthenticationHandler = function () {
 
                         if (!token) {
 
-                            return res.status(409).send({fail: 'You have already activated registration'});
+                            return res.status(403).send({fail: 'You already activated registration'});
                         }
 
                         twilio.sendSms(user.phone, token.phoneSecret, function (err, result) {
@@ -390,189 +336,173 @@ var AuthenticationHandler = function () {
                                 return next(err)
                             }
 
-                            res.status(200).send({success: 'Please check your mobile'})
+                            res.status(200).send({success: 'Please, check your mobile'})
                         });
                     });
             });
     };
 
     this.provideActivationSecretToEmail = function (req, res, next) {
-        var session   = req.session || {};
-        var userEmail = session.userEmail;
+        var session = req.session || {};
+        var email   = session.email;
 
-        if (!userEmail || !validator.isEmail(userEmail)) {
+        if (!validator.isEmail(email)) {
 
-            return res.status(403).send({fail: 'Please, login firstly'});
+            return res.status(401).send({fail: 'Please, login firstly'});
         }
 
-        // check user in db
-        UserModel
-            .findOne({email: userEmail}, {__v: 0})
-            .lean()
-            .exec(function (err, user) {
+        findModelByEmail(UserModel, email, function (err, user) {
+            if (err) {
+
+                return next(err);
+            }
+
+            if (!user) {
+
+                return res.status(402).send({fail: 'Please, register firstly'});
+            }
+
+            findModelByEmail(ActivateTokenModel, email, function (err, token) {
                 if (err) {
-
-                    return next(err);
-                }
-
-                if (!user) {
-
-                    return res.status(404).send({fail: 'Please, register firstly'});
-                }
-                // check activation token
-                ActivateTokenModel
-                    .findOne({userEmail: userEmail}, {__v: 0})
-                    .lean()
-                    .exec(function (err, token) {
-                        if (err) {
 
                             return next(err);
                         }
 
-                        if (!token) {
+                if (!token) {
 
-                            return res.status(409).send({fail: 'You have already activated registration'});
-                        }
+                    return res.status(403).send({fail: 'You already activated registration'});
+                }
 
-                        mailer.sendActivationLink(token.emailSecret, userEmail, function (err, result) {
-                            if (err) {
+                mailer.sendActivationLink(token.emailSecret, email, function (err, result) {
+                    if (err) {
 
-                                return next(err)
-                            }
+                        return next(err)
+                    }
 
-                            res.status(200).send({success: 'Please check your email'})
-                        });
-                    });
+                    res.status(200).send({success: 'Please, check your email'})
+                });
             });
+        });
     };
 
     // Recovery
     this.useRecovery = function (req, res, next) {
         var body  = req.body;
         var email = body.email;
-        var recoveryToken;
 
-        if (!email || !validator.isEmail(body.email)) {
+        if (!validator.isEmail(email)) {
 
-            return res.status(422).send({fail: 'Please, provide email'});
+            return res.status(400).send({fail: 'It is not email, please try again'});
         }
 
-        UserModel
-            .findOne({email: email})
-            .lean()
-            .exec(function (err, user) {
+        findModelByEmail(UserModel, email, function (err, user) {
+            if (err) {
+
+                next(err);
+            }
+
+            if (!user) {
+
+                return res.status(402).send({fail: 'Email not registered'});
+            }
+
+            new RecoveryTokenModel({
+                phoneSecret: generator.generatePhoneSecret(),
+                emailSecret: generator.generateEmailSecret(),
+                email      : email
+            }).save(function (err, result) {
                 if (err) {
 
-                    next(err);
+                    return next(err);
                 }
-                if (!user) {
+                // add to session user's email
+                req.session.email = email;
 
-                    return res.status(404).send({fail: 'Email not registered'});
-                }
-
-                recoveryToken = new RecoveryTokenModel({
-                    userEmail  : email,
-                    emailSecret: generator.generateEmailSecret(),
-                    phoneSecret: generator.generatePhoneSecret()
-                });
-
-                recoveryToken.save(function (err, result) {
-                    if (err) {
-
-                        return next(err);
-                    }
-
-                    // add to session user's email
-                    req.session.userEmail = email;
-
-                    res.status(200).send({success: true});
-                });
-
+                res.status(200).send({success: 'Please, make choice'});
             });
-
+        });
     };
 
     this.provideRecoverySecretToMobile = function (req, res, next) {
-        var session   = req.session || {};
-        var userEmail = session.userEmail;
+        var session = req.session || {};
+        var email   = session.email;
 
-        if (!userEmail || !validator.isEmail(userEmail)) {
+        if (!validator.isEmail(email)) {
 
-            return res.status(404).send({fail: 'Please provide email'});
+            return res.status(401).send({fail: 'Please, provide your email'});
         }
 
-        async.waterfall([
-            function (callback) {
-                UserModel
-                    .findOne({email: userEmail})
-                    .lean()
-                    .exec(function (err, user) {
-                        return callback(err, user);
-                    })
-            },
-            function (user, callback) {
-                RecoveryTokenModel
-                    .findOne({userEmail: userEmail})
-                    .lean()
-                    .exec(function (err, token) {
-                        return callback(err, user, token)
-                    })
-            },
-            function (user, token, callback) {
-                twilio.sendSms(user.phone, token.phoneSecret, function (err, result) {
-                    callback(null);
-                });
-            }
-        ], function (err) {
+        findModelByEmail(UserModel, email, function(err, user) {
             if (err) {
 
                 return next(err);
             }
 
-            res.status(200).send({success: 'Please check your mobile'});
-        })
+            if (!user) {
+
+                return res.status(403).send({fail: 'Account is not exist'});
+            }
+
+            findModelByEmail(RecoveryTokenModel, email, function(err, token) {
+                if (err) {
+
+                    return next(err);
+                }
+
+                if (!token) {
+
+                    return res.status(401).send({fail: 'Please, use forgot your password link'})
+                }
+
+                twilio.sendSms(user.phone, token.phoneSecret, function (err, result) {
+                    if (err) {
+
+                        return next(err);
+                    }
+
+                    res.status(200).send({success: 'Please, check your phone'})
+                });
+            });
+        });
     };
 
     this.provideRecoverySecretToEmail = function (req, res, next) {
-        var session   = req.session || {};
-        var userEmail = session.userEmail;
+        var session = req.session || {};
+        var email   = session.email;
 
-        if (!userEmail || !validator.isEmail(userEmail)) {
+        if (!validator.isEmail(email)) {
 
-            return res.status(404).send({fail: 'Please provide email'});
+            return res.status(401).send({fail: 'Please, provide email'});
         }
 
-        async.waterfall([
-            function (callback) {
-                RecoveryTokenModel
-                    .findOne({userEmail: userEmail})
-                    .lean()
-                    .exec(function (err, token) {
-                        return callback(err, token)
-                    })
-            },
-            function (token, callback) {
-                mailer.sendRecoveryLink(token.emailSecret, userEmail, function (err, result) {
-                    callback(err, result);
-                });
-            }
-        ], function (err, result) {
+        findModelByEmail(RecoveryTokenModel, email, function(err, token) {
             if (err) {
 
-                return callback(err);
+                return next(err);
             }
 
-            res.status(200).send({success: 'Please check your mail'});
-        });
+            if (!token) {
 
+                return res.status(401).send({fail: 'Please, use forgot ypur password link'})
+            }
+
+            mailer.sendRecoveryLink(token.emailSecret, email, function (err, result) {
+                if (err) {
+
+                    return next(err);
+                }
+
+                res.status(200).send({success: 'Please, check your mail'});
+            });
+        });
     };
 
     this.recoveryByMail = function (req, res, next) {
         var secret = req.params.secret;
 
-        if (!secret || !(typeof secret === 'string') || !secret.trim().length) {
+        if (!validator.isEmailSecret(secret)) {
 
-            return res.status(400).send({fail: 'Wrong link. Please click on link in email'});
+            return res.status(403).send({fail: 'Wrong link. Please click on link in email'});
         }
 
         RecoveryTokenModel
@@ -589,87 +519,97 @@ var AuthenticationHandler = function () {
                     return res.status(403).send({fail: "You has already used this link"});
                 }
 
-                RecoveryTokenModel
-                    .remove({emailSecret: secret}, function (err, result) {
-                    if (err) {
-
-                        return next(err);
-                    }
-
-                    res.status(200).send({success: 'Please set new password'});
-                });
-            });
-    };
-
-    this.recoveryByMobile = function (req, res, next) {
-        var body         = req.body || {};
-        var secretNumber = body.secretNumber;
-
-        if (!secretNumber) {
-
-            return res.status(422).send({fail: "Please provide secret number"});
-        }
-
-        RecoveryTokenModel
-            .findOne({phoneSecret: secretNumber})
-            .lean()
-            .exec(function (err, token) {
-                if (err) {
-
-                    return next(err);
-                }
-
-                if (!token) {
-
-                    return res.status(403).send({fail: "Wrong secret number. Please provide from sms"});
-                }
-
                 res.status(200).send({success: 'Please set new password'});
             });
     };
 
+    this.recoveryByMobile = function (req, res, next) {
+        var session = req.session || {};
+        var body    = req.body    || {};
+        var secret = body.secret;
+        var email  = session.email;
+
+        if (!validator.isPhoneSecret(secret)) {
+
+            return res.status(400).send({fail: 'Please, provide secret number from sms'});
+        }
+
+        if (!validator.isEmail(email)) {
+
+            return res.status(401).send({fail: 'Please, use forgot your password link'});
+        }
+
+        findModelByEmail(RecoveryTokenModel, email, function(err, token) {
+            if (err) {
+
+                return next(err);
+            }
+
+            if (!token) {
+
+                return res.status(401).send({fail: 'Please, use recovery'});
+            }
+
+            if (token.phoneSecret !== secret) {
+
+                return res.status(400).send({fail: 'Wrong secret number. Please, try again'});
+            }
+
+            res.status(200).send({success: 'Please, set new password'});
+        });
+    };
+
+
     this.setNewPassword = function (req, res, next) {
         var session   = req.session || {};
-        var body      = req.body || {};
+        var body      = req.body    || {};
         var password  = body.password;
-        var userEmail = session.userEmail;
-        var newPassword;
+        var email     = session.email;
 
-        if (!userEmail || !validator.isEmail(userEmail)) {
+        if (!validator.isEmail(email)) {
 
-            return res.status(403).send({fail: 'Please provide email firstly'});
+            return res.status(405).send({fail: 'Please, use recovery'});
         }
 
-        if (!password) {
+        findModelByEmail(RecoveryTokenModel, email, function(err, token) {
+            if (err) {
 
-            return res.status(422).send({fail: 'Please provide new password'});
-        }
+                return next(err);
+            }
 
-        newPassword = coder.encryptPassword(password);
+            if (!token) {
 
-        async.parallel([
+                return res.status(401).send({fail: 'Please, use recovery'});
+            }
+
+            if (!validator.isPassword(password)) {
+
+                return res.status(400).send({fail: 'Please, provide new password'});
+            }
+
+            async.parallel([
                 function (callback) {
                     RecoveryTokenModel
-                        .remove({userEmail: userEmail}, function (err, result) {
+                        .remove({email: email}, function (err, result) {
                             return callback(err);
                         });
                 },
                 function (callback) {
                     UserModel
-                        .update({email: userEmail}, {$set: {password: newPassword}})
+                        .update({email: email}, {$set: {password: coder.encryptPassword(password)}})
                         .exec(function (err, result) {
                             return callback(err, result);
                         });
-                }],
-            function (err, result) {
+                }
+            ], function (err, result) {
                 if (err) {
 
                     return next(err);
                 }
 
-                return res.status(200).send({success: 'New password successfully updated'});
+                return res.status(200).send({success: 'You can use new password'});
             });
-
+        });
     }
 };
 

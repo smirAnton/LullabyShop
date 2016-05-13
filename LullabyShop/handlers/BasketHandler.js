@@ -5,13 +5,13 @@ var validator = require('../helpers/validator')();
 var BasketHandler = function () {
 
     this.addProductToBasket = function (req, res, next) {
-        var session   = req.session || {};
-        var body      = req.body    || {};
-        var product   = body.product;
+        var session = req.session || {};
+        var body    = req.body    || {};
+        var product = body.product;
 
         if (!product) {
 
-            return res.status(422).send({fail: 'Unknown product'});
+            return res.status(400).send({fail: 'Unknown product'});
         }
 
         session.basket = session.basket || [];
@@ -25,7 +25,6 @@ var BasketHandler = function () {
         var body        = req.body    || {};
         var basket      = session.basket;
         var removeIndex = body.removeIndex;
-
 
         if (!validator.isEmptyBasket(basket)) {
 

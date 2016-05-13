@@ -1,3 +1,7 @@
+<script>
+    $( "#birthday" ).datepicker();
+</script>
+
 <div class="container">
     <h1 class="page-header">Your Profile</h1>
     <div class="row">
@@ -44,7 +48,7 @@
                 <div class="form-group">
                     <label class="col-lg-3 control-label">Birthday:</label>
                     <div class="col-lg-8">
-                        <input class="form-control" id="birthday" type="date" value="<%= new Date(user.birthday).toDateString()%>">
+                        <input class="form-control" id="birthday" value="<%= birthday %>">
                     </div>
                 </div>
                 <div class="form-group">

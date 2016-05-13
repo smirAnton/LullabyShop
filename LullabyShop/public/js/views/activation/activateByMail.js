@@ -3,41 +3,20 @@
 define([
     'backbone'
 ], function (Backbone) {
-    var View = Backbone.View.extend({
 
+    return Backbone.View.extend({
         initialize: function (secret) {
-            var self = this;
-
             $.ajax({
                 url    : '/activate/mail/' + secret,
                 type   : 'GET',
                 success: function (response) {
-                    alert(response.success);
-                    Backbone.history.navigate('#lullaby/login', {trigger: true});
+                    APP.notification(response.success);
+                    APP.navigate('#lullaby/login');
                 },
-                error: function (xhr) {
-                   self.handleError(xhr);
+                error  : function (err) {
+                   APP.handleError(err);
                 }
             });
-        },
-
-        handleError: function(xhr) {
-            switch (xhr.status) {
-                case 400: // if wrong link (user use custom link for instance)
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/shop', {trigger: true});
-                    break;
-
-                case 404: // if account has already activated
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/shop', {trigger: true});
-                    break;
-
-                default:
-                    break;
-            }
         }
     });
-
-    return View;
 });

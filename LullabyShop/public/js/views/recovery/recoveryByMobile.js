@@ -5,7 +5,8 @@ define([
     'underscore',
     'text!templates/recovery/recoveryByMobile.html'
 ], function (Backbone, _, recoveryTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(recoveryTemplate),
 
@@ -14,54 +15,34 @@ define([
         },
 
         events: {
-            'click #provideSecretNumberBtn': 'onProvideSecretNumber'
+            'click #provideSecretBtn': 'onProvideSecret'
         },
 
-        onProvideSecretNumber : function(e) {
-            var self = this;
-            var secretNumber;
+        onProvideSecret : function(e) {
+            var secret;
 
             e.stopPropagation();
             e.preventDefault();
 
-            secretNumber = this.$el.find('#secretNumber').val();
+            secret = this.$el.find('#secretNumber').val();
 
-            if (!secretNumber) {
+            if (!secret) {
 
-                return alert('Please provide secret number');
+                return alert('Please, provide secret number');
             }
 
             $.ajax({
                 url    : '/recovery/mobile',
                 type   : 'POST',
-                data   : {secretNumber: secretNumber},
+                data   : {secret: secret},
                 success: function (response) {
-                    alert(response.success);
-                    Backbone.history.navigate('#lullaby/recovery/password', {trigger: true});
+                    APP.notification(response.success);
+                    APP.navigate('#lullaby/recovery/password');
                 },
-                error  : function (xhr) {
-                    self.handleError(xhr);
+                error  : function (err) {
+                    APP.handleError(err);
                 }
             });
-        },
-
-        handleError: function(xhr) {
-            var self = this;
-
-            switch (xhr.status) {
-                case 403: // Wrong secret number
-                    alert(xhr.responseJSON.fail);
-                    self.$el.find('#secretNumber').val('');
-                    break;
-
-                case 422: // No secret number
-                    alert(xhr.responseJSON.fail);
-                    self.$el.find('#secretNumber').val('');
-                    break;
-
-                default:
-                    break;
-            }
         },
 
         render: function () {
@@ -70,6 +51,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

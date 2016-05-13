@@ -4,30 +4,36 @@ var APP = APP || {};
 
 require.config({
     paths: {
-        backbone         : './libs/backbone/backbone',
-        backbonePaginator: './libs/backbone.paginator/lib/backbone.paginator',
-        jQuery           : './libs/jquery/dist/jquery',
         underscore       : './libs/underscore/underscore',
         bootstrap        : './libs/bootstrap/dist/js/bootstrap.min',
+        jquery_ui        : './libs/jquery-ui/jquery-ui',
         socketio         : '../socket.io/socket.io',
+        backbone         : './libs/backbone/backbone',
+        jquery           : './libs/jquery/dist/jquery',
+        moment           : './libs/moment/moment',
         text             : './libs/text/text',
-        models           : './models',
-        collections      : './collections',
-        views            : './views',
-        templates        : '../templates',
+
         constants        : './constants/magicNumbers',
-        validator        : './helpers/validator'
+        validator        : './helpers/validator',
+        dater            : './helpers/dater',
+
+        collections      : './collections',
+        templates        : '../templates',
+        models           : './models',
+        views            : './views'
     },
     shim: {
-        'socketio': {
-            exports      : 'io'
-        },
+        bootstrap        : [ 'jquery', 'jquery_ui'],
+        backbone         : ['underscore', 'jquery', 'jquery_ui'],
+        app              : ['backbone'],
+
         underscore: {
             exports      : '_'
         },
-        bootstrap        : ['jQuery'],
-        backbone         : ['underscore', 'jQuery'],
-        app              : ['backbone']
+
+        'socketio': {
+            exports      : 'io'
+        }
     }
 });
 

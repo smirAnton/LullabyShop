@@ -2,10 +2,12 @@
 
 define([
     'backbone',
+    'validator',
     'underscore',
     'text!templates/recovery/useRecovery.html'
-], function (Backbone, _, recoveryFormTemplate) {
-    var View = Backbone.View.extend({
+], function (Backbone, validator, _, recoveryFormTemplate) {
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(recoveryFormTemplate),
 
@@ -18,47 +20,28 @@ define([
         },
 
         onProvideEmail: function (e) {
-            var self = this;
-            var userEmail;
+            var email;
 
             e.stopPropagation();
             e.preventDefault();
 
-            userEmail = this.$el.find('#email').val();
+            email = this.$el.find('#email').val();
+            if (!validator.isEmail(email)) {
 
-            if (!userEmail || !userEmail.trim().length) {
-
-                return alert('Please provide email');
+                return APP.notification('Please, provide email');
             }
 
             $.ajax({
                 url    : '/recovery',
                 type   : 'POST',
-                data   : {email: userEmail},
+                data   : {email: email},
                 success: function (response) {
-                    Backbone.history.navigate('lullaby/recovery/choice', {trigger: true});
+                    APP.navigate('lullaby/recovery/choice');
                 },
-                error  : function (xhr) {
-                    self.handleError(xhr);
+                error  : function (err) {
+                    APP.handleError(err);
                 }
             });
-        },
-
-        handleError: function(xhr) {
-            switch (xhr.status) {
-                case 404: // email is not registered
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/register', {trigger: true});
-                    break;
-
-                case 422: // email is not provided
-                    alert(xhr.responseJSON.fail);
-                    self.$el.find('#email').val('');
-                    break;
-
-                default:
-                    break;
-            }
         },
 
         render: function () {
@@ -67,6 +50,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

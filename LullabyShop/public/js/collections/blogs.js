@@ -5,7 +5,8 @@ define([
     'constants',
     'models/blog'
 ], function(Backbone, constant, BlogModel){
-    var Blogs = Backbone.Collection.extend({
+
+    return Backbone.Collection.extend({
         model  : BlogModel,
         url    : '/lullaby/blog',
         sortKey: 'id',
@@ -115,6 +116,4 @@ define([
             });
         }
     });
-
-    return Blogs;
 });

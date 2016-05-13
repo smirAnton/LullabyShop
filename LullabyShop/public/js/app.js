@@ -14,34 +14,56 @@ define(['backbone', 'underscore', 'router', 'socketio'], function (Backbone, _, 
 
         socket.connect();
 
+        APP.notification = function(notificationText) {
+            $('#notification').empty().append('<p>' + notificationText + '</p>').dialog();
+        };
+
+        APP.navigate = function(url) {
+            Backbone.history.navigate(url, {trigger: true});
+        };
+
+        APP.handleError = function(err) {
+            switch (err.status) {
+                case 401: // Unauthorized
+                    APP.notification(err.responseJSON.fail);
+                    APP.navigate('#lullaby/login');
+                    break;
+
+                case 402: // Not registered
+                    APP.notification(err.responseJSON.fail);
+                    APP.navigate('#lullaby/register');
+                    break;
+
+                case 403: // Forbidden
+                    APP.notification(err.responseJSON.fail);
+                    APP.navigate('#lullaby/shop');
+                    break;
+
+                case 406: // Not activated
+                    APP.notification(err.responseJSON.fail);
+                    APP.navigate('#lullaby/activate/choice');
+                    break;
+
+                default:
+                    APP.notification(err.responseJSON.fail);
+                    break;
+            }
+        };
+
         $.ajax({
-            url : '/session',
-            type:'GET',
-            success: function(sessionData, xhr){
-                console.log(sessionData);
-                localStorage.clear();
+            url    : '/session',
+            type   :'GET',
+            success: function(session){
+                APP.session  = {};
+                APP.loggedIn = session.loggedIn || false;
 
-                if (sessionData.loggedIn) {
-                    localStorage.setItem('loggedIn', true);
-                    localStorage.setItem('userId',   sessionData.userId);
-                }
-
-                if (sessionData.isAdmin) {
-                    localStorage.setItem('isAdmin', true);
-                }
-
-                APP.userFirstname = sessionData.userName || 'Anonymous';
-                localStorage.setItem('userFirstname', APP.userFirstname);
-
-                if (sessionData.basket) {
-                    localStorage.setItem('basket', JSON.stringify(sessionData.basket));
-                    console.log(localStorage.getItem('basket'));
-                } else {
-                    localStorage.setItem('basket', JSON.stringify([]));
-                }
+                APP.session.username = session.username || 'Anonymous';
+                APP.session.isAdmin  = session.isAdmin  || false;
+                APP.session.userId   = session.userId   || null;
+                APP.session.basket   = session.basket   || [];
             },
-            error: function(err, xhr){
-                alert(xhr.statusText);
+            error  : function(err){
+                APP.handleError(err);
             }
         });
     }

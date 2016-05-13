@@ -14,7 +14,6 @@ module.exports = function () {
     router.post('/login',                  security.forAll,   security.login);
     router.post('/register',               security.forAll,   security.register);
 
-
     // registration activation
     router.get ('/activate/mail',          security.forAll,   security.provideActivationSecretToEmail);
     router.get ('/activate/mail/:secret',  security.forAll,   security.activateRegistrationByEmail);

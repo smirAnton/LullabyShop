@@ -1,6 +1,7 @@
 'use strict';
 
 define([
+    'dater',
     'backbone',
     'validator',
     'underscore',
@@ -8,30 +9,36 @@ define([
     'text!templates/profile/profile.html',
     'text!templates/profile/editProfile.html',
     'text!templates/recovery/setNewPassword.html'
-], function (Backbone, validator, _, UserModel, profileTemplate, editProfileTemplate, setNewPasswordTemplate) {
-    var View = Backbone.View.extend({
+], function (dater,
+             Backbone,
+             validator,
+             _,
+             UserModel,
+             profileTemplate,
+             editProfileTemplate,
+             setNewPasswordTemplate) {
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(profileTemplate),
 
         initialize: function () {
-            var self = this;
-            var userId;
-            var user;
+            var self   = this;
+            var userId = localStorage.getItem('userId');
 
-            userId = localStorage.getItem('userId');
             if (!userId) {
 
                 alert('You should login firstly');
                 return Backbone.history.navigate('#lullaby/login', {trigger: true});
             }
 
-            user = new UserModel({_id: userId});
-            user.fetch({
-                success: function (response) {
-                    self.model = response;
-                    self.render();
-                },
-                error  : function (err, xhr) {
+            new UserModel({_id: userId})
+               .fetch({
+                    success: function (response) {
+                        self.model = response;
+                        self.render();
+                    },
+                    error  : function (err, xhr) {
                     self.handleError(xhr);
                 }
             });
@@ -47,7 +54,6 @@ define([
         },
 
         onChangePassword: function (e) {
-            e.stopPropagation();
             e.preventDefault();
 
             this.template = _.template(setNewPasswordTemplate);
@@ -58,7 +64,6 @@ define([
             var self = this;
             var confirmedPassword;
             var password;
-            var user;
 
             e.stopPropagation();
             e.preventDefault();
@@ -68,23 +73,22 @@ define([
 
             if (!password || !confirmedPassword) {
 
-                return alert('Please provide both passwords');
+                return APP.notification('Please provide both passwords');
             }
 
             if (password !== confirmedPassword) {
 
-                return alert('Password not matched');
+                return APP.notification('Password not matched');
             }
 
-            user = self.model;
-            user.save({password: password}, {
+            this.model.save({password: password}, {
                 success: function (response) {
-                    alert(response.attributes.success);
+                    APP.notification(response.attributes.success);
                     self.template = _.template(profileTemplate);
                     self.render();
                 },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
+                error  : function (err, xhr) {
+                    APP.handlerError(xhr);
                 }
             });
         },
@@ -100,7 +104,7 @@ define([
             // get user's photo from form
             userFile = ( $('#userAvatar')[0].files[0] );
 
-            if (validator.validateImage(userFile)) {
+            if (validator.isImage(userFile)) {
                 formData = new FormData();
                 formData.set('attachment', userFile);
 
@@ -115,22 +119,19 @@ define([
                         self.initialize();
                     },
                     error      : function (xhr) {
-                       self.handleError(xhr);
+                       APP.handleError(xhr);
                     }
                 });
             }
         },
 
         onCancel: function (e) {
-            e.stopPropagation();
             e.preventDefault();
 
-            this.template = _.template(profileTemplate);
-            this.render();
+            changeAndRenderTemplate(profileTemplate);
         },
 
         onEdit: function (e) {
-            e.stopPropagation();
             e.preventDefault();
 
             this.template = _.template(editProfileTemplate);
@@ -144,10 +145,10 @@ define([
             var birthday;
             var surname;
             var street;
+            var userId;
             var email;
             var phone;
             var city;
-            var user;
 
             e.stopPropagation();
             e.preventDefault();
@@ -164,12 +165,12 @@ define([
 
                 return alert('Nope...Please, provide email');
             }
-
             if (!validator.validatePhone(phone)) {
 
                 return alert('Nope...Please, provide phone number');
             }
 
+            // grab user's updated data
             userData = {
                 firstname: firstname,
                 surname  : surname,
@@ -179,59 +180,39 @@ define([
                 city     : city
             };
 
-            if (validator.validateBirthday(birthday)) {
+            userId = this.model.attributes._id;
 
+            if (validator.isBirthday(birthday)) {
                 userData.birthday = birthday;
             }
 
-
-            user = self.model;
-            user.save(userData, {
-                success: function (response) {
-                    self.template = _.template(profileTemplate);
-                    self.render();
-                },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
-                }
+            new UserModel({_id: userId})
+                .save(userData, {
+                    success: function (response, xhr) {
+                        self.template = _.template(profileTemplate);
+                        self.render();
+                    },
+                    error  : function (err, xhr) {
+                        APP.handlerError(xhr);
+                    }
             });
         },
 
-        handleError: function (xhr) {
-            switch (xhr.status) {
-                case 400: // bad request
-                    alert(xhr.responseJSON.fail);
-                    break;
-
-                case 401: // user not authorized
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/login', {trigger: true});
-                    break;
-
-                case 403: // can not delete yourself (account)
-                    alert(xhr.responseJSON.fail);
-                    break;
-
-                case 404: // not found
-                    alert(xhr.responseJSON.fail);
-                    Backbone.history.navigate('#lullaby/shop', {trigger: true});
-                    break;
-
-                case 422: // wrong incoming data
-                    alert(xhr.responseJSON.fail);
-                    break;
-
-                default:
-                    break;
-            }
-        },
-
         render: function () {
-            this.$el.html(this.template({user: this.model.attributes}));
+            var userData     = this.model.attributes;
+            var userBirthday = dater.formatDate(userData.birthday);
+
+            this.$el.html(this.template({
+                user    : userData,
+                birthday: userBirthday
+            }));
 
             return this;
         }
     });
 
-    return View;
+    function changeAndRenderTemplate(template) {
+        this.template = _.template(template);
+        this.render();
+    }
 });
