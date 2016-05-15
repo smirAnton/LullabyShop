@@ -32,7 +32,6 @@ define([
                 success: function(response){
                     if (APP.mainView) {
                         APP.mainView.undelegateEvents();
-
                         delete APP.mainView;
                     }
 

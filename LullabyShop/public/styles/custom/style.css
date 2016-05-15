@@ -1,3 +1,14 @@
+#notification {
+    position: fixed;
+    left: -20%;
+    top: 25%;
+    width: 20%;
+    height: 30px;
+    opacity: 0;
+    z-index: 101;
+    background-color: #FF6978
+}
+
 h4, h5, h6,
 h1, h2, h3 {
     margin-top: 0;
@@ -1138,25 +1149,25 @@ i.ars {
 i.facebok {
     width: 35px;
     height: 35px;
-    background: url(../images/support/img-sprite.png) no-repeat -8px -10px;
+    background: url(../../images/support/img-sprite.png) no-repeat -8px -10px;
     float: left;
     vertical-align: middle;
 }
 
 i.facebok:hover {
-    background: url(../images/support/img-sprite.png) no-repeat -8px -46px;
+    background: url(../../images/support/img-sprite.png) no-repeat -8px -46px;
 }
 
 i.twiter {
     width: 35px;
     height: 35px;
-    background: url(../images/support/img-sprite.png) no-repeat -48px -12px;
+    background: url(../../images/support/img-sprite.png) no-repeat -48px -12px;
     float: left;
     vertical-align: middle;
 }
 
 i.twiter:hover {
-    background: url(../images/support/img-sprite.png) no-repeat -48px -48px;
+    background: url(../../images/support/img-sprite.png) no-repeat -48px -48px;
 }
 
 .social-ic ul {

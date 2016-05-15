@@ -1,18 +1,8 @@
-<%
-    var amountOfProducts = 0;
-    var totalSum         = 0;
-
-    if (basket.length) {
-        _.each(basket, function(product) {
-             console.log(product);
-             totalSum += product.price;
-             amountOfProducts += 1;
-        });
-    }
-%>
 <div class="cart box_1">
     <a href="#lullaby/checkout">
-        <h3><span class="simpleCart_total"><%= totalSum %> UAH </span>(<span id="simpleCart_quantity" class="simpleCart_quantity"><%= amountOfProducts %></span> items)
+        <h3>
+            <span class="simpleCart_total"><%= totalSum %> UAH </span>(
+            <span id="simpleCart_quantity" class="simpleCart_quantity"><%= count %></span> items)
             <img src="../../images/support/bag.png" alt="">
         </h3>
     </a>

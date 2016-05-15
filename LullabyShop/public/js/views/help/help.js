@@ -5,7 +5,8 @@ define([
     'underscore',
     'text!templates/help/help.html'
 ], function (Backbone, _, helpTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(helpTemplate),
 
@@ -19,6 +20,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

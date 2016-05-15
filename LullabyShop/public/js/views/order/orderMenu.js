@@ -12,9 +12,19 @@ define([
 
         initialize: function () {
             var self = this;
-            this.basket = APP.session.basket;
 
-            this.render();
+            $.ajax({
+                url : '/lullaby/basket',
+                type: 'GET',
+                success: function(response) {
+                    self.totalSum = response.totalSum;
+                    self.count    = response.count;
+                    self.render();
+                },
+                error: function(err) {
+                    APP.notification(err);
+                }
+            });
 
             APP.channel.on('addProductToBasket', function () {
                 self.initialize();
@@ -22,7 +32,7 @@ define([
         },
 
         render: function () {
-            this.$el.html(this.template({basket: this.basket}));
+            this.$el.html(this.template({totalSum: this.totalSum, count: this.count}));
 
             return this;
         }

@@ -2,15 +2,6 @@
     <div class="check">
         <div class="col-md-3 cart-total">
             <a id="continueToBasketBtn" class="continue" href="#">Continue to basket</a>
-            <%
-                var amountOfProducts = 0;
-                var totalSum         = 0;
-
-                _.each(basket, function(product) {
-                    totalSum += product.price;
-                    amountOfProducts += 1;
-                });
-            %>
             <div class="price-details">
                 <h3>Price Details</h3>
                 <span>Total</span>
@@ -32,9 +23,9 @@
             </div>
         </div>
         <div class="col-md-9 cart-items">
-            <h1>My Shopping Bag (<%= amountOfProducts %>)</h1>
+            <h1>My Shopping Bag (<%= count %>)</h1>
             <%
-                _.each(basket, function(product) {
+                _.each(collection, function(product) {
             %>
             <div class="cart-header">
                 <div id="removeProductFromBasketBtn" data-id="<%= product._id %>" class="close1"></div>

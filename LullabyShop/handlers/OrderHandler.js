@@ -196,48 +196,6 @@ var OrderHandler = function () {
             });
         });
     };
-
-    function calculateTotalSum(products, callback) {
-        var totalSum = 0;
-
-        ProductModel
-            .find({_id: {$in: products}}, {_id: 1, price: 1}, function (err, productsFromDb) {
-                var barrier = products.length;
-                var limit = productsFromDb.length;
-                var index;
-                var step;
-
-                if (err) {
-
-                    return callback(err);
-                }
-
-                for (step = barrier - 1; step >= 0; step -= 1) {
-                    for (index = limit - 1; index >= 0; index -= 1) {
-                        if (products[step] == productsFromDb[index]._id) {
-                            totalSum += productsFromDb[index].price;
-                        }
-                    }
-                }
-
-                return callback(null, totalSum);
-            });
-    }
-
-    function isRegisteredUserOrder(orderId, callback) {
-        OrderModel
-            .find({_id: ObjectId(orderId)}, {__v: 0})
-            .lean()
-            .exec(function(err, order) {
-                if (err) {
-
-                    return callback(err);
-                }
-
-                order[0] = order[0]  || {};
-                return order[0].user ? callback(null, true) : callback(null, false);
-            })
-    }
 };
 
 module.exports = OrderHandler;

@@ -213,6 +213,29 @@ var UserHandler = function () {
                     });
             });
     };
+
+    this.getUserDataForOrder = function(req, res, next) {
+        var session       = req.session || {};
+        var userId = session.userId;
+
+        if (!validator.isId(userId)) {
+
+            return res.status(400).send({fail: 'User is not authorized'});
+        }
+
+        UserModel
+            .findById(userId, {firstname: 1, surname: 1, email: 1, phone: 1})
+            .lean()
+            .exec(function(err, userData) {
+                if (err) {
+
+                    return next(err);
+
+                }
+
+                res.status(200).send(userData);
+            });
+    }
 };
 
 module.exports = UserHandler;

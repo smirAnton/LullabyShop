@@ -79,30 +79,19 @@ define([
 
         onAddProduct: function(e) {
             var self = this;
-            var productData;
             var productId;
-            var product;
             var basket;
 
             e.stopPropagation();
             e.preventDefault();
 
             productId = $(e.currentTarget).data("id");
-            product   = this.collection.get(productId).attributes;
-
-            productData  = {
-                productCode: product.productCode,
-                mainImage  : product.mainImage,
-                price      : product.price,
-                _id        : product._id
-            };
 
             $.ajax({
                 url    : '/lullaby/basket/add',
                 type   : 'POST',
-                data   : {product: JSON.stringify(productData)},
+                data   : {productId: productId},
                 success: function(response) {
-                    APP.session.basket.push(productData);
                     APP.channel.trigger('addProductToBasket');
                 },
                 error: function(err) {

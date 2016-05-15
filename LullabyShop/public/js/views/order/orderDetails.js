@@ -8,14 +8,28 @@ define([
     'text!templates/order/orderDetails.html',
     'text!templates/order/orderForm.html'
 ], function (Backbone, _, UserModel, OrderModel, orderDetailsTemplate, orderFormTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(orderDetailsTemplate),
 
         initialize: function () {
-            this.basket = APP.session.basket;
+            var self = this;
 
-            this.render();
+            $.ajax({
+                url : '/lullaby/basket/details',
+                type: 'GET',
+                success: function(response) {
+                    self.collection = JSON.parse(response.products);
+                    self.totalSum   = response.totalSum;
+                    self.count      = response.count;
+
+                    self.render();
+                },
+                error: function(err) {
+                    APP.handleError(err);
+                }
+            });
         },
 
         events: {
@@ -27,31 +41,19 @@ define([
 
         onRemoveProductFromBasket: function (e) {
             var self = this;
-            var removeIndex;
             var productId;
-            var basket;
 
             e.stopPropagation();
             e.preventDefault();
 
             productId = $(e.currentTarget).data("id");
-            basket = APP.session.basket;
-
-            // define remove product index in basket's array
-            removeIndex = basket
-                .map(function (product) { return product._id; })
-                .indexOf(productId);
 
             $.ajax({
                 url    : '/lullaby/basket/remove',
                 type   : 'POST',
-                data   : {removeIndex: removeIndex, products: basket},
+                data   : {productId: productId},
                 success: function(response) {
-                    basket.splice(removeIndex, 1);
-
-                    APP.session.basket = basket;
-                    self.basket        = basket;
-                    self.render();
+                    self.initialize();
                 },
                 error  : function(err) {
                     APP.handleError(err);
@@ -60,35 +62,31 @@ define([
         },
 
         onContinueToBasket: function (e) {
-            e.stopPropagation();
             e.preventDefault();
 
-            Backbone.history.navigate('#lyllaby/shop', {trigger: true});
+            APP.navigate('#lyllaby/shop');
         },
 
         onShowOrderForm: function (e) {
             var self = this;
-            var userId;
-            var user;
 
-            e.stopPropagation();
             e.preventDefault();
 
-            userId = localStorage.getItem('userId');
-
-            if (userId) {
-                user = new UserModel({_id: userId});
-                user.fetch({
-                    success: function () {
-                        self.userData = user.attributes;
+            if (APP.loggedIn) {
+                $.ajax({
+                    url    : '/lullaby/user/personal',
+                    type   : 'GET',
+                    success: function(response) {
+                        self.userData = response;
                         self.template = _.template(orderFormTemplate);
                         self.render();
                     },
-                    error: function (err, xhr) {
-                        alert(xhr.statusText);
+                    error  : function(err) {
+                        APP.handleError(err);
                     }
                 });
             } else {
+                this.userData = {};
                 self.template = _.template(orderFormTemplate);
                 self.render();
             }
@@ -132,41 +130,24 @@ define([
 
             order.save(null, {
                 success: function (response, xhr) {
-                    localStorage.setItem('basket', JSON.stringify([]));
-
-                    alert(xhr.success);
+                    APP.notification(xhr.success);
                     Backbone.history.navigate('lullaby/shop', {trigger: true});
                 },
                 error: function (err, xhr) {
-                    self.handleError(xhr);
+                    APP.handleError(xhr);
                 }
             });
         },
 
-        handleError: function (xhr) {
-            switch (xhr.status) {
-                case 400: // basket is empty (nothing to delete)
-                    alert(xhr.responseJSON.fail);
-                    break;
-
-                case 422: // no product to add in basket
-                    alert(xhr.responseJSON.fail);
-                    break;
-
-                default:
-                    break;
-            }
-        },
-
         render: function () {
             this.$el.html(this.template({
-                basket: this.basket,
+                collection: this.collection,
+                totalSum: this.totalSum,
+                count   : this.count,
                 user  : this.userData})
             );
 
             return this;
         }
     });
-
-    return View;
 });

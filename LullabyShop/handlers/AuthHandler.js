@@ -204,7 +204,7 @@ var AuthenticationHandler = function () {
 
         if (!validator.isId(userId) || !validator.isEmail(email)) {
 
-            return res.status(401).send({fail: 'You should login firstly'});
+            return res.status(400).send({fail: 'You should login firstly'});
         }
 
         UserModel

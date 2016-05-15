@@ -14,8 +14,16 @@ define(['backbone', 'underscore', 'router', 'socketio'], function (Backbone, _, 
 
         socket.connect();
 
-        APP.notification = function(notificationText) {
-            $('#notification').empty().append('<p>' + notificationText + '</p>').dialog();
+        APP.notification = function(message) {
+            var $el = $('#notification');
+
+            $el.animate({left: '0%', opacity: '100'}, 'slow');
+
+            $el.empty().append('<div class="alert alert-danger fade in"><p><strong>Problems! </strong>' + message + '</p></div>');
+
+            setTimeout(function () {
+                $el.animate({left: '-20%', opacity: '0'}, 'slow');
+            }, 2000);
         };
 
         APP.navigate = function(url) {
@@ -26,7 +34,7 @@ define(['backbone', 'underscore', 'router', 'socketio'], function (Backbone, _, 
             switch (err.status) {
                 case 401: // Unauthorized
                     APP.notification(err.responseJSON.fail);
-                    APP.navigate('#lullaby/login');
+                    //APP.navigate('#lullaby/shop');
                     break;
 
                 case 402: // Not registered
