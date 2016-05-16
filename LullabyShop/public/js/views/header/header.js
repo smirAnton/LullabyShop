@@ -14,38 +14,6 @@ define([
             this.render();
         },
 
-        events: {
-            'click #logoutBtn': 'onLogout'
-        },
-
-        onLogout: function (e) {
-            e.preventDefault();
-
-            //if (!APP.session.loggedIn) {
-            //
-            //    return APP.notification('You should firstly login');
-            //}
-
-            $.ajax({
-                url    : '/logout',
-                type   :'GET',
-                success: function(response){
-                    if (APP.mainView) {
-                        APP.mainView.undelegateEvents();
-                        delete APP.mainView;
-                    }
-
-                    delete APP.session;
-
-                    APP.notification(response.success);
-                    Backbone.history.navigate('#lullaby/shop', {trigger: true});
-                },
-                error  : function(err){
-                    APP.handleError(err);
-                }
-            });
-        },
-
         render: function () {
             this.$el.html(this.template());
 

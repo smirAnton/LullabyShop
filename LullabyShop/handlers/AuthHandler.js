@@ -250,7 +250,7 @@ var AuthenticationHandler = function () {
                             return next(err);
                         }
 
-                        res.status(200).send({success: 'You successfully activated registration'});
+                        res.status(200).send({success: 'You successfully activated register'});
                     });
             });
     };
@@ -294,7 +294,7 @@ var AuthenticationHandler = function () {
                             return next(err);
                         }
 
-                        res.status(200).send({success: 'You successfully activated registration'});
+                        res.status(200).send({success: 'You successfully activated register'});
                     });
             });
     };
@@ -327,7 +327,7 @@ var AuthenticationHandler = function () {
 
                         if (!token) {
 
-                            return res.status(403).send({fail: 'You already activated registration'});
+                            return res.status(403).send({fail: 'You already activated register'});
                         }
 
                         twilio.sendSms(user.phone, token.phoneSecret, function (err, result) {
@@ -370,7 +370,7 @@ var AuthenticationHandler = function () {
 
                 if (!token) {
 
-                    return res.status(403).send({fail: 'You already activated registration'});
+                    return res.status(403).send({fail: 'You already activated register'});
                 }
 
                 mailer.sendActivationLink(token.emailSecret, email, function (err, result) {
@@ -403,7 +403,7 @@ var AuthenticationHandler = function () {
 
             if (!user) {
 
-                return res.status(402).send({fail: 'Email not registered'});
+                return res.status(400).send({fail: 'Email not registered'});
             }
 
             new RecoveryTokenModel({
@@ -483,7 +483,7 @@ var AuthenticationHandler = function () {
 
             if (!token) {
 
-                return res.status(401).send({fail: 'Please, use forgot ypur password link'})
+                return res.status(401).send({fail: 'Please, use forgot password link provided in email'})
             }
 
             mailer.sendRecoveryLink(token.emailSecret, email, function (err, result) {
@@ -536,7 +536,7 @@ var AuthenticationHandler = function () {
 
         if (!validator.isEmail(email)) {
 
-            return res.status(401).send({fail: 'Please, use forgot your password link'});
+            return res.status(400).send({fail: 'Please, use forgot your password link'});
         }
 
         findModelByEmail(RecoveryTokenModel, email, function(err, token) {
@@ -547,7 +547,7 @@ var AuthenticationHandler = function () {
 
             if (!token) {
 
-                return res.status(401).send({fail: 'Please, use recovery'});
+                return res.status(400).send({fail: 'Please, use recovery'});
             }
 
             if (token.phoneSecret !== secret) {

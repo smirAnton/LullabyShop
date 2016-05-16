@@ -4,12 +4,12 @@ define([
     'backbone',
     'validator',
     'underscore',
-    'text!templates/registration/registration.html'
-], function (Backbone, validator, _, registrationTemplate) {
+    'text!templates/register/register.html'
+], function (Backbone, validator, _, registerTemplate) {
 
     return Backbone.View.extend({
         el      : "#content",
-        template: _.template(registrationTemplate),
+        template: _.template(registerTemplate),
 
         initialize: function () {
             this.render();
@@ -21,20 +21,21 @@ define([
         },
 
         onRegister: function (e) {
+            var $confirmedPassword = this.$el.find('#confirmedPassword');
             var confirmedPassword;
             var firstname;
             var userData;
             var password;
             var surname;
-            var fields;
             var gender;
             var phone;
             var email;
+            var fail;
 
             e.stopPropagation();
             e.preventDefault();
 
-            confirmedPassword = this.$el.find('#confirmedPassword').val();
+            confirmedPassword = $confirmedPassword.val();
             firstname         = this.$el.find('#firstname').val();
             password          = this.$el.find('#password').val();
             surname           = this.$el.find('#surname').val();
@@ -42,24 +43,18 @@ define([
             phone             = this.$el.find('#phone').val();
             gender            = this.$el.find('[name=gender]:checked').val();
 
-            if (!confirmedPassword || !firstname || !password || !gender || !email || !phone) {
+            if (fail = validator.isPassword(confirmedPassword)||
+                       validator.isPassword(password)         ||
+                       validator.isMobile(phone)              ||
+                       validator.isEmail(email)) {
 
-                return alert('Please, fill all form\'s fields');
-            }
-
-            if (!validator.isEmail(email)) {
-
-                return alert('Nope...Please, provide email');
-            }
-
-            if (!validator.isPhone(phone)) {
-
-                return alert('Nope...Please, provide phone number in format +38(XXX)XXX-XX-XX');
+                return APP.notification(fail);
             }
 
             if (password !== confirmedPassword) {
+                $confirmedPassword.val('');
 
-                return alert('Passwords not matched. Please try again')
+                return APP.notification('Passwords not matched. Please try again');
             }
 
             userData = {
@@ -73,12 +68,11 @@ define([
             };
 
             $.ajax({
-                url    : '/register',
                 method : 'POST',
+                url    : '/register',
                 data   : userData,
                 success: function (response) {
                     APP.notification(response.success);
-                    APP.navigate('lullaby/activate/choice');
                 },
                 error  : function (err) {
                     APP.handleError(err);

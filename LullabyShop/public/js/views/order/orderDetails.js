@@ -17,8 +17,8 @@ define([
             var self = this;
 
             $.ajax({
-                url : '/lullaby/basket/details',
                 type: 'GET',
+                url : '/lullaby/basket/details',
                 success: function(response) {
                     self.collection = JSON.parse(response.products);
                     self.totalSum   = response.totalSum;
@@ -49,8 +49,8 @@ define([
             productId = $(e.currentTarget).data("id");
 
             $.ajax({
-                url    : '/lullaby/basket/remove',
                 type   : 'POST',
+                url    : '/lullaby/basket/remove',
                 data   : {productId: productId},
                 success: function(response) {
                     self.initialize();

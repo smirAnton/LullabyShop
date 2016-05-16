@@ -1,9 +1,9 @@
 'use strict';
 
-var nodemailer   = require("nodemailer");
-var logger       = require('./logger')(module);
-var util         = require('util');
-var env          = process.env;
+var nodemailer = require("nodemailer");
+var logger     = require('./logger')(module);
+var util       = require('util');
+var env        = process.env;
 
 module.exports = function () {
     var sender = nodemailer.createTransport({
@@ -98,7 +98,7 @@ module.exports = function () {
             subject: 'Lullaby service team',
 
             text   : 'No need to worry! You can simply reset your password on Lullaby home by clicking the '
-                   + 'link: http://localhost:3000/#lullaby/recovery/mail/' + tokenSecret
+                   + 'link: http://localhost:3000/#lullaby/recovery/' + tokenSecret
         };
 
         sender.sendMail(mailOptions, function (err, result) {

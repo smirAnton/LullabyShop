@@ -37,7 +37,7 @@ define([
             e.stopPropagation();
             e.preventDefault();
 
-            rememberMe = $("#rememberMe").is(":checked");
+            rememberMe = this.$el.find("#rememberMe").is(":checked");
             password   = this.$el.find('#password').val();
             email      = this.$el.find('#email').val();
 
@@ -67,6 +67,9 @@ define([
                     APP.session.isAdmin  = user.isAdmin;
                     APP.session.userId   = user._id;
                     APP.session.email    = user.email;
+
+
+                    $('#logout').fadeIn(300);
 
                     APP.notification('Welcome to Lullaby\'s store');
                     APP.navigate('lullaby/shop');

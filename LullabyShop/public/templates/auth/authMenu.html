@@ -1,10 +1,109 @@
-<div class="log">
-    <div class="login">
-        <div id="loginContainer">
-            <a href="#lullaby/login" id="loginButton"><span>LOGIN</span></a>
+<!-- Authentication menu -->
+<div id="auth_menu">
+    <div class="log">
+        <div class="login">
+            <div id="loginContainer">
+                <a href="javascript:;" id="loginBtn"><span>LOGIN</span></a>
+
+                <!-- login form -->
+                <div class="loginBox" id="loginBox">
+                    <form class="loginForm">
+                        <fieldset class="body">
+                            <fieldset>
+                                <label for="email">Email</label>
+                                <input type="text" name="email" id="email">
+                            </fieldset>
+                            <fieldset>
+                                <label for="password">Password</label>
+                                <input type="password" name="password" id="password">
+                            </fieldset>
+                            <input type="submit" class="submit_button" id="signInBtn" value="Sign in">
+                            <label for="checkbox"><input type="checkbox" id="checkbox"> <i>Remember me</i></label>
+                        </fieldset>
+                        <span><a href="javascript:;" id="forgetPassLink">Forgot your password?</a></span>
+                    </form>
+                </div>
+
+                <!-- Recovery form -->
+                <div class="loginBox" id="forgetPassBox" hidden>
+                    <form class="loginForm">
+                        <fieldset class="body">
+                            <fieldset>
+                                <label for="email">Please, provide your email</label>
+                                <input type="text" name="email" id="userEmail">
+                            </fieldset>
+                            <input type="submit" class="submit_button" id="recoveryBtn" value="Use recovery">
+                        </fieldset>
+                    </form>
+                </div>
+
+                <!-- Check sms number's form -->
+                <div class="loginBox" id="checkSmsBox" hidden>
+                    <form class="loginForm">
+                        <fieldset class="body">
+                            <fieldset>
+                                <label for="email">Please, provide number in sms</label>
+                                <input type="text" name="Secret" id="secretNumber">
+                            </fieldset>
+                            <input type="submit" class="submit_button" id="checkSmsSecretBtn" value="Submit">
+                        </fieldset>
+                    </form>
+                </div>
+
+                <!-- Recovery choice -->
+                <div class="loginBox" id="recoveryChoiceBox" hidden>
+                    <form class="loginForm">
+                        <fieldset class="body">
+                            <fieldset>
+                                <label>Please, select recovery option:</label>
+                            </fieldset>
+                            <input type="submit" class="submit_button" id="recoveryByEmailBtn" value="By email">
+                            <input type="submit" class="submit_button" id="recoveryByPhoneBtn" value="By phone">
+                        </fieldset>
+                    </form>
+                </div>
+
+                <!-- Set new password -->
+                <div class="loginBox" id="setNewPasswordBox" hidden>
+                    <form class="loginForm">
+                        <fieldset class="body">
+                            <fieldset>
+                                <label>Please, set new password:</label>
+                            </fieldset>
+                            <fieldset>
+                                <label for="password">New password</label>
+                                <input type="password" name="password" id="newPassword">
+                            </fieldset>
+                            <fieldset>
+                                <label for="password">Confirmed new password</label>
+                                <input type="password" name="Confirmed password" id="confirmedNewPassword">
+                            </fieldset>
+                            <input type="submit" class="submit_button" id="setNewPassBtn" value="Set new password">
+                        </fieldset>
+                    </form>
+                </div>
+
+            </div>
         </div>
     </div>
-</div>
-<div class="reg">
-    <a href="#lullaby/register">REGISTER</a>
-</div>
+    <div class="reg">
+        <a href="#lullaby/register">REGISTER</a>
+    </div>
+</div> <!-- end of Authentication menu -->
+
+<!-- Logout menu -->
+<div id="auth_menu_logout" hidden>
+    <div class="log">
+        <div class="login">
+            <div id="logoutContainer">
+                <a href="javascript:;" id="logoutBtn"><span>LOGOUT</span></a>
+            </div>
+        </div>
+    </div>
+    <div class="reg">
+        <a href="javascript:;"></a>
+    </div>
+</div> <!-- end of logout menu -->
+
+
+

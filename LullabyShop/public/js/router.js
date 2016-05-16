@@ -28,11 +28,8 @@ define(['backbone'], function (Backbone) {
             'lullaby/activate/choice': 'activationChoice',
             'lullaby/activate/mobile': 'activateByMobile',
             'lullaby/activate/mail/:secret': 'activateByMail',
-            'lullaby/recovery': 'recovery',
-            'lullaby/recovery/choice': 'recoveryChoice',
-            'lullaby/recovery/mobile': 'recoveryByMobile',
-            'lullaby/recovery/password': 'setNewPassword',
-            'lullaby/recovery/mail/:secret': 'recoveryByMail',
+
+            'lullaby/recovery/:secret': 'recovery',
 
             'lullaby/admin': 'admin',
             'lullaby/admin/chat': 'adminChat',
@@ -142,7 +139,8 @@ define(['backbone'], function (Backbone) {
             var self = this;
 
             if (APP.loggedIn) {
-                APP.navigate('#lullaby/main');
+                APP.notification('#lullaby/main');
+                APP.navigate('#lullaby/shop');
 
             } else if (!APP.mainView) {
                 APP.next = Backbone.history.fragment;
@@ -170,7 +168,7 @@ define(['backbone'], function (Backbone) {
                 APP.navigate('#lullaby/main');
 
             } else {
-                require(['views/registration/registration'], function (View) {
+                require(['views/register/register'], function (View) {
                     if (self.view) {
 
                         self.view.undelegateEvents();
@@ -428,93 +426,16 @@ define(['backbone'], function (Backbone) {
             }
         },
 
-        recovery: function () {
-            APP.authorised = localStorage.getItem('loggedIn');
+        recovery: function (secret) {
             var self = this;
 
-            if (APP.authorised) {
+            require(['views/auth/recovery'], function (View) {
+                if (self.view) {
 
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else if (!APP.mainView) {
-
-                APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else {
-                require(['views/recovery/useRecovery'], function (RecoveryView) {
-                    if (self.view) {
-
-                        self.view.undelegateEvents();
-                    }
-                    self.view = new RecoveryView();
-                });
-            }
-        },
-
-        recoveryChoice: function () {
-            APP.authorised = localStorage.getItem('loggedIn');
-            var self = this;
-
-            if (APP.authorised) {
-
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else if (!APP.mainView) {
-
-                APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else {
-                require(['views/recovery/recoveryChoice'], function (RecoveryChoiceView) {
-                    if (self.view) {
-
-                        self.view.undelegateEvents();
-                    }
-
-                    self.view = new RecoveryChoiceView();
-                });
-            }
-        },
-
-        recoveryByMobile: function () {
-            APP.authorised = localStorage.getItem('loggedIn');
-            var self = this;
-
-            if (APP.authorised) {
-
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else if (!APP.mainView) {
-
-                APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else {
-                require(['views/recovery/recoveryByMobile'], function (RecoveryByMobileView) {
-                    if (self.view) {
-
-                        self.view.undelegateEvents();
-                    }
-                    self.view = new RecoveryByMobileView();
-                });
-            }
-        },
-
-        recoveryByMail: function (secret) {
-            APP.authorised = localStorage.getItem('loggedIn');
-            var self = this;
-
-            if (APP.authorised) {
-
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else if (!APP.mainView) {
-
-                APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else {
-                require(['views/recovery/recoveryByMail'], function (RecoveryByMailView) {
-                    if (self.view) {
-
-                        self.view.undelegateEvents();
-                    }
-                    self.view = new RecoveryByMailView(secret);
-                });
-            }
+                    self.view.undelegateEvents();
+                }
+                self.view = new View(secret);
+            });
         },
 
         setNewPassword: function (secret) {

@@ -2,51 +2,72 @@
 
 define(
     function () {
-        var phoneRegExp = /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/;
-        var emailRegExp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        var skypeRegExp = /^[\w\._@]{6,100}$/;
-        var  dateRegExp = /^\d{2}\/\d{2}\/\d{4}$/;
-        var  nameRegExp = /^[a-zA-Z]+[a-zA-Z-_\s]+$/;
+        var phoneSecretRegExp = /\d{4}/;
+        var skypeRegExp       = /^[\w\._@]{6,100}$/;
+        var phoneRegExp       = /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/;
+        var emailRegExp       = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var  dateRegExp       = /^\d{2}\/\d{2}\/\d{4}$/;
+        var  nameRegExp       = /^[a-zA-Z]+[a-zA-Z-_\s]+$/;
 
-        var isEmail = function (email) {
-            return email.match(emailRegExp);
-        };
+        function isPassword (password) {
+            if (!password || !password.trim().length) {
 
-        var isPhone = function (phone) {
-            return phone.match(phoneRegExp);
-        };
+                return 'Password can not be empty. Please, try again'
+            }
+        }
 
-        var isBirthday = function (date) {
-            return date.match(dateRegExp);
-        };
+        function isEmail(email) {
+            if (!email.match(emailRegExp)) {
 
-        var isImage = function (image) {
+                return 'Not email. Please, try again';
+            }
+        }
+
+        function isMobile(phone) {
+            if (!phone.match(phoneRegExp)) {
+
+                return 'Not mobile number. Please, try again'
+            }
+        }
+
+        function isBirthday(date) {
+            if (!date.match(dateRegExp)) {
+
+                return APP.notification('Not date. Please, try again');
+            }
+        }
+
+        function isImage(image) {
             if (!image) {
-                alert('You did not attach any file. Please, select image');
 
-                return false;
+                return 'You did not attach any file. Please, select image';
             }
 
             if (image.size > Image.MAX_SIZE) {
-                alert('too big file size (max size <= 300KB). Please, try again');
 
-                return false;
+                return 'too big file size (max size <= 300KB). Please, try again';
             }
 
             if (!image.type.match('image.*')) {
-                alert('You uploaded not image. Please, try again');
 
-                return false;
+                return 'You uploaded not image. Please, try again';
             }
+        }
 
-            return true;
-        };
+        function isPhoneSecret(secret) {
+            if (!secret.match(phoneSecretRegExp)) {
+
+                return 'Secret number should consist of four digits';
+            }
+        }
 
         return {
-            isBirthday: isBirthday,
-            isPhone   : isPhone,
-            isEmail   : isEmail,
-            isImage   : isImage
+            isPhoneSecret: isPhoneSecret,
+            isBirthday   : isBirthday,
+            isPassword   : isPassword,
+            isMobile     : isMobile,
+            isEmail      : isEmail,
+            isImage      : isImage
         }
     }
 );
