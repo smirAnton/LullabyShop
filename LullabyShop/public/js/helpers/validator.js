@@ -33,7 +33,7 @@ define(
         function isBirthday(date) {
             if (!date.match(dateRegExp)) {
 
-                return APP.notification('Not date. Please, try again');
+                return 'Not date. Please, try again';
             }
         }
 
@@ -61,13 +61,21 @@ define(
             }
         }
 
+        function isMatchedPasswords(pass, confPass) {
+            if (pass !== confPass) {
+
+                return 'Passwords not matched. Please, try again';
+            }
+        }
+
         return {
-            isPhoneSecret: isPhoneSecret,
-            isBirthday   : isBirthday,
-            isPassword   : isPassword,
-            isMobile     : isMobile,
-            isEmail      : isEmail,
-            isImage      : isImage
+            isMatchedPasswords: isMatchedPasswords,
+            isPhoneSecret     : isPhoneSecret,
+            isBirthday        : isBirthday,
+            isPassword        : isPassword,
+            isMobile          : isMobile,
+            isEmail           : isEmail,
+            isImage           : isImage
         }
     }
 );

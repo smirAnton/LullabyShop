@@ -61,20 +61,14 @@ define([
                 type   :'GET',
                 url    : '/logout',
                 success: function(response){
-                    if (APP.mainView) {
-                        APP.mainView.undelegateEvents();
-
-                        delete APP.mainView;
-                    }
-
-                    delete APP.session;
                     APP.loggedIn = false;
-
-                    APP.notification(response.success);
+                    APP.session  = {};
 
                     $('#auth_menu_logout').slideUp(300, function(){
                         $('#auth_menu').slideDown(300, function() {
-                            APP.notification(response.success);
+                            $('#account').slideUp(100, function() {
+                                APP.showSuccessAlert(response.success);
+                            });
                         });
                     });
                 },
@@ -100,7 +94,7 @@ define([
             // validate user's data
             if (fail = validator.isEmail(email) || validator.isPassword(password)) {
 
-                return APP.notification(fail);
+                return APP.showErrorAlert(fail);
             }
 
             userData = {
@@ -117,13 +111,15 @@ define([
                     $('#loginBox').slideUp(300, function() {
                         $('#auth_menu').slideUp(300, function() {
                             $('#auth_menu_logout').slideDown(300, function() {
-                                APP.loggedIn         = true;
-                                APP.session.username = user.firstname;
-                                APP.session.isAdmin  = user.isAdmin;
-                                APP.session.userId   = user._id;
-                                APP.session.email    = user.email;
+                                $('#account').slideDown(200, function() {
+                                    APP.loggedIn         = true;
+                                    APP.session.username = user.firstname;
+                                    APP.session.isAdmin  = user.isAdmin;
+                                    APP.session.userId   = user._id;
+                                    APP.session.email    = user.email;
 
-                                APP.notification('Welcome to Lullaby\'s store');
+                                    APP.showSuccessAlert('Welcome to Lullaby\'s store');
+                                });
                             });
                         });
                     });
@@ -150,7 +146,7 @@ define([
             // validate user's data
             if (fail = validator.isEmail(email)) {
 
-                return APP.notification(fail);
+                return APP.showErrorAlert(fail);
             }
 
             $.ajax({
@@ -256,7 +252,7 @@ define([
                 success: function(response){
                     $('#recoveryChoiceBox').slideUp(600, function() {
                         $('#checkSmsBox').slideDown(600, function() {
-                            APP.notification(response.success);
+                            APP.showSuccessAlert(response.success);
                         });
                     });
                 },
@@ -275,7 +271,7 @@ define([
                 data   : {email: APP.session.email},
                 success: function (response) {
                     $('#recoveryChoiceBox').slideUp(600, function() {
-                        APP.notification(response.success);
+                        APP.showSuccessAlert(response.success);
                     });
                 },
                 error  : function (err) {
@@ -283,6 +279,7 @@ define([
                 }
             });
         },
+
         render: function () {
             this.$el.html(this.template());
 

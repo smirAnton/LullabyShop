@@ -11,7 +11,7 @@ define([
 ], function (Backbone, _, UserModel, HeaderView, FooterView, HomeView, mainTemplate) {
 
     return Backbone.View.extend({
-        el      : "#content-holder",
+        el      : "#wrapper",
         template: _.template(mainTemplate),
 
         initialize: function (options) {

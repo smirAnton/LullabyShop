@@ -8,15 +8,8 @@ define([
     'models/user',
     'text!templates/profile/profile.html',
     'text!templates/profile/editProfile.html',
-    'text!templates/recovery/setNewPassword.html'
-], function (dater,
-             Backbone,
-             validator,
-             _,
-             UserModel,
-             profileTemplate,
-             editProfileTemplate,
-             setNewPasswordTemplate) {
+    'text!templates/profile/changePassword.html'
+], function (dater, Backbone, validator, _, UserModel, profileTemplate, editProfileTemplate, changePasswordTemplate) {
 
     return Backbone.View.extend({
         el      : "#content",
@@ -24,24 +17,17 @@ define([
 
         initialize: function () {
             var self   = this;
-            var userId = localStorage.getItem('userId');
 
-            if (!userId) {
-
-                alert('You should login firstly');
-                return Backbone.history.navigate('#lullaby/login', {trigger: true});
-            }
-
-            new UserModel({_id: userId})
+            new UserModel({_id: APP.session.userId})
                .fetch({
                     success: function (response) {
-                        self.model = response;
+                        self.model = response.attributes;
                         self.render();
                     },
                     error  : function (err, xhr) {
-                    self.handleError(xhr);
-                }
-            });
+                        APP.handleError(xhr);
+                    }
+               });
         },
 
         events: {
@@ -56,79 +42,83 @@ define([
         onChangePassword: function (e) {
             e.preventDefault();
 
-            this.template = _.template(setNewPasswordTemplate);
+            this.template = _.template(changePasswordTemplate);
             this.render();
         },
 
         onSetNewPassword: function (e) {
-            var self = this;
+            var self               = this;
+            var $confirmedPassword = this.$el.find('#confirmedPassword');
             var confirmedPassword;
             var password;
+            var fail;
 
             e.stopPropagation();
             e.preventDefault();
 
-            confirmedPassword = this.$el.find('#confirmedPassword').val();
+            confirmedPassword = $confirmedPassword.val();
             password          = this.$el.find('#password').val();
 
-            if (!password || !confirmedPassword) {
+            if (fail = validator.isPassword(password)                            ||
+                       validator.isPassword(confirmedPassword)                   ||
+                       validator.isMatchedPasswords(password, confirmedPassword)) {
 
-                return APP.notification('Please provide both passwords');
+                return APP.showErrorAlert(fail);
             }
 
-            if (password !== confirmedPassword) {
-
-                return APP.notification('Password not matched');
-            }
-
-            this.model.save({password: password}, {
-                success: function (response) {
-                    APP.notification(response.attributes.success);
-                    self.template = _.template(profileTemplate);
-                    self.render();
-                },
-                error  : function (err, xhr) {
-                    APP.handlerError(xhr);
-                }
+            new UserModel({_id: APP.session.userId})
+                .save({password: password}, {
+                    success: function (response) {
+                        APP.showSuccessAlert(response.attributes.success);
+                        self.template = _.template(profileTemplate);
+                        self.render();
+                    },
+                    error  : function (err, xhr) {
+                        APP.handlerError(xhr);
+                    }
             });
         },
 
         onUploadAvatar: function (e) {
             var self = this;
             var formData;
-            var userFile;
+            var image;
+            var fail;
 
             e.stopPropagation();
             e.preventDefault();
 
-            // get user's photo from form
-            userFile = ( $('#userAvatar')[0].files[0] );
+            image = this.$el.find('#userAvatar')[0].files[0];
 
-            if (validator.isImage(userFile)) {
-                formData = new FormData();
-                formData.set('attachment', userFile);
+            if (fail = validator.isImage(image)) {
 
-                $.ajax({
-                    url        : 'lullaby/user/upload',
-                    type       : 'POST',
-                    data       : formData,
-                    processData: false,
-                    contentType: false,
-                    success    : function (response) {
-                        self.template = _.template(profileTemplate);
-                        self.initialize();
-                    },
-                    error      : function (xhr) {
-                       APP.handleError(xhr);
-                    }
-                });
+                return APP.showErrorAlert(fail);
             }
+
+            formData = new FormData();
+            formData.set('attachment', image);
+
+            $.ajax({
+                type       : 'POST',
+                url        : '/lullaby/user/upload',
+                data       : formData,
+                processData: false,
+                contentType: false,
+                success    : function (response) {
+                    self.template = _.template(profileTemplate);
+                    self.initialize();
+                },
+                error      : function (xhr) {
+                    APP.handleError(xhr);
+                }
+            });
         },
 
         onCancel: function (e) {
             e.preventDefault();
 
-            changeAndRenderTemplate(profileTemplate);
+            this.template = _.template(profileTemplate);
+            this.render();
         },
 
         onEdit: function (e) {
@@ -145,10 +135,10 @@ define([
             var birthday;
             var surname;
             var street;
-            var userId;
             var email;
             var phone;
             var city;
+            var fail;
 
             e.stopPropagation();
             e.preventDefault();
@@ -161,18 +151,16 @@ define([
             phone     = this.$el.find('#phone').val();
             city      = this.$el.find('#city').val();
 
-            if (!validator.validateEmail(email)) {
+            if (fail = validator.isEmail(email)       ||
+                       validator.isMobile(phone)      ||
+                       validator.isBirthday(birthday)) {
 
-                return alert('Nope...Please, provide email');
-            }
-            if (!validator.validatePhone(phone)) {
-
-                return alert('Nope...Please, provide phone number');
+                return APP.showErrorAlert(fail);
             }
 
-            // grab user's updated data
             userData = {
                 firstname: firstname,
+                birthday : birthday,
                 surname  : surname,
                 street   : street,
                 email    : email,
@@ -180,39 +168,25 @@ define([
                 city     : city
             };
 
-            userId = this.model.attributes._id;
-
-            if (validator.isBirthday(birthday)) {
-                userData.birthday = birthday;
-            }
-
-            new UserModel({_id: userId})
+            new UserModel({_id: APP.session.userId})
                 .save(userData, {
-                    success: function (response, xhr) {
-                        self.template = _.template(profileTemplate);
-                        self.render();
-                    },
-                    error  : function (err, xhr) {
-                        APP.handlerError(xhr);
-                    }
-            });
+                   success: function (response) {
+                       self.template = _.template(profileTemplate);
+                       self.initialize();
+                   },
+                   error  : function (err, xhr) {
+                       APP.handlerError(xhr);
+                   }
+                });
         },
 
         render: function () {
-            var userData     = this.model.attributes;
-            var userBirthday = dater.formatDate(userData.birthday);
-
             this.$el.html(this.template({
-                user    : userData,
-                birthday: userBirthday
+                dater: dater,
+                user : this.model
             }));
 
             return this;
         }
     });
-
-    function changeAndRenderTemplate(template) {
-        this.template = _.template(template);
-        this.render();
-    }
 });

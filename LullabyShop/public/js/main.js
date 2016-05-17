@@ -10,6 +10,7 @@ require.config({
         socketio         : '../socket.io/socket.io',
         backbone         : './libs/backbone/backbone',
         jquery           : './libs/jquery/dist/jquery',
+        toastr           : './libs/toastr/toastr.min',
         moment           : './libs/moment/moment',
         text             : './libs/text/text',
 

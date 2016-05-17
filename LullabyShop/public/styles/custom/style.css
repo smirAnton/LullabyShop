@@ -1,3 +1,7 @@
+table thead tr th, td{
+    text-align: center;
+}
+
 #notification {
     position: fixed;
     left: -20%;

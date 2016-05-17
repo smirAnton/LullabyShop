@@ -21,6 +21,7 @@
     "jquery": "^2.2.2",
     "requirejs": "^2.2.0",
     "text": "^2.0.14",
-    "bootstrap": "^3.3.6"
+    "bootstrap": "^3.3.6",
+    "toastr": "^2.1.2"
   }
 }

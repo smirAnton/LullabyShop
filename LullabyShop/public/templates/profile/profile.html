@@ -27,7 +27,7 @@
                 </div>
                 <div class="form-group">
                     <label class="col-lg-3 control-label">Day of birth:</label>
-                    <span  class="col-lg-5 control-label"><%= birthday %></span>
+                    <span  class="col-lg-5 control-label"><%= dater.formatDate(user.birthday) %></span>
                 </div>
                 <div class="form-group">
                     <label class="col-lg-3 control-label">City:</label>
@@ -55,26 +55,31 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Order code</th>
-                        <th>Shipment date</th>
-                        <th>Total sum</th>
+                        <th class="ordersTable">#</th>
+                        <th class="ordersTable">Order code</th>
+                        <th class="ordersTable">Shipment date</th>
+                        <th class="ordersTable">Amount of products</th>
+                        <th class="ordersTable">Total sum</th>
                     </tr>
                 </thead>
                 <tbody>
                     <%
                         var orders = user.orders;
-                        var counter = 0;
-                        _.each(orders, function(order) {
-                            counter += 1;
+                        var limit = orders.length;
+                        var positionCounter = 0;
+                        var index;
+
+                        for(index = limit - 1; index >= 0; index -= 1) {
+                            positionCounter += 1;
                     %>
                     <tr>
-                        <td><%= counter %></td>
-                        <td><%= order.orderCode %></td>
-                        <td><%= new Date(order.shipmentDate).toDateString() %></td>
-                        <td><%= order.totalSum %></td>
+                        <td><%= positionCounter %></td>
+                        <td><%= orders[index].orderCode %></td>
+                        <td><%= dater.formatDate(orders[index].shipmentDate) %></td>
+                        <td><%= orders[index].products.length %></td>
+                        <td><%= orders[index].totalSum %></td>
                     </tr>
-                    <% }); %>
+                    <% } %>
                 </tbody>
             </table>
         </div>

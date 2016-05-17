@@ -14,7 +14,6 @@ define(['backbone'], function (Backbone) {
             'lullaby/help': 'help',
             'lullaby/chat': 'chat',
             'lullaby/about': 'aboutUs',
-            'lullaby/login': 'login',
             'lullaby/register': 'register',
             'lullaby/profile': 'profile',
             'lullaby/contacts': 'contacts',
@@ -60,11 +59,10 @@ define(['backbone'], function (Backbone) {
             var options;
 
             if (!APP.mainView) {
-
                 APP.next = Backbone.history.fragment;
                 Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else {
 
+            } else {
                 require(['views/home'], function (HomeView) {
                     if (self.view) {
 
@@ -85,9 +83,9 @@ define(['backbone'], function (Backbone) {
             var self = this;
 
             if (!APP.mainView) {
-
                 APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
+                APP.navigate('#lullaby/main');
+
             } else {
                 require(['views/help/help'], function (View) {
                     if (self.view) {
@@ -121,33 +119,11 @@ define(['backbone'], function (Backbone) {
             var self = this;
 
             if (!APP.mainView) {
-
-                APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else {
-                require(['views/aboutUs/aboutUs'], function (View) {
-                    if (self.view) {
-
-                        self.view.undelegateEvents();
-                    }
-                    self.view = new View();
-                })
-            }
-        },
-
-        login: function () {
-            var self = this;
-
-            if (APP.loggedIn) {
-                APP.notification('#lullaby/main');
-                APP.navigate('#lullaby/shop');
-
-            } else if (!APP.mainView) {
                 APP.next = Backbone.history.fragment;
                 APP.navigate('#lullaby/main');
 
             } else {
-                require(['views/login/login'], function (View) {
+                require(['views/aboutUs/aboutUs'], function (View) {
                     if (self.view) {
 
                         self.view.undelegateEvents();
@@ -181,10 +157,7 @@ define(['backbone'], function (Backbone) {
         profile: function () {
             var self = this;
 
-            if (!APP.loggedIn) {
-                APP.navigate('#lullaby/login');
-
-            } else if (!APP.mainView) {
+            if (!APP.mainView) {
                 APP.next = Backbone.history.fragment;
                 APP.navigate('#lullaby/main');
 

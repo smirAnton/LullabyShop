@@ -12,6 +12,10 @@ define([
 
         initialize: function () {
             this.render();
+
+            if (APP.loggedIn) {
+                $('#account').slideDown(100);
+            }
         },
 
         render: function () {
