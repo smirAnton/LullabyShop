@@ -43,9 +43,9 @@
                         <fieldset class="body">
                             <fieldset>
                                 <label for="email">Please, provide number in sms</label>
-                                <input type="text" name="Secret" id="secretNumber">
+                                <input type="text" name="Secret" id="secretRecoveryNumber">
                             </fieldset>
-                            <input type="submit" class="submit_button" id="checkSmsSecretBtn" value="Submit">
+                            <input type="submit" class="submit_button" id="checkRecoverySmsSecretBtn" value="Submit">
                         </fieldset>
                     </form>
                 </div>
@@ -59,6 +59,32 @@
                             </fieldset>
                             <input type="submit" class="submit_button" id="recoveryByEmailBtn" value="By email">
                             <input type="submit" class="submit_button" id="recoveryByPhoneBtn" value="By phone">
+                        </fieldset>
+                    </form>
+                </div>
+
+                <!-- Activation choice -->
+                <div class="loginBox" id="activationChoiceBox" hidden>
+                    <form class="loginForm">
+                        <fieldset class="body">
+                            <fieldset>
+                                <label>Please, select activation option:</label>
+                            </fieldset>
+                            <input type="submit" class="submit_button" id="activateByEmailBtn" value="By email">
+                            <input type="submit" class="submit_button" id="activateByPhoneBtn" value="By phone">
+                        </fieldset>
+                    </form>
+                </div>
+
+                <!-- Check sms number's form -->
+                <div class="loginBox" id="checkActivationSmsBox" hidden>
+                    <form class="loginForm">
+                        <fieldset class="body">
+                            <fieldset>
+                                <label for="email">Please, provide number in sms</label>
+                                <input type="text" name="Secret" id="secretActivateNumber">
+                            </fieldset>
+                            <input type="submit" class="submit_button" id="checkActivateSmsSecretBtn" value="Submit">
                         </fieldset>
                     </form>
                 </div>
@@ -104,6 +130,8 @@
         <a href="javascript:;"></a>
     </div>
 </div> <!-- end of logout menu -->
+
+
 
 
 

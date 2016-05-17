@@ -1,14 +1,15 @@
 'use strict';
 
 define([
+    'constant',
     'backbone',
     'underscore',
-    'constants',
     'models/product',
     'collections/products',
     'text!templates/product/productsList.html'
-], function (Backbone, _, Constant, ProductModel, ProductCollection, productListTemplate) {
-    var View = Backbone.View.extend({
+], function (constant, Backbone, _, ProductModel, ProductCollection, productListTemplate) {
+
+    return Backbone.View.extend({
         el      : "#products",
         template: _.template(productListTemplate),
 
@@ -133,6 +134,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

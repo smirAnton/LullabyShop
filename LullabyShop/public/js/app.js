@@ -39,34 +39,31 @@ define([
 
     APP.handleError = function(err) {
         switch (err.status) {
-            case 401: // Unauthorized
-                APP.showErrorAlert(err.responseJSON.fail);
-                //APP.navigate('#lullaby/shop');
-                break;
-
-            case 402: // Not registered
-                APP.showErrorAlert(err.responseJSON.fail);
-                APP.navigate('#lullaby/register');
-                break;
-
-            case 403: // Forbidden
+            case 401:
                 APP.showErrorAlert(err.responseJSON.fail);
                 APP.navigate('#lullaby/shop');
                 break;
 
-            case 406: // Not activated
-                APP.showErrorAlert(err.responseJSON.fail);
-                APP.navigate('#lullaby/activate/choice');
+            case 402: // Registration not activated
+                $('#loginBox').slideUp(300, function() {
+                    $('#activationChoiceBox').slideDown(300, function() {
+                        APP.showErrorAlert(err.responseJSON.fail);
+                    });
+                });
                 break;
 
             default:
-                APP.showErrorAlert(err.responseJSON.fail);
+                APP.showWarningAlert(err.responseJSON.fail);
                 break;
         }
     };
 
     APP.navigate = function(url) {
         Backbone.history.navigate(url, {trigger: true});
+    };
+
+    APP.paginationNavigate = function(url) {
+        Backbone.history.navigate(url);
     };
 
     APP.showSuccessAlert = function(message) {
@@ -77,9 +74,13 @@ define([
         setupAlerts('error', message);
     };
 
+    APP.showWarningAlert = function(message) {
+        setupAlerts('warning', message);
+    };
+
     function setupAlerts (kind, message) {
         toastr.options = {
-            'closeButton'      : false,
+            'closeButton'      : true,
             'debug'            : true,
             'newestOnTop'      : false,
             'progressBar'      : false,

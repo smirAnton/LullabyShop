@@ -2,16 +2,16 @@
 
 define([
     'backbone',
-    'constants',
     'models/blog'
-], function(Backbone, constant, BlogModel){
+], function(Backbone, BlogModel){
 
     return Backbone.Collection.extend({
-        model  : BlogModel,
         url    : '/lullaby/blog',
+        model  : BlogModel,
         sortKey: 'id',
 
         comparator: function(blog) {
+
             return blog.get(this.sortKey);
         },
 
@@ -21,19 +21,19 @@ define([
         },
 
         initialize: function(options){
-            var self = this;
+            var self      = this;
+            var paginData = options.data;
 
-            options    = options       || {};
-            this.page  = options.page  || constant.FIRST_PAGE;
-            this.count = options.count || constant.AMOUNT_OF_TOPICS_PER_PAGE;
+            this.page     = paginData.page  || 1;
+            this.count    = paginData.count || 4;
 
             this.fetchData(this.page, this.count, {
-                success: function (collection, xhr, options) {
-                    self.countTopics = collection.models[0].attributes.count;
-                    self.countPages  = Math.ceil(self.countTopics / constant.AMOUNT_OF_TOPICS_PER_PAGE);
+                success: function (response) {
+                    self.countTopics = response.models[0].attributes.count;
+                    self.countPages  = Math.ceil(self.countTopics / self.count);
                 },
-                error  : function (err, xhr, options) {
-                    alert(xhr.statusText);
+                error  : function (err, xhr) {
+                    APP.handleError(xhr);
                 }
             });
         },
@@ -63,18 +63,17 @@ define([
 
         nextPage: function(){
             var self = this;
-
             var page = this.page + 1;
-            if (page > self.countPages) {
-                page = self.countPages
-            }
+
+            page = (page > this.countPages) ? this.countPages : page;
 
             this.fetchData(page, this.count, {
-                success: function (model, xhr, options) {
+                success: function () {
                     self.page = page;
+                    APP.paginationNavigate('#lullaby/blog/p=' + page);
                 },
-                error  : function (model, xhr, options) {
-                   alert(xhr.statusText);
+                error  : function (model, xhr) {
+                   APP.handleError(xhr);
                 }
             });
         },
@@ -86,32 +85,27 @@ define([
             page = page || 1;
 
             this.fetchData(page, this.count, {
-                success: function (model, xhr, options) {
+                success: function () {
                     self.page = page;
+                    APP.paginationNavigate('#lullaby/blog/p=' + page);
                 },
-                error  : function (model, xhr, options) {
-                    alert(xhr.statusText);
+                error  : function (model, xhr) {
+                    APP.handleError(xhr);
                 }
             });
         },
 
         goToPage: function(pageNumber){
             var self = this;
-            var page;
-
-            if (pageNumber > this.countPages || pageNumber < 0) {
-
-                return alert('Not found such page');
-            }
-
-            page = pageNumber;
+            var page = (pageNumber > this.countPages || pageNumber < 0) ? this.countPages : pageNumber;
 
             this.fetchData(page, this.count, {
-                success: function (model, xhr, options) {
+                success: function () {
                     self.page = page;
+                    APP.paginationNavigate('#lullaby/blog/p=' + page);
                 },
-                error  : function (model, xhr, options) {
-                    alert(xhr.statusText);
+                error  : function (model, xhr) {
+                    APP.handleError(xhr);
                 }
             });
         }

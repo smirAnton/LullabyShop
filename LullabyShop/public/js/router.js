@@ -2,6 +2,7 @@
 
 define(['backbone'], function (Backbone) {
     APP = APP || {};
+
     APP.navigate = function(url) {
         Backbone.history.navigate(url, {trigger: true});
     };
@@ -18,25 +19,27 @@ define(['backbone'], function (Backbone) {
             'lullaby/profile': 'profile',
             'lullaby/contacts': 'contacts',
             'lullaby/checkout': 'checkout',
-            'lullaby/blog(/p=:page)(/c=:count)': 'blogList',
+
+            'lullaby/blog(/p=:page)': 'blogList',
             'lullaby/blog/:id': 'blogDetails',
+
             'lullaby/search/:word(/p=:page)(/c=:count)': 'search',
             'lullaby/categories/:query': 'filter',
             'lullaby/category/:id(/p=:page)(/c=:count)': 'productsCategory',
             'lullaby/product/:id': 'productDetails',
-            'lullaby/activate/choice': 'activationChoice',
-            'lullaby/activate/mobile': 'activateByMobile',
-            'lullaby/activate/mail/:secret': 'activateByMail',
 
+
+            'lullaby/activate/:secret': 'activate',
             'lullaby/recovery/:secret': 'recovery',
 
-            'lullaby/admin': 'admin',
-            'lullaby/admin/chat': 'adminChat',
-            'lullaby/admin/blog': 'adminBlog',
-            'lullaby/admin/user': 'adminUser',
-            'lullaby/admin/product': 'adminProduct',
-            'lullaby/admin/category': 'adminCategory',
-            'lullaby/admin/reminder': 'adminReminder',
+            /* For admin */
+            'lullaby/admin'           : 'admin',
+            'lullaby/admin/chat'      : 'adminChat',
+            'lullaby/admin/blog'      : 'adminBlog',
+            'lullaby/admin/user'      : 'adminUser',
+            'lullaby/admin/product'   : 'adminProduct',
+            'lullaby/admin/category'  : 'adminCategory',
+            'lullaby/admin/reminder'  : 'adminReminder',
             'lullaby/admin/newsletter': 'adminNewsletter',
 
             '*any': 'default'
@@ -208,7 +211,7 @@ define(['backbone'], function (Backbone) {
             }
         },
 
-        blogList: function (page, count) {
+        blogList: function (page) {
             var self = this;
 
             if (!APP.mainView) {
@@ -218,11 +221,11 @@ define(['backbone'], function (Backbone) {
             } else {
                 require(['views/blog/blogList'], function (View) {
                     if (self.view) {
-
                         self.view.undelegateEvents();
                     }
-                    self.view = new View(page, count);
-                })
+
+                    self.view = new View(page);
+                });
             }
         },
 
@@ -336,67 +339,16 @@ define(['backbone'], function (Backbone) {
             }
         },
 
-        activationChoice: function () {
-            APP.authorised = localStorage.getItem('loggedIn');
+        activate: function (secret) {
             var self = this;
 
-            if (APP.authorised) {
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
+            require(['views/auth/activate'], function (View) {
+                if (self.view) {
+                    self.view.undelegateEvents();
+                }
 
-            } else if (!APP.mainView) {
-                APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-
-            } else {
-                require(['views/activation/activationChoice'], function (ActivationChoiceView) {
-                    if (self.view) {
-                        self.view.undelegateEvents();
-                    }
-                    self.view = new ActivationChoiceView();
-                });
-            }
-        },
-
-        activateByMobile: function () {
-            APP.authorised = localStorage.getItem('loggedIn');
-            var self = this;
-
-            if (APP.authorised) {
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-
-            } else if (!APP.mainView) {
-                APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-
-            } else {
-                require(['views/activation/activateByMobile'], function (ActivateByMobileView) {
-                    if (self.view) {
-                        self.view.undelegateEvents();
-                    }
-                    self.view = new ActivateByMobileView();
-                })
-            }
-        },
-
-        activateByMail: function (secret) {
-            APP.authorised = localStorage.getItem('loggedIn');
-            var self = this;
-
-            if (APP.authorised) {
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-
-            } else if (!APP.mainView) {
-                APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-
-            } else {
-                require(['views/activation/activateByMail'], function (activateByMailView) {
-                    if (self.view) {
-                        self.view.undelegateEvents();
-                    }
-                    self.view = new activateByMailView(secret);
-                })
-            }
+                self.view = new View(secret);
+            })
         },
 
         recovery: function (secret) {
@@ -404,35 +356,14 @@ define(['backbone'], function (Backbone) {
 
             require(['views/auth/recovery'], function (View) {
                 if (self.view) {
-
                     self.view.undelegateEvents();
                 }
+
                 self.view = new View(secret);
             });
         },
 
-        setNewPassword: function (secret) {
-            APP.authorised = localStorage.getItem('loggedIn');
-            var self = this;
-
-            if (APP.authorised) {
-
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else if (!APP.mainView) {
-
-                APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
-            } else {
-                require(['views/recovery/setNewPassword'], function (SetNewPasswordView) {
-                    if (self.view) {
-
-                        self.view.undelegateEvents();
-                    }
-                    self.view = new SetNewPasswordView(secret);
-                });
-            }
-        },
-
+        /* Admin routes*/
         admin: function () {
             APP.authorised = localStorage.getItem('loggedIn');
             APP.isAdmin = localStorage.getItem('isAdmin');
@@ -612,6 +543,7 @@ define(['backbone'], function (Backbone) {
             }
         },
 
+        /* default route */
         default: function () {
             APP.authorised = localStorage.getItem('loggedIn');
             Backbone.history.navigate('#lullaby/main', {trigger: true});

@@ -1,34 +1,31 @@
 'use strict';
 
 define([
+    'constant',
     'backbone',
-    'jquery',
-    'constants',
     'underscore',
     'collections/blogs',
     'text!templates/blog/blogList.html'
-], function (Backbone, $, constant, _, BlogCollection, blogListTemplate) {
-    var View = Backbone.View.extend({
+], function (constant, Backbone, _, BlogCollection, blogListTemplate) {
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(blogListTemplate),
 
-        initialize: function (options) {
-            var self = this;
+        initialize: function (pageNumber) {
+            var self      = this;
+            var paginData = constant.pagination;
             var count;
             var page;
 
-            console.log($( "#datepicker" ));
-            $( "#datepicker" ).datepicker();
-
-            options = options       || {};
-            page    = options.page  || constant.FIRST_PAGE;
-            count   = options.count || constant.AMOUNT_OF_TOPICS_PER_PAGE;
+            page  = pageNumber || 1;
+            count = paginData.TOPICS_PER_PAGE;
 
             this.collection = new BlogCollection({
-                reset     : true,
-                data: {
-                    page  : page,
-                    count : count
+                reset: true,
+                data : {
+                    page : page,
+                    count: count
                 }
             });
 
@@ -84,6 +81,7 @@ define([
 
             page = $(e.currentTarget).data("id");
             this.collection.goToPage(page);
+            Backbone.history.navigate('#lullaby/blog/p=' + page);
         },
 
         render: function () {
@@ -96,6 +94,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });

@@ -83,7 +83,7 @@ module.exports = function () {
 
             text   : 'You need to confirm your email address in order to activate your Lullaby account. '
                    + 'Activating your account will give you more benefits and better control. \n'
-                   + 'Please click the link: http://localhost:3000/#lullaby/activate/mail/' + secret
+                   + 'Please click the link: http://localhost:3000/#lullaby/activate/' + secret
         };
 
         sender.sendMail(mailOptions, function (err, result) {

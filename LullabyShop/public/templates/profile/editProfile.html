@@ -1,5 +1,9 @@
 <script>
+    var availableCities = "<%= cities %>".split(',');
+
     $( "#birthday" ).datepicker();
+
+    $( "#city" ).autocomplete({ source: availableCities });
 </script>
 
 <div class="container">

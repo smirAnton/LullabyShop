@@ -16,11 +16,11 @@ define([
         },
 
         events: {
-            'click #registerBtn': 'onRegister',
-            'click #cancelBtn'  : 'onCancel'
+            'click #createAccountBtn': 'onCreateAccount',
+            'click #cancelBtn'       : 'onCancel'
         },
 
-        onRegister: function (e) {
+        onCreateAccount: function (e) {
             var $confirmedPassword = this.$el.find('#confirmedPassword');
             var confirmedPassword;
             var firstname;
@@ -43,18 +43,13 @@ define([
             phone             = this.$el.find('#phone').val();
             gender            = this.$el.find('[name=gender]:checked').val();
 
-            if (fail = validator.isPassword(confirmedPassword)||
-                       validator.isPassword(password)         ||
-                       validator.isMobile(phone)              ||
-                       validator.isEmail(email)) {
+            if (fail = validator.isPassword(confirmedPassword)                   ||
+                       validator.isPassword(password)                            ||
+                       validator.isMobile(phone)                                 ||
+                       validator.isEmail(email)                                  ||
+                       validator.isMatchedPasswords(password, confirmedPassword)) {
 
-                return APP.notification(fail);
-            }
-
-            if (password !== confirmedPassword) {
-                $confirmedPassword.val('');
-
-                return APP.notification('Passwords not matched. Please try again');
+                return APP.showErrorAlert(fail);
             }
 
             userData = {
@@ -72,7 +67,9 @@ define([
                 url    : '/register',
                 data   : userData,
                 success: function (response) {
-                    APP.notification(response.success);
+                    APP.showSuccessAlert(response.success);
+                    APP.navigate('#lullaby/shop');
+                    APP.activate = true;
                 },
                 error  : function (err) {
                     APP.handleError(err);

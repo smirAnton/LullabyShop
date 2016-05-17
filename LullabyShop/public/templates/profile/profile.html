@@ -49,6 +49,12 @@
             </form>
         </div>
     </div>
+    <%
+        var orders = user.orders;
+        if (!orders.length) {
+    %>
+    <h1 class="page-header">You don't have any orders yet</h1>
+    <% } else { %>
     <h1 class="page-header">Your orders</h1>
     <div class="row">
         <div class="row">
@@ -64,7 +70,6 @@
                 </thead>
                 <tbody>
                     <%
-                        var orders = user.orders;
                         var limit = orders.length;
                         var positionCounter = 0;
                         var index;
@@ -79,7 +84,7 @@
                         <td><%= orders[index].products.length %></td>
                         <td><%= orders[index].totalSum %></td>
                     </tr>
-                    <% } %>
+                    <% }} %>
                 </tbody>
             </table>
         </div>

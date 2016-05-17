@@ -6,16 +6,16 @@ require.config({
     paths: {
         underscore       : './libs/underscore/underscore',
         bootstrap        : './libs/bootstrap/dist/js/bootstrap.min',
-        jquery_ui        : './libs/jquery-ui/jquery-ui',
         socketio         : '../socket.io/socket.io',
         backbone         : './libs/backbone/backbone',
+        jquery_ui        : './libs/jquery_ui_custom/jquery-ui.min',
         jquery           : './libs/jquery/dist/jquery',
         toastr           : './libs/toastr/toastr.min',
         moment           : './libs/moment/moment',
         text             : './libs/text/text',
 
-        constants        : './constants/magicNumbers',
         validator        : './helpers/validator',
+        constant         : './constants/constants',
         dater            : './helpers/dater',
 
         collections      : './collections',

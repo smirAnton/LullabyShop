@@ -2,6 +2,7 @@
 
 define([
     'dater',
+    'constant',
     'backbone',
     'validator',
     'underscore',
@@ -9,19 +10,20 @@ define([
     'text!templates/profile/profile.html',
     'text!templates/profile/editProfile.html',
     'text!templates/profile/changePassword.html'
-], function (dater, Backbone, validator, _, UserModel, profileTemplate, editProfileTemplate, changePasswordTemplate) {
+], function (dater, constant, Backbone, validator, _, UserModel, profileTemplate, editProfileTemplate, changePasswordTemplate) {
 
     return Backbone.View.extend({
         el      : "#content",
         template: _.template(profileTemplate),
 
         initialize: function () {
-            var self   = this;
+            var self = this;
 
             new UserModel({_id: APP.session.userId})
                .fetch({
                     success: function (response) {
-                        self.model = response.attributes;
+                        self.cities = constant.autocompletes.CITIES;
+                        self.model  = response.attributes;
                         self.render();
                     },
                     error  : function (err, xhr) {
@@ -170,7 +172,7 @@ define([
 
             new UserModel({_id: APP.session.userId})
                 .save(userData, {
-                   success: function (response) {
+                   success: function () {
                        self.template = _.template(profileTemplate);
                        self.initialize();
                    },
@@ -182,8 +184,9 @@ define([
 
         render: function () {
             this.$el.html(this.template({
-                dater: dater,
-                user : this.model
+                dater : dater,
+                cities: this.cities,
+                user  : this.model
             }));
 
             return this;

@@ -6,7 +6,8 @@ define([
     'models/blog',
     'text!templates/blog/blogDetails.html'
 ], function (Backbone, _, BlogModel, blogTemplate) {
-    var View = Backbone.View.extend({
+
+    return Backbone.View.extend({
         el      : "#content",
         template: _.template(blogTemplate),
 
@@ -16,7 +17,8 @@ define([
 
             blog = new BlogModel({_id: blogId});
             blog.fetch({
-                success: function() {
+                success: function(response) {
+                    console.log(response);
                     self.model = blog;
                     self.render();
                 },
@@ -32,6 +34,4 @@ define([
             return this;
         }
     });
-
-    return View;
 });
