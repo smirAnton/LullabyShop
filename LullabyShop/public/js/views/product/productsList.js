@@ -58,41 +58,41 @@ define([
         },
 
         onSortByPrice: function(e) {
-            e.stopPropagation();
             e.preventDefault();
 
             this.collection.sortByField('price');
         },
 
         onSortByDate: function(e) {
-            e.stopPropagation();
             e.preventDefault();
 
             this.collection.sortByField('createdDate');
         },
 
         onSortByTitle: function(e) {
-            e.stopPropagation();
             e.preventDefault();
 
             this.collection.sortByField('title');
         },
 
         onAddProduct: function(e) {
-            var self = this;
             var productId;
-            var basket;
+            var product;
 
             e.stopPropagation();
             e.preventDefault();
 
-            productId = $(e.currentTarget).data("id");
+            productId = this.$el.find(e.currentTarget).data("id");
+            product   = this.collection.get(productId);
 
             $.ajax({
-                url    : '/lullaby/basket/add',
                 type   : 'POST',
+                url    : '/lullaby/basket/add',
                 data   : {productId: productId},
-                success: function(response) {
+                success: function() {
+                    APP.session.totalSum += product.attributes.price;
+                    APP.session.basket.push(productId);
+
                     APP.channel.trigger('addProductToBasket');
                 },
                 error: function(err) {
@@ -102,26 +102,22 @@ define([
         },
 
         onNext: function (e) {
-            e.stopPropagation();
             e.preventDefault();
 
             this.collection.nextPage();
         },
 
         onPrev: function (e) {
-            e.stopPropagation();
             e.preventDefault();
 
             this.collection.prevPage();
         },
 
         onGoToPage: function(e) {
-            var pageNumber;
+            var pageNumber = this.$el.find(e.currentTarget).data("id");
 
-            e.stopPropagation();
             e.preventDefault();
 
-            pageNumber = $(e.currentTarget).data("id");
             this.collection.goToPage(pageNumber);
         },
 

@@ -16,6 +16,7 @@ require.config({
 
         validator        : './helpers/validator',
         constant         : './constants/constants',
+        helper            : './helpers/helper',
         dater            : './helpers/dater',
 
         collections      : './collections',

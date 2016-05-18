@@ -41,18 +41,30 @@ define([
 
         onRemoveProductFromBasket: function (e) {
             var self = this;
+            var removeIndex;
             var productId;
+            var product;
 
             e.stopPropagation();
             e.preventDefault();
 
             productId = $(e.currentTarget).data("id");
 
+            removeIndex = APP.session.basket
+                .map(function (product) { return product._id; })
+                .indexOf(productId);
+
+            APP.session.basket.splice(removeIndex, 1);
+
             $.ajax({
                 type   : 'POST',
                 url    : '/lullaby/basket/remove',
-                data   : {productId: productId},
+                data   : {
+                    removeIndex: removeIndex,
+                    productId  : productId
+                },
                 success: function(response) {
+                    APP.session.basket.splice(removeIndex, 1);
                     self.initialize();
                 },
                 error  : function(err) {

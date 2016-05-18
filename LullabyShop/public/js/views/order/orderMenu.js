@@ -13,26 +13,17 @@ define([
         initialize: function () {
             var self = this;
 
-            $.ajax({
-                url : '/lullaby/basket',
-                type: 'GET',
-                success: function(response) {
-                    self.totalSum = response.totalSum;
-                    self.count    = response.count;
-                    self.render();
-                },
-                error: function(err) {
-                    APP.notification(err);
-                }
-            });
+            this.render();
 
             APP.channel.on('addProductToBasket', function () {
-                self.initialize();
+                self.render();
             });
         },
 
         render: function () {
-            this.$el.html(this.template({totalSum: this.totalSum, count: this.count}));
+            this.$el.html(this.template({
+                countProducts: APP.session.basket.length,
+                totalSum     : APP.session.totalSum}));
 
             return this;
         }

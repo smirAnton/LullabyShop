@@ -1,13 +1,14 @@
 'use strict';
 
-define(
-    function () {
+define(['underscore'],
+    function (_) {
         var phoneSecretRegExp = /\d{4}/;
+        var digitsRegExp      = /^[0-9]/;
         var skypeRegExp       = /^[\w\._@]{6,100}$/;
         var phoneRegExp       = /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/;
         var emailRegExp       = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        var  dateRegExp       = /^\d{2}\/\d{2}\/\d{4}$/;
-        var  nameRegExp       = /^[a-zA-Z]+[a-zA-Z-_\s]+$/;
+        var dateRegExp        = /^\d{2}\/\d{2}\/\d{4}$/;
+        var nameRegExp        = /^[a-zA-Z]+[a-zA-Z-_\s]+$/;
 
         function isPassword (password) {
             if (!password || !password.trim().length) {
@@ -17,10 +18,8 @@ define(
         }
 
         function isEmail(email) {
-            if (!email.match(emailRegExp)) {
 
-                return 'Not email. Please, try again';
-            }
+           return email.match(emailRegExp) ? '' : 'Not email. Please, try again';
         }
 
         function isMobile(phone) {
@@ -68,8 +67,15 @@ define(
             }
         }
 
+        function isPositiveDigit(value) {
+
+            return value && !_.isNaN(parseInt(value)) && value < 0
+        }
+
+
         return {
             isMatchedPasswords: isMatchedPasswords,
+            isPositiveDigit   : isPositiveDigit,
             isPhoneSecret     : isPhoneSecret,
             isBirthday        : isBirthday,
             isPassword        : isPassword,

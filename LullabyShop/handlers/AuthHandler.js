@@ -2,6 +2,7 @@
 
 var ActivateTokenModel = require('../models/ActivateToken');
 var RecoveryTokenModel = require('../models/RecoveryToken');
+var ProductModel       = require('../models/Product');
 var UserModel          = require('../models/User');
 
 var async              = require('async');
@@ -35,8 +36,33 @@ var AuthenticationHandler = function () {
     };
 
     this.getSessionData = function (req, res, next) {
-        var session = req.session || {};
-        res.status(200).send(session);
+        var session = req.session    || {};
+        var basket  = session.basket || [];
+
+        ProductModel
+            .find({_id: {$in: basket}}, {_id: 1, price: 1}, function (err, products) {
+                var limit = products.length;
+                var barrier = basket.length;
+                var totalSum = 0;
+                var index;
+                var step;
+
+                if (err) {
+
+                    return next(err);
+                }
+
+                for (step = barrier - 1; step >= 0; step -= 1) {
+                    for (index = limit - 1; index >= 0; index -= 1) {
+                        if (basket[step] == products[index]._id) {
+                            totalSum += products[index].price;
+                        }
+                    }
+                }
+
+                session.totalSum = totalSum;
+                res.status(200).send(session);
+            });
     };
 
     // authentication

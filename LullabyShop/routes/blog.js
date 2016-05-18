@@ -11,7 +11,6 @@ module.exports = function () {
     var security = new AuthHandler();
 
     router.get   ('/',       security.forAll,    handler.fetch);
-    router.get   ('/count',  security.forAll,    handler.count);
     router.post  ('/',       security.onlyAdmin, handler.create);
     router.post  ('/search', security.forAll,    handler.search);
     router.get   ('/:id',    security.forAll,    handler.fetchById);

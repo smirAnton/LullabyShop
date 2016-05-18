@@ -43,35 +43,6 @@ var BasketHandler = function () {
         res.status(200).send({success: 'Product removed from basket'});
     };
 
-    this.getCurrentUserBasketData = function (req, res, next) {
-        var session  = req.session    || {};
-        var basket   = session.basket || [];
-
-        ProductModel
-            .find({_id: {$in: basket}}, {_id: 1, price: 1}, function (err, products) {
-                var limit    = products.length;
-                var barrier  = basket.length;
-                var totalSum = 0;
-                var index;
-                var step;
-
-                if (err) {
-
-                    return next(err);
-                }
-
-                for (step = barrier - 1; step >= 0; step -= 1) {
-                    for (index = limit - 1; index >= 0; index -= 1) {
-                        if (basket[step] == products[index]._id) {
-                            totalSum += products[index].price;
-                        }
-                    }
-                }
-
-                res.status(200).send({count: barrier, totalSum: totalSum});
-            });
-    };
-
     this.getDetailsUserBasketData = function (req, res, next) {
         var session  = req.session    || {};
         var basket   = session.basket || [];

@@ -5,59 +5,51 @@ var BlogModel = require('../models/Blog');
 var validator = require('../helpers/validator')();
 var constant  = require('../constants/magicNumbers');
 
+var async     = require('async');
+
 var BlogHandler = function () {
 
     this.fetch = function (req, res, next) {
         var query = req.query;
-        var limit = parseInt(query.count) || constant.AMOUNT_OF_TOPICS_PER_PAGE;
-        var page  = parseInt(query.page)  || constant.FIRST_PAGE;
+        var limit = parseInt(query.count) || constant.TOPICS_PER_PAGE;
+        var page  = parseInt(query.page)  || constant.DEFAULT_PAGE;
         var skip  = (page - 1) * limit;
 
-        BlogModel
-            .find({}, {__v: 0})
-            .lean()
-            .count(function (err, amount) {
-                if (err) {
+        async.parallel([
+            function(callback) {
+                BlogModel
+                    .find({}, {__v: 0})
+                    .lean()
+                    .count(function (err, amount) {
 
-                    return next(err);
-                }
-
+                        return callback(err, {amount: amount})
+                    });
+            },
+            function(callback) {
                 BlogModel
                     .find({}, {__v: 0})
                     .skip(skip)
                     .limit(limit)
                     .lean()
                     .exec(function (err, topics) {
-                        if (err) {
 
-                            return next(err);
-                        }
-
-                        if (!topics) {
-
-                            return res.status(404).send({fail: 'Not found'})
-                        }
-
-                        topics[0] = topics[0] || {};
-                        topics[0].count = amount;
-
-                        res.status(200).send(topics);
+                        return callback(err, topics);
                     });
-            });
-    };
+            }
+        ], function(err, result) {
+            var amount = result[0].amount;
+            var blogs  = result[1];
 
-    this.count = function (req, res, next) {
-        BlogModel
-            .find({}, {__v: 0})
-            .lean()
-            .count(function (err, amount) {
-                if (err) {
+            if (err) {
 
-                    return next(err);
-                }
+                return next(err);
+            }
 
-                res.status(200).send({count: amount});
-            });
+            blogs[0]        = blogs[0] || {};
+            blogs[0].amount = amount   || 0;
+
+            res.status(200).send(blogs);
+        });
     };
 
     this.fetchById = function (req, res, next) {

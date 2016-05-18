@@ -1,14 +1,13 @@
 'use strict';
 
-define(['moment'],
-    function (moment) {
+define(['moment'], function (moment) {
 
-        var formatDate = function(date) {
-            return moment(date).format('L');
-        };
+    function formatDate(date) {
 
-        return {
-            formatDate: formatDate
-        }
+        return moment(date).format('L');
     }
-);
+
+    return {
+        formatDate: formatDate
+    }
+});

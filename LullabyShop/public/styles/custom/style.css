@@ -2,6 +2,14 @@ table thead tr th, td{
     text-align: center;
 }
 
+.positionInCenter{
+    text-align: center;
+}
+
+.positionInRight{
+    text-align: right;
+}
+
 #notification {
     position: fixed;
     left: -20%;

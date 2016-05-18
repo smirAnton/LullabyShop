@@ -13,23 +13,21 @@ define([
 
         initialize: function (blogId) {
             var self = this;
-            var blog;
 
-            blog = new BlogModel({_id: blogId});
-            blog.fetch({
-                success: function(response) {
-                    console.log(response);
-                    self.model = blog;
-                    self.render();
-                },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
-                }
-            });
+            new BlogModel({_id: blogId})
+                .fetch({
+                    success: function(response) {
+                        self.model = response.toJSON();
+                        self.render();
+                    },
+                    error: function (err, xhr) {
+                        APP.handleError(xhr);
+                    }
+                });
         },
 
         render: function () {
-            this.$el.html(this.template({blog : this.model.attributes}));
+            this.$el.html(this.template({ topic: this.model }));
 
             return this;
         }

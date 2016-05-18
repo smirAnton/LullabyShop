@@ -17,10 +17,11 @@ define([
             success: function(session){
                 APP.session          = {};
                 APP.loggedIn         = session.loggedIn  || false;
-                APP.session.username = session.firstname || 'Anonymous';
-                APP.session.isAdmin  = session.isAdmin   || false;
                 APP.session.userId   = session.userId    || null;
                 APP.session.basket   = session.basket    || [];
+                APP.session.isAdmin  = session.isAdmin   || false;
+                APP.session.username = session.firstname || 'Anonymous';
+                APP.session.totalSum = session.totalSum  || 0;
 
                 APP.channel = _.extend({}, Backbone.Events);
 
@@ -52,6 +53,10 @@ define([
                 });
                 break;
 
+            case 404: // Not exist such page
+                APP.showErrorAlert(err.responseJSON.fail);
+                break;
+
             default:
                 APP.showWarningAlert(err.responseJSON.fail);
                 break;
@@ -62,8 +67,8 @@ define([
         Backbone.history.navigate(url, {trigger: true});
     };
 
-    APP.paginationNavigate = function(url) {
-        Backbone.history.navigate(url);
+    APP.blogsPaginNavigate = function(pageNumber) {
+        Backbone.history.navigate('#lullaby/blog/p=' + pageNumber);
     };
 
     APP.showSuccessAlert = function(message) {

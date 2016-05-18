@@ -29,8 +29,8 @@ define([
 
             this.fetchData(this.page, this.count, {
                 success: function (response) {
-                    self.countTopics = response.models[0].attributes.count;
-                    self.countPages  = Math.ceil(self.countTopics / self.count);
+                    self.countTopics = response.models[0].attributes.amount;
+                    self.countPages  = Math.ceil(self.countTopics / 4);
                 },
                 error  : function (err, xhr) {
                     APP.handleError(xhr);
@@ -63,14 +63,13 @@ define([
 
         nextPage: function(){
             var self = this;
-            var page = this.page + 1;
+            var page = (this.page + 1 > this.countPages) ? this.countPages : this.page + 1;
 
-            page = (page > this.countPages) ? this.countPages : page;
+            APP.blogsPaginNavigate(page);
 
             this.fetchData(page, this.count, {
                 success: function () {
                     self.page = page;
-                    APP.paginationNavigate('#lullaby/blog/p=' + page);
                 },
                 error  : function (model, xhr) {
                    APP.handleError(xhr);
@@ -80,14 +79,13 @@ define([
 
         prevPage: function(){
             var self = this;
-            var page = this.page - 1;
+            var page = this.page - 1 || 1;
 
-            page = page || 1;
+            APP.blogsPaginNavigate(page);
 
             this.fetchData(page, this.count, {
                 success: function () {
                     self.page = page;
-                    APP.paginationNavigate('#lullaby/blog/p=' + page);
                 },
                 error  : function (model, xhr) {
                     APP.handleError(xhr);
@@ -99,10 +97,11 @@ define([
             var self = this;
             var page = (pageNumber > this.countPages || pageNumber < 0) ? this.countPages : pageNumber;
 
+            APP.blogsPaginNavigate(page);
+
             this.fetchData(page, this.count, {
                 success: function () {
                     self.page = page;
-                    APP.paginationNavigate('#lullaby/blog/p=' + page);
                 },
                 error  : function (model, xhr) {
                     APP.handleError(xhr);
