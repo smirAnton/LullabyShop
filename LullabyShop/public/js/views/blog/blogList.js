@@ -17,7 +17,7 @@ define([
         initialize: function (pageNumber) {
             var self   = this;
             this.page  = pageNumber;
-            // use default amount topics for page = 4
+            // use default amount topics per page 4
             this.count = constant.pagination.TOPICS_PER_PAGE;
 
             this.collection = new Collection({

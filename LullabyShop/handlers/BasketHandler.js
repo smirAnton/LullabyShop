@@ -1,79 +1,80 @@
 'use strict';
 
-var validator = require('../helpers/validator')();
-
 var ProductModel = require('../models/Product');
+
+var validator    = require('../helpers/validator')();
 
 var BasketHandler = function () {
 
     this.addProductToBasket = function (req, res, next) {
-        var session   = req.session || {};
         var body      = req.body    || {};
+        var session   = req.session || {};
         var productId = body.productId;
 
-        if (!productId) {
+        if (!validator.isId(productId)) {
 
             return res.status(400).send({fail: 'Unknown product'});
         }
 
-        session.basket = session.basket || [];
+        // add productId to basket
         session.basket.push(productId);
 
         res.status(200).send({success: 'Product added to basket'});
     };
 
     this.removeProductFromBasket = function (req, res, next) {
-        var session   = req.session    || {};
-        var body      = req.body       || {};
-        var basket    = session.basket || [];
-        var productId = body.productId;
-        var removeIndex;
+        var session     = req.session    || {};
+        var body        = req.body       || {};
+        var basket      = session.basket || [];
+        var removeIndex = body.removeIndex;
 
-        if (!validator.isEmptyBasket(basket)) {
+        if (!basket.length) {
 
             return res.status(400).send({fail: 'Basket is empty'});
         }
-
-        removeIndex = basket
-            .map(function (product) { return product._id; })
-            .indexOf(productId);
 
         session.basket.splice(removeIndex, 1);
 
         res.status(200).send({success: 'Product removed from basket'});
     };
 
-    this.getDetailsUserBasketData = function (req, res, next) {
-        var session  = req.session    || {};
-        var basket   = session.basket || [];
+    this.fetchBasketProducts = function (req, res, next) {
+        var session = req.session    || {};
+        var basket  = session.basket || [];
+        var options = {
+            _id        : 1,
+            title      : 1,
+            price      : 1,
+            mainImage  : 1,
+            productCode: 1
+        };
 
         ProductModel
-            .find({_id: {$in: basket}}, {_id: 1, title: 1, price: 1, mainImage: 1, productCode: 1}, function (err, products) {
-                var limit    = products.length;
-                var barrier  = basket.length;
-                var result   = [];
-                var totalSum = 0;
+            .find({_id: {$in: basket}}, options)
+            .lean()
+            .exec(function (err, productsFromDb) {
+                var limit   = basket.length;
+                var barrier = productsFromDb.length;
+                var result  = [];
                 var index;
                 var step;
-                var _temp;
 
                 if (err) {
 
                     return next(err);
                 }
 
-                for (step = barrier - 1; step >= 0; step -= 1) {
-                    for (index = limit - 1; index >= 0; index -= 1) {
-                        if (basket[step] == products[index]._id) {
-                            _temp = products[index];
+                for (step = 0; step < limit; step += 1) {
 
-                            result.push(_temp);
-                            totalSum += _temp.price
+                    for (index = barrier - 1; index >= 0; index -= 1) {
+
+                        if (basket[step] == productsFromDb[index]._id) {
+                            result.push(productsFromDb[index]);
                         }
                     }
                 }
 
-                res.status(200).send({products: JSON.stringify(result), totalSum: totalSum, count: barrier});
+                res.status(200).send(result);
             });
     };
 };

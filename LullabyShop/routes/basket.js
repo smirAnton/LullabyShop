@@ -10,7 +10,7 @@ module.exports = function () {
     var handler  = new BasketHandler();
     var security = new AuthHandler();
 
-    router.get ('/details',security.forAll, handler.getDetailsUserBasketData);
+    router.get ('/',       security.forAll, handler.fetchBasketProducts);
     router.post('/add',    security.forAll, handler.addProductToBasket);
     router.post('/remove', security.forAll, handler.removeProductFromBasket);
 

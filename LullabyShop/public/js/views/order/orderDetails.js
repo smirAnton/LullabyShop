@@ -18,12 +18,9 @@ define([
 
             $.ajax({
                 type: 'GET',
-                url : '/lullaby/basket/details',
-                success: function(response) {
-                    self.collection = JSON.parse(response.products);
-                    self.totalSum   = response.totalSum;
-                    self.count      = response.count;
-
+                url : '/lullaby/basket',
+                success: function(products) {
+                    self.collection = products;
                     self.render();
                 },
                 error: function(err) {
@@ -43,29 +40,20 @@ define([
             var self = this;
             var removeIndex;
             var productId;
-            var product;
 
             e.stopPropagation();
             e.preventDefault();
 
-            productId = $(e.currentTarget).data("id");
-
-            removeIndex = APP.session.basket
-                .map(function (product) { return product._id; })
-                .indexOf(productId);
-
-            APP.session.basket.splice(removeIndex, 1);
+            productId   = this.$el.find(e.currentTarget).data("id");
+            removeIndex = this.collection.indexOf(productId);
 
             $.ajax({
                 type   : 'POST',
                 url    : '/lullaby/basket/remove',
-                data   : {
-                    removeIndex: removeIndex,
-                    productId  : productId
-                },
-                success: function(response) {
-                    APP.session.basket.splice(removeIndex, 1);
-                    self.initialize();
+                data   : { removeIndex: removeIndex },
+                success: function() {
+                    self.collection.splice(removeIndex, 1);
+                    self.render();
                 },
                 error  : function(err) {
                     APP.handleError(err);
@@ -142,7 +130,7 @@ define([
 
             order.save(null, {
                 success: function (response, xhr) {
-                    APP.notification(xhr.success);
+                    APP.showSuccessAlert(xhr.success);
                     Backbone.history.navigate('lullaby/shop', {trigger: true});
                 },
                 error: function (err, xhr) {
@@ -154,9 +142,8 @@ define([
         render: function () {
             this.$el.html(this.template({
                 collection: this.collection,
-                totalSum: this.totalSum,
-                count   : this.count,
-                user  : this.userData})
+                totalSum  : APP.session.totalSum,
+                user      : this.userData})
             );
 
             return this;

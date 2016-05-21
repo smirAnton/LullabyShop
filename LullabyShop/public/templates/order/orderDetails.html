@@ -1,3 +1,4 @@
+<% var count = collection.length; %>
 <div class="container">
     <div class="check">
         <div class="col-md-3 cart-total">
@@ -5,7 +6,7 @@
             <div class="price-details">
                 <h3>Price Details</h3>
                 <span>Total</span>
-                <span class="total1"><%= totalSum %></span>
+                <span class="total1"><%= count %></span>
                 <span>Discount</span>
                 <span class="total1">---</span>
                 <div class="clearfix"></div>
@@ -25,16 +26,19 @@
         <div class="col-md-9 cart-items">
             <h1>My Shopping Bag (<%= count %>)</h1>
             <%
-                _.each(collection, function(product) {
+                var index;
+                for(index = count - 1; index >=0; index -= 1) {
             %>
             <div class="cart-header">
-                <div id="removeProductFromBasketBtn" data-id="<%= product._id %>" class="close1"></div>
+                <div id="removeProductFromBasketBtn" data-id="<%= collection[index]._id %>" class="close1"></div>
                 <div class="cart-sec simpleCart_shelfItem">
                     <div class="cart-item cyc">
-                        <img src="<%= product.mainImage %>" class="img-responsive" alt=""/>
+                        <img src="<%= collection[index].mainImage %>" class="img-responsive" alt=""/>
                     </div>
                     <div class="cart-item-info">
-                        <h3><%= product.title %><span>Product code No: <%= product.productCode %></span></h3>
+                        <h3><%= collection[index].title %>
+                            <span>Product code No: <%= collection[index].productCode %></span>
+                        </h3>
                         <ul class="qty">
                             <li><p>Size : M</p></li>
                             <li><p>Qty : 1</p></li>
@@ -48,7 +52,7 @@
                     <div class="clearfix"></div>
                 </div>
             </div>
-            <% }) %>
+            <% } %>
         </div>
         <div class="clearfix"></div>
     </div>

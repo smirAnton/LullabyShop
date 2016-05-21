@@ -1,67 +1,65 @@
-<%
-    var chunks = function(array, size) {
-        var results = [];
-        while (array.length) {
-            results.push(array.splice(0, size));
-        }
-        return results;
-    }
-%>
+<% productsChunk = helper.chunks(products, 4) %>
 <div class="container">
     <div class="col-md-9 w_content">
+
+        <!-- sorts menu -->
         <div class="women">
-            <a href="#"><h4>Night wear - <span><%= countProducts %> items</span></h4></a>
+            <a href="javascript:;"><h4>Night wear - <span><%= countProducts %> items</span></h4></a>
             <ul class="w_nav">
                 <li>Sort :</li>
-                <li><a id="sortByDateBtn" href="#">new </a></li>
+                <li><a id="sortByDateBtn" href="javascript:;">new </a></li>
                 |
-                <li><a id="sortByTitleBtn" href="#">title </a></li>
+                <li><a id="sortByTitleBtn" href="javascript:;">title </a></li>
                 |
-                <li><a id="sortByPriceBtn" href="#">price: Low High </a></li>
-                <div class="clear"></div>
+                <li><a id="sortByPriceBtn" href="javascript:;">price: Low High </a></li>
             </ul>
             <div class="clearfix"></div>
         </div>
+
+        <!-- product list -->
         <div class="grids_of_4">
             <%
-                var productsJson = products.toJSON();
-                var partsForFourProducts = chunks(productsJson, 4);
+                if (productsChunk.length > 1) {
 
-                if (!countProducts) {
-
+                    var index = productsChunk.length - 1;
+                    for (; index >= 0; index -= 1) {
             %>
             <div class="grids_of_4">
-                <p style="text-align:center"><img src="images/defaults/product_404.png"></p>
-            </div>
-
             <%
-                } else {
-                _.each(partsForFourProducts, function(partOfProducts) {
-            %>
-            <div class="grids_of_4">
-                <% _.each(partOfProducts, function(product) { %>
-                <div class="grid1_of_4">
-                    <div class="content_box">
-                        <a href="#lullaby/product/<%= product._id %>">
-                            <img src="<%= product.searchImage %>" class="img-responsive" alt=""/>
-                        </a>
-                        <h4><a href="#lullaby/product/<%= product._id %>"><%= product.title %></a></h4>
-                        <p><%= product.brand %></p>
-                        <div class="grid_1 simpleCart_shelfItem">
-                            <div class="item_add"><span class="item_price"><h6>ONLY <%= product.price %> UAH</h6></span>
-                            </div>
-                            <div class="item_add">
-                                <span class="item_price">
-                                    <a id="addProductBtn" data-id="<%= product._id %>" href="#">add to cart</a>
-                                </span>
-                            </div>
+                        var part = productsChunk[index];
+                        var step = part.length - 1;
+
+
+                        for (; step >= 0; step -=1) {
+                            var product = part[step];
+                %>
+            <div class="grid1_of_4">
+                <div class="content_box">
+                    <a href="#lullaby/product/<%= product._id %>">
+                        <img src="<%= product.searchImage %>" class="img-responsive" />
+                    </a>
+                    <h4><a href="#lullaby/product/<%= product._id %>"><%= product.title %></a></h4>
+                    <p><%= product.brand %></p>
+                    <div class="grid_1 simpleCart_shelfItem">
+                        <div class="item_add"><span class="item_price"><h6>ONLY <%= product.price %> UAH</h6></span>
+                        </div>
+                        <div class="item_add">
+                            <span class="item_price">
+                                <a id="addProductBtn" data-id="<%= product._id %>" href="#">add to cart</a>
+                            </span>
                         </div>
                     </div>
                 </div>
-                <% }); %>
             </div>
-            <% });} %>
+
         </div>
+            <%
+                }}} else {
+            %>
+        <div class="grids_of_4">
+            <p style="text-align:center"><img src="images/defaults/product_404.png"></p>
+        </div>
+            <% } %>
     </div>
     <nav class="defaultImagePosition">
         <ul class="pagination">

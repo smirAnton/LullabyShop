@@ -39,7 +39,7 @@ define([
 
             this.addProductToBasket(this.model);
 
-            APP.channel.trigger('addProductToBasket');
+            APP.channel.trigger('basket');
         },
 
         onLeaveComment: function (e) {

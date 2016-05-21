@@ -11,7 +11,7 @@ define(['backbone'], function (Backbone) {
         view: null,
         routes: {
             'lullaby/main': 'main',
-            'lullaby/shop(/p=:page)(/c=:count)': 'shop',
+            'lullaby/shop(/p=:page)': 'shop',
             'lullaby/help': 'help',
             'lullaby/chat': 'chat',
             'lullaby/about': 'aboutUs',
@@ -47,37 +47,33 @@ define(['backbone'], function (Backbone) {
 
         main: function () {
             if (APP.mainView) {
-
                 Backbone.history.navigate('#lullaby/shop', {trigger: true});
-            } else {
-                require(['views/main'], function (MainView) {
 
-                    APP.mainView = new MainView();
+            } else {
+                require(['views/main'], function (View) {
+
+                    APP.mainView = new View();
                 });
             }
         },
 
-        shop: function (page, count) {
+        shop: function (page) {
             var self = this;
-            var options;
+            Backbone.history.navigate('#lullaby/shop/p=1');
+            console.log(page)
 
             if (!APP.mainView) {
                 APP.next = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/main', {trigger: true});
+                APP.navigate('#lullaby/main');
 
             } else {
-                require(['views/home'], function (HomeView) {
+                require(['views/home'], function (View) {
                     if (self.view) {
 
                         self.view.undelegateEvents();
                     }
-                    options = {
-                        page: page,
-                        count: count
-                    };
 
-                    self.view = new HomeView(options);
-                    APP.homeView = self.view;
+                    APP.homeView = self.view = new View(page);
                 });
             }
         },

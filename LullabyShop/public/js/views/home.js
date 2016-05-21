@@ -15,11 +15,8 @@ define([
         el: "#content",
         template: _.template(homeTemplate),
 
-        initialize: function (options) {
+        initialize: function (page) {
             var next = APP.nextView;
-            var collection;
-            var count;
-            var page;
 
             this.render();
 
@@ -57,7 +54,7 @@ define([
                     this.productView.undelegateEvents()
                 }
 
-                this.productView = new ProductListView();
+                this.productView = new ProductListView(page);
             }
         },
 

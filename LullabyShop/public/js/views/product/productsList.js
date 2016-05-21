@@ -1,50 +1,32 @@
 'use strict';
 
 define([
+    'helper',
     'constant',
     'backbone',
     'underscore',
     'models/product',
     'collections/products',
     'text!templates/product/productsList.html'
-], function (constant, Backbone, _, ProductModel, ProductCollection, productListTemplate) {
+], function (helper, constant, Backbone, _, ProductModel, Collection, productListTemplate) {
 
     return Backbone.View.extend({
         el      : "#products",
         template: _.template(productListTemplate),
 
-        initialize: function (options) {
-            var self = this;
-            var searchWord;
-            var categoryId;
-            var filter;
-            var count;
-            var page;
+        initialize: function (pageNumber) {
+            var self   = this;
+            this.page  = pageNumber;
+            // use default amount products per page 12
+            this.count = constant.pagination.PRODUCTS_PER_PAGE;
 
-            options    = options       || {};
-            page       = options.page  || 1;
-            count      = options.count || 12;
-            categoryId = options.categoryId;
-            searchWord = options.searchWord;
-            filter     = options.filter;
-
-            this.collection = new ProductCollection({
-                reset     : true,
-                searchWord: searchWord,
-                categoryId: categoryId,
-                filter    : filter,
-                data: {
-                    page  : page,
-                    count : count
-                }
+            this.collection = new Collection({
+                reset: true,
+                data : { page: self.page, count: self.count }
             });
 
-            this.collection.on('sync', function() {
-                self.countProducts = self.collection.countProducts;
-                self.countPages    = self.collection.countPages;
-                self.render();}, self.collection);
-
-            this.collection.on('sort', function() {self.render()}, self.collection);
+            this.collection.on('sync', function() { self.render() }, self.collection);
+            this.collection.on('sort', function() { self.render() }, self.collection);
         },
 
         events: {
@@ -76,24 +58,21 @@ define([
         },
 
         onAddProduct: function(e) {
-            var productId;
-            var product;
+            var productId = this.$el.find(e.currentTarget).data("id");
+            var product   = this.collection.get(productId);
 
             e.stopPropagation();
             e.preventDefault();
 
-            productId = this.$el.find(e.currentTarget).data("id");
-            product   = this.collection.get(productId);
-
             $.ajax({
                 type   : 'POST',
                 url    : '/lullaby/basket/add',
-                data   : {productId: productId},
+                data   : { productId: productId },
                 success: function() {
                     APP.session.totalSum += product.attributes.price;
                     APP.session.basket.push(productId);
 
-                    APP.channel.trigger('addProductToBasket');
+                    APP.channel.trigger('changeBasketStatus');
                 },
                 error: function(err) {
                     APP.handleError(err);
@@ -123,9 +102,11 @@ define([
 
         render: function () {
             this.$el.html(this.template({
-                countProducts: this.countProducts,
-                countPages   : this.countPages,
-                products     : this.collection}));
+                countProducts: this.collection.countProducts,
+                countPages   : this.collection.countPages,
+                products     : this.collection.toJSON(),
+                helper       : helper})
+            );
 
             return this;
         }

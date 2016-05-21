@@ -13,11 +13,21 @@ define([
         initialize: function () {
             var self = this;
 
-            this.render();
+            $.ajax({
+                url    : '/session',
+                type   :'GET',
+                success: function(session){
+                    APP.session.basket   = session.basket   || [];
+                    APP.session.totalSum = session.totalSum || 0;
 
-            APP.channel.on('addProductToBasket', function () {
-                self.render();
+                    self.render();
+                },
+                error  : function(err){
+                    APP.handleError(err);
+                }
             });
+
+            APP.channel.on('changeBasketStatus', function() { self.render(); });
         },
 
         render: function () {

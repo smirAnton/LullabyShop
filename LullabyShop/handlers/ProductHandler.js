@@ -7,59 +7,51 @@ var validator     = require('validator');
 var ObjectId      = require('mongodb').ObjectID;
 var async         = require('async');
 
+var constant      = require('../constants/magicNumbers');
+
 var ProductHandler = function () {
 
     this.fetch = function (req, res, next) {
         var query = req.query;
-        var page = parseInt(query.page) || 1;
-        var limit = parseInt(query.count) || 12;
-        var skip = (page - 1) * limit;
+        var limit = parseInt(query.count) || constant.PRODUCTS_PER_PAGE;
+        var page  = parseInt(query.page.data.page)  || constant.DEFAULT_PAGE;
+        var skip  = (page - 1) * limit;
 
-        ProductModel
-            .find({})
-            .lean()
-            .count(function (err, count) {
-                if (err) {
+        async.parallel([
+            function(callback) {
+                ProductModel
+                    .find({}, {__v: 0})
+                    .lean()
+                    .count(function (err, amount) {
 
-                    return next(err);
-                }
-
+                        return callback(err, amount)
+                    });
+            },
+            function(callback) {
                 ProductModel
                     .find({}, {__v: 0})
                     .skip(skip)
                     .limit(limit)
                     .lean()
-                    .exec(function (err, products) {
-                        if (err) {
+                    .exec(function (err, allProducts) {
 
-                            return next(err);
-                        }
-
-                        if (!products) {
-
-                            return res.status(404).send({fail: 'Not found'})
-                        }
-
-                        products[0] = products[0] || {};
-                        products[0].count = count;
-
-                        res.status(200).send(products);
+                        return callback(err, allProducts);
                     });
-            });
-    };
+            }
+        ], function(err, result) {
+            var amount   = result[0];
+            var products = result[1];
 
-    this.count = function (req, res, next) {
-        ProductModel
-            .find({})
-            .lean()
-            .count(function (err, amount) {
-                if (err) {
+            if (err) {
 
-                    return next(err);
-                }
+                return next(err);
+            }
 
-                res.status(200).send({amount: amount});
-            });
+            products[0]        = products[0] || {};
+            products[0].amount = amount      || 0;
+
+            res.status(200).send(products);
+        });
     };
 
     this.fetchByIdWithComments = function (req, res, next) {

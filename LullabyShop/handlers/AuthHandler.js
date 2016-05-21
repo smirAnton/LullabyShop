@@ -35,36 +35,6 @@ var AuthenticationHandler = function () {
         return next();
     };
 
-    this.getSessionData = function (req, res, next) {
-        var session = req.session    || {};
-        var basket  = session.basket || [];
-
-        ProductModel
-            .find({_id: {$in: basket}}, {_id: 1, price: 1}, function (err, products) {
-                var limit = products.length;
-                var barrier = basket.length;
-                var totalSum = 0;
-                var index;
-                var step;
-
-                if (err) {
-
-                    return next(err);
-                }
-
-                for (step = barrier - 1; step >= 0; step -= 1) {
-                    for (index = limit - 1; index >= 0; index -= 1) {
-                        if (basket[step] == products[index]._id) {
-                            totalSum += products[index].price;
-                        }
-                    }
-                }
-
-                session.totalSum = totalSum;
-                res.status(200).send(session);
-            });
-    };
-
     // authentication
     function findModelByEmail(Model, email, callback) {
         Model
@@ -221,15 +191,14 @@ var AuthenticationHandler = function () {
     this.logout = function (req, res, next) {
         var session = req.session || {};
         var userId  = session.userId;
-        var email   = session.email;
 
-        if (!validator.isId(userId) || !validator.isEmail(email)) {
+        if (!validator.isId(userId)) {
 
             return res.status(400).send({fail: 'You should login firstly'});
         }
 
         UserModel
-            .update({email: email}, {$set : {lastVisit: new Date()}},
+            .update({_id: userId}, {$set : {lastVisit: new Date()}},
                 function (err, updatedUser) {
                     if (err) {
 

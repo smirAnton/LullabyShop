@@ -16,12 +16,12 @@ define([
             type   :'GET',
             success: function(session){
                 APP.session          = {};
-                APP.loggedIn         = session.loggedIn  || false;
-                APP.session.userId   = session.userId    || null;
-                APP.session.basket   = session.basket    || [];
-                APP.session.isAdmin  = session.isAdmin   || false;
-                APP.session.username = session.firstname || 'Anonymous';
                 APP.session.totalSum = session.totalSum  || 0;
+                APP.session.username = session.firstname || 'Anonymous';
+                APP.session.isAdmin  = session.isAdmin   || false;
+                APP.session.basket   = session.basket    || [];
+                APP.session.userId   = session.userId    || null;
+                APP.loggedIn         = session.loggedIn  || false;
 
                 APP.channel = _.extend({}, Backbone.Events);
 
@@ -69,6 +69,10 @@ define([
 
     APP.blogsPaginNavigate = function(pageNumber) {
         Backbone.history.navigate('#lullaby/blog/p=' + pageNumber);
+    };
+
+    APP.productsPaginNavigate = function(pageNumber) {
+        Backbone.history.navigate('#lullaby/product/p=' + pageNumber);
     };
 
     APP.showSuccessAlert = function(message) {

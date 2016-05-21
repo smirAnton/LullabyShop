@@ -22,7 +22,7 @@ var BlogHandler = function () {
                     .lean()
                     .count(function (err, amount) {
 
-                        return callback(err, {amount: amount})
+                        return callback(err, amount)
                     });
             },
             function(callback) {
@@ -37,7 +37,7 @@ var BlogHandler = function () {
                     });
             }
         ], function(err, result) {
-            var amount = result[0].amount;
+            var amount = result[0];
             var blogs  = result[1];
 
             if (err) {

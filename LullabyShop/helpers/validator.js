@@ -54,10 +54,6 @@ module.exports = function (module) {
         return id && validator.isMongoId(id);
     }
 
-    function isEmptyBasket(basket) {
-        return basket && Array.isArray(basket) && basket.length;
-    }
-
     function isBoolean(value) {
         return value && value.in([true, false]);
     }
@@ -71,7 +67,6 @@ module.exports = function (module) {
     }
 
     return {
-        isEmptyBasket: isEmptyBasket,
         isEmptyString: isEmptyString,
         isEmailSecret: isEmailSecret,
         isPhoneSecret: isPhoneSecret,
