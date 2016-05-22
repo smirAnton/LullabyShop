@@ -21,54 +21,24 @@ define([
             this.sort();
         },
 
-        initialize: function(pageNumber){
-            var self   = this;
-            this.page  = pageNumber || 1;
-            this.count = constant.pagination.PRODUCTS_PER_PAGE;
+        initialize: function(options){
+            var self       = this;
+            this.sortParam = options.data.sort || '';
+            this.page      = options.data.page || 1;
+            this.count     = constant.pagination.PRODUCTS_PER_PAGE;
 
-            this.fetchData(this.page, this.count, {
+            this.fetchData(this.page, this.count, this.sortParam, {
                 success: function (response) {
                     self.countProducts = response.toJSON()[0].amount;
-                    self.countPages    = Math.ceil(self.countProducts / self.countProducts);
+                    self.countPages    = Math.ceil(self.countProducts / self.count);
                 },
                 error  : function (err, xhr) {
                     APP.handleError(xhr);
                 }
             });
-
-
-            //var self = this;
-            //
-            //options    = options       || {};
-            //this.page  = options.page  || 1;
-            //this.count = options.count || 12;
-            //
-            //if (options.categoryId) {
-            //
-            //    this.url = '/lullaby/category/' + options.categoryId;
-            //} else if (options.searchWord){
-            //
-            //    this.url = '/lullaby/product/search/' + options.searchWord;
-            //} else if (options.filter){
-            //
-            //    this.url = '/lullaby/product/filter/' + options.filter;
-            //} else {
-            //
-            //    this.url = '/lullaby/product';
-            //}
-            //
-            //this.fetchData(this.page, this.count, {
-            //    success: function (collection, xhr, options) {
-            //        self.countProducts = collection.models[0].attributes.count;
-            //        self.countPages    = Math.ceil(self.countProducts / 12);
-            //    },
-            //    error  : function (err, xhr, options) {
-            //        alert(xhr.statusText);
-            //    }
-            //});
         },
 
-        fetchData: function (page, count, options) {
+        fetchData: function (page, count, sort, options) {
             var success = (options && options.success) || function () {};
             var error   = (options && options.error)   || function () {};
 
@@ -84,7 +54,8 @@ define([
                 reset  : true,
                 data   : {
                     page : page,
-                    count: count
+                    count: count,
+                    sort : sort
                 },
                 success: success,
                 error  : error
@@ -92,16 +63,22 @@ define([
         },
 
         nextPage: function(){
-            var self = this;
-            var page = (this.page + 1 > this.countPages) ? this.countPages : this.page + 1;
+            var self     = this;
+            var page     = parseInt(this.page) + 1;
+            var nextPage = page > this.countPages ? this.countPages : page;
+            var navigateUrl = '#lullaby/shop/p=' + nextPage;
 
-            APP.productsPaginNavigate(page);
+            if (this.sortParam !== 'title') {
+                navigateUrl = navigateUrl + '/s=' + this.sortParam;
+            }
 
-            this.fetchData(page, this.count, {
+            Backbone.history.navigate(navigateUrl);
+
+            this.fetchData(nextPage, this.count, this.sortParam, {
                 success: function () {
-                    self.page = page;
+                    self.page = nextPage;
                 },
-                error  : function (model, xhr) {
+                error  : function (err, xhr) {
                     APP.handleError(xhr);
                 }
             });
@@ -109,11 +86,36 @@ define([
 
         prevPage: function(){
             var self = this;
-            var page = this.page - 1 || 1;
+            var prevPage = parseInt(this.page) - 1 || 1;
+            var navigateUrl = '#lullaby/shop/p=' + prevPage;
 
-            APP.productsPaginNavigate(page);
+            if (this.sortParam !== 'title') {
+                navigateUrl = navigateUrl + '/s=' + this.sortParam;
+            }
 
-            this.fetchData(page, this.count, {
+            Backbone.history.navigate(navigateUrl);
+
+            this.fetchData(prevPage, this.count, this.sortParam, {
+                success: function () {
+                    self.page = prevPage;
+                },
+                error  : function (err, xhr) {
+                    APP.handleError(xhr);
+                }
+            });
+        },
+
+        goToPage: function(page){
+            var self = this;
+            var navigateUrl = '#lullaby/shop/p=' + page;
+
+            if (this.sortParam !== 'title') {
+                navigateUrl = navigateUrl + '/s=' + this.sortParam;
+            }
+
+            Backbone.history.navigate(navigateUrl);
+
+            this.fetchData(page, this.count, this.sortParam, {
                 success: function () {
                     self.page = page;
                 },
@@ -122,18 +124,16 @@ define([
                 }
             });
         },
+        
+        globalSortByField: function (sortParam) {
+            this.page = 1;
+            this.sortParam = sortParam || null;
 
-        goToPage: function(pageNumber){
-            var self = this;
-            var page = (pageNumber > this.countPages || pageNumber < 0) ? this.countPages : pageNumber;
+            Backbone.history.navigate('#lullaby/shop/p=' + this.page + '/s=' + sortParam);
 
-            APP.productsPaginNavigate(page);
-
-            this.fetchData(page, this.count, {
-                success: function () {
-                    self.page = page;
-                },
-                error  : function (model, xhr) {
+            this.fetchData(this.page, this.count, this.sortParam, {
+                success: function () { },
+                error  : function (err, xhr) {
                     APP.handleError(xhr);
                 }
             });

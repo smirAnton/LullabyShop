@@ -14,13 +14,30 @@ var ProductHandler = function () {
     this.fetch = function (req, res, next) {
         var query = req.query;
         var limit = parseInt(query.count) || constant.PRODUCTS_PER_PAGE;
-        var page  = parseInt(query.page.data.page)  || constant.DEFAULT_PAGE;
+        var page  = parseInt(query.page)  || constant.DEFAULT_PAGE;
         var skip  = (page - 1) * limit;
+        var options;
+        var sort;
+
+        if (query.sort === 'price') {
+            sort = { 'price' : 1 };
+        } else if (query.sort === 'date') {
+            sort = { 'createdDate' : 1 };
+        } else {
+            sort = { 'title' : 1 };
+        }
+
+        options = {
+            title      : 1,
+            price      : 1,
+            brand      : 1,
+            searchImage: 1
+        };
 
         async.parallel([
             function(callback) {
                 ProductModel
-                    .find({}, {__v: 0})
+                    .find({}, {_id: 1})
                     .lean()
                     .count(function (err, amount) {
 
@@ -28,8 +45,10 @@ var ProductHandler = function () {
                     });
             },
             function(callback) {
+                console.log(sort);
                 ProductModel
-                    .find({}, {__v: 0})
+                    .find({}, options)
+                    .sort(sort)
                     .skip(skip)
                     .limit(limit)
                     .lean()

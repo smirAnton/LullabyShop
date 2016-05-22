@@ -26,7 +26,20 @@ define([
         },
 
         events: {
-            'click #filterBtn': 'onFilter'
+            'click #globalSortBtn': 'onGlobalSort',
+            'click #filterBtn'    : 'onFilter'
+        },
+
+        onGlobalSort: function (e) {
+            var self      = this;
+            var sortParam = this.$el.find('input[name=radio]:checked').val();
+            
+            Backbone.history.navigate('#lullaby/product')
+
+
+            e.preventDefault();
+
+            console.log(sortParam);
         },
 
         onFilter: function(e) {

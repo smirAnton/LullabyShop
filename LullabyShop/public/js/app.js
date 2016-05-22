@@ -58,7 +58,8 @@ define([
                 break;
 
             default:
-                APP.showWarningAlert(err.responseJSON.fail);
+                // APP.showWarningAlert(err);
+                console.log(err);
                 break;
         }
     };

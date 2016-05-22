@@ -1,18 +1,14 @@
 'use strict';
 
 var CategoryModel = require('../models/Category');
-var ProductModel  = require('../models/Product');
 
 var validator     = require('../helpers/validator')();
-var constant      = require('../constants/magicNumbers');
-
-var ObjectId      = require('mongodb').ObjectID;
 
 var CategoryHandler = function () {
 
     this.fetch = function (req, res, next) {
         CategoryModel
-            .find({}, {__v: 0})
+            .find({}, {_id: 1, title: 1})
             .lean()
             .exec(function (err, categories) {
                 if (err) {
@@ -22,63 +18,10 @@ var CategoryHandler = function () {
 
                 if (!categories) {
 
-                    return res.status(404).send({fail: 'Not found'});
+                    return res.status(404).send({ fail: 'Not found' });
                 }
 
                 res.status(200).send(categories);
-            });
-    };
-
-    this.count = function (req, res, next) {
-        CategoryModel
-            .find({})
-            .lean()
-            .count(function (err, amount) {
-                if (err) {
-
-                    return next(err);
-                }
-
-                res.status(200).send({amount: amount});
-            });
-    };
-
-    this.fetchByIdWithProducts = function (req, res, next) {
-        var categoryId   = req.params.id;
-        var aggregateObj = [{$match: {category: ObjectId(categoryId)}}];
-        var query        = req.query             || {};
-        var page         = parseInt(query.page)  || constant.FIRST_PAGE;
-        var limit        = parseInt(query.count) || constant.AMOUNT_OF_PRODUCTS_PER_PAGE;
-        var skip         = (page - 1) * limit;
-
-        if (!validator.isId(categoryId)) {
-
-            return res.status(400).send({fail: 'Bad request'});
-        }
-
-        aggregateObj.push(
-            {$skip : skip},
-            {$limit: limit}
-        );
-
-        CategoryModel
-            .find({_id: ObjectId(categoryId)})
-            .lean()
-            .exec(function (err, category) {
-
-                ProductModel
-                    .aggregate(aggregateObj)
-                    .exec(function (err, products) {
-                        if (err) {
-
-                            return next(err);
-                        }
-
-                        products[0]       = products[0] || {};
-                        products[0].count = category[0].products.length;
-
-                        return res.status(200).send(products);
-                    });
             });
     };
 
@@ -88,17 +31,17 @@ var CategoryHandler = function () {
 
         if (!validator.isEmptyString(title)) {
 
-            return res.status(422).send({fail: 'Please, provide category title'});
+            return res.status(400).send({fail: 'Please, provide category title'});
         }
 
-        new CategoryModel({title: title})
-            .save(function (err, createdCategory) {
+        new CategoryModel({ title: title })
+            .save(function (err, result) {
                 if (err) {
 
                     return next(err);
                 }
 
-                res.status(201).send({success: 'Ctaegory successfully created'});
+                res.status(201).send({success: 'Category successfully created'});
             });
     };
 
@@ -109,23 +52,24 @@ var CategoryHandler = function () {
 
         if (!validator.isId(categoryId)) {
 
-            return res.status(400).send({fail: 'Bad request'});
+            return res.status(400).send({ fail: 'Bad request' });
         }
 
         if (!validator.isEmptyString(title)) {
 
-            return res.status(422).send({fail: 'Please, provide category title'});
+            return res.status(400).send({ fail: 'Please, provide category title' });
         }
 
         CategoryModel
-            .findByIdAndUpdate(categoryId, {title: title}, {new: true})
+            .findByIdAndUpdate(categoryId, { title: title }, { new: true })
+            .lean()
             .exec(function (err, result) {
                 if (err) {
 
                     return next(err);
                 }
 
-                res.status(200).send({success: 'Category successfully updated'});
+                res.status(200).send({ success: 'Category successfully updated' });
             });
     };
 
@@ -139,13 +83,14 @@ var CategoryHandler = function () {
 
         CategoryModel
             .findByIdAndRemove(categoryId)
+            .lean()
             .exec(function (err, result) {
                 if (err) {
 
                     return next(err);
                 }
 
-                res.status(200).send({success: 'Category successfully removed'});
+                res.status(200).send({ success: 'Category successfully removed' });
             });
     };
 };

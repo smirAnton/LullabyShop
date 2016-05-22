@@ -7,13 +7,14 @@ var validator    = require('../helpers/validator')();
 var BasketHandler = function () {
 
     this.addProductToBasket = function (req, res, next) {
-        var body      = req.body    || {};
-        var session   = req.session || {};
-        var productId = body.productId;
+        var body       = req.body       || {};
+        var productId  = body.productId;
+        var session    = req.session    || {};
+        session.basket = session.basket || [];
 
         if (!validator.isId(productId)) {
 
-            return res.status(400).send({fail: 'Unknown product'});
+            return res.status(400).send({ fail: 'Unknown product' });
         }
 
         // add productId to basket

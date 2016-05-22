@@ -12,7 +12,7 @@ var SessionHandler = function () {
         var options = {_id: 1, price: 1};
 
         ProductModel
-            .find({_id: {$in: basket}}, options)
+            .find({_id: { $in: basket }}, options)
             .lean()
             .exec(function (err, products) {
                 var totalSum = 0;

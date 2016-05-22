@@ -5,38 +5,67 @@ define([
     'constant',
     'backbone',
     'underscore',
-    'models/product',
     'collections/products',
     'text!templates/product/productsList.html'
-], function (helper, constant, Backbone, _, ProductModel, Collection, productListTemplate) {
+], function (helper, constant, Backbone, _, Collection, productListTemplate) {
 
     return Backbone.View.extend({
         el      : "#products",
         template: _.template(productListTemplate),
 
-        initialize: function (pageNumber) {
-            var self   = this;
-            this.page  = pageNumber;
-            // use default amount products per page 12
-            this.count = constant.pagination.PRODUCTS_PER_PAGE;
+        initialize: function (options) {
+            var self  = this;
 
-            this.collection = new Collection({
-                reset: true,
-                data : { page: self.page, count: self.count }
+            // pagination params
+            this.page = options.page || 1;
+            this.sort = options.sort || 'title';
+
+            // get all categories titles and ids
+            $.ajax({
+                type       : 'GET',
+                url        : 'lullaby/category',
+                dataType   : 'json',
+                contentType: "application/json",
+                success    : function (categories) {
+                    self.categories = categories;
+
+                    // get products
+                    self.collection = new Collection({
+                        reset: true,
+                        data : { page: self.page, sort: self.sort }
+                    });
+
+                    self.collection.on('sync', function() { self.render() }, self.collection);
+                    self.collection.on('sort', function() { self.render() }, self.collection);
+                },
+                error      : function (err) {
+                    APP.handleError(err);
+                }
             });
-
-            this.collection.on('sync', function() { self.render() }, self.collection);
-            this.collection.on('sort', function() { self.render() }, self.collection);
         },
 
         events: {
-            'click a#sortByPriceBtn': 'onSortByPrice',
-            'click a#sortByTitleBtn': 'onSortByTitle',
-            'click a#sortByDateBtn' : 'onSortByDate',
-            'click a#addProductBtn' : 'onAddProduct',
-            'click a#nextBtn'       : 'onNext',
-            'click a#prevBtn'       : 'onPrev',
-            'click a#goToBtn'       : 'onGoToPage'
+            'click #glSortByPriceBtn': 'onGlobalSortByPrice',
+            'click #glSortByDateBtn' : 'onGlobalSortByDate',
+            'click #sortByPriceBtn'  : 'onSortByPrice',
+            'click #sortByTitleBtn'  : 'onSortByTitle',
+            'click #sortByDateBtn'   : 'onSortByDate',
+            'click #addProductBtn'   : 'onAddProduct',
+            'click #goToPageBtn'     : 'onGoToPage',
+            'click #nextPageBtn'     : 'onNextPage',
+            'click #prevPageBtn'     : 'onPrevPage'
+        },
+
+        onGlobalSortByPrice: function (e) {
+            e.preventDefault();
+
+            this.collection.globalSortByField('price');
+        },
+
+        onGlobalSortByDate: function (e) {
+            e.preventDefault();
+
+            this.collection.globalSortByField('createdDate');
         },
 
         onSortByPrice: function(e) {
@@ -61,32 +90,33 @@ define([
             var productId = this.$el.find(e.currentTarget).data("id");
             var product   = this.collection.get(productId);
 
+            console.log(productId)
             e.stopPropagation();
             e.preventDefault();
 
             $.ajax({
-                type   : 'POST',
-                url    : '/lullaby/basket/add',
-                data   : { productId: productId },
-                success: function() {
+                type       : 'POST',
+                url        : '/lullaby/basket/add',
+                data       : { productId: productId },
+                success    : function() {
                     APP.session.totalSum += product.attributes.price;
                     APP.session.basket.push(productId);
 
                     APP.channel.trigger('changeBasketStatus');
                 },
-                error: function(err) {
+                error      : function(err) {
                     APP.handleError(err);
                 }
             });
         },
 
-        onNext: function (e) {
+        onNextPage: function (e) {
             e.preventDefault();
 
             this.collection.nextPage();
         },
 
-        onPrev: function (e) {
+        onPrevPage: function (e) {
             e.preventDefault();
 
             this.collection.prevPage();
@@ -102,9 +132,11 @@ define([
 
         render: function () {
             this.$el.html(this.template({
-                countProducts: this.collection.countProducts,
+                collection   : this.collection.toJSON(),
+                categories   : this.categories,
                 countPages   : this.collection.countPages,
-                products     : this.collection.toJSON(),
+                countProducts: this.collection.countProducts,
+                // function to chunk array
                 helper       : helper})
             );
 

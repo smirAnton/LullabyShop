@@ -14,15 +14,16 @@ define([
             var self = this;
 
             $.ajax({
-                url    : '/session',
-                type   :'GET',
-                success: function(session){
+                type    :'GET',
+                url     : '/session',
+                dataType: 'json',
+                success : function(session){
                     APP.session.basket   = session.basket   || [];
                     APP.session.totalSum = session.totalSum || 0;
 
                     self.render();
                 },
-                error  : function(err){
+                error   : function(err){
                     APP.handleError(err);
                 }
             });

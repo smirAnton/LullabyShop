@@ -10,11 +10,9 @@ module.exports = function(server) {
 
         socket.on('start', function (userFirstname, callback) {
             if (!global.clients[socket.id]) {
-
                 global.clients[socket.id] = socket;
                 socket.userFirstname = userFirstname;
             } else {
-
                 socket.userFirstname = userFirstname;
             }
 

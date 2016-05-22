@@ -71,13 +71,13 @@ var CommentHandler = function () {
     };
 
     this.create = function (req, res, next) {
-        var commentOptions = {};
-        var session        = req.session      || {};
-        var body           = req.body         || {};
-        var userId         = session.userId;
-        var authorName     = body.username;
-        var productId      = body.productId;
-        var commentText    = body.commentText;
+        var options     = {};
+        var session     = req.session      || {};
+        var body        = req.body         || {};
+        var userId      = session.userId;
+        var authorName  = body.username;
+        var productId   = body.productId;
+        var commentText = body.commentText;
         var comment;
 
         if (!validator.isFirstname(authorName)    ||
@@ -87,17 +87,17 @@ var CommentHandler = function () {
             return res.status(422).send({fail: 'Wrong incoming data'});
         }
 
-        commentOptions = {
+        options = {
             authorName: authorName,
             product   : productId,
             text      : commentText
         };
 
         if (validator.isId(userId)) {
-            commentOptions.user = userId;
+            options.user = userId;
         }
 
-        comment = new CommentModel(commentOptions);
+        comment = new CommentModel(options);
 
         async.parallel([
                 function (callback) {

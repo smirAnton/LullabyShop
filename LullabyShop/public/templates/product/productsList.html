@@ -1,13 +1,52 @@
-<% productsChunk = helper.chunks(products, 4) %>
 <div class="container">
+
+    <!-- Category filters and sorting stuff -->
+    <div class="women_main">
+        <div class="col-md-3 s-d">
+            <div class="w_sidebar">
+                <div class="w_nav1">
+
+                    <!-- Global products sort area -->
+                    <h4>Sort products by</h4>
+                    <ul>
+                        <!--<li><a href="javascript:;" id="glSortByTitleBtn">TITLE</a></li>-->
+                        <li><a href="javascript:;" id="glSortByPriceBtn">PRICE</a></li>
+                        <li><a href="javascript:;" id="glSortByDateBtn">DATE</a></li>
+                    </ul>
+                </div>
+
+                <!-- Filters by categories area -->
+                <section class="sky-form">
+                    <h4>Filter by categories</h4>
+                    <div class="row1 scroll-pane">
+                        <div class="col col-4">
+                            <%
+                                var limit = categories.length;
+                                for (var index = 0; index < limit; index += 1) {
+                                    var category = categories[index];
+                            %>
+                            <label class="checkbox"><input type="checkbox" name="checkbox" value="<%= category._id %>"><i></i><%= category.title.toUpperCase() %></label>
+                            <% } %>
+                        </div>
+                    </div>
+                    <h1></h1>
+                    <div class="registration_form">
+                        <p style="text-align: center"><input type="submit" value="Make filter" id="filterBtn"></p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products area -->
     <div class="col-md-9 w_content">
 
-        <!-- sorts menu -->
+        <!-- filter menu -->
         <div class="women">
-            <a href="javascript:;"><h4>Night wear - <span><%= countProducts %> items</span></h4></a>
+            <a href="javascript:;"><h4>Products - <span><%= countProducts %> items</span></h4></a>
             <ul class="w_nav">
                 <li>Sort :</li>
-                <li><a id="sortByDateBtn" href="javascript:;">new </a></li>
+                <li><a id="sortByDateBtn"  href="javascript:;">new </a></li>
                 |
                 <li><a id="sortByTitleBtn" href="javascript:;">title </a></li>
                 |
@@ -16,23 +55,21 @@
             <div class="clearfix"></div>
         </div>
 
-        <!-- product list -->
+        <!-- product list area -->
+        <%
+            chunkProducts = helper.chunks(collection, 4);
+
+            if (chunkProducts.length > 1) {
+                var limit = chunkProducts.length
+                for (var index  = 0; index < limit; index += 1) {
+                    var partProducts = chunkProducts[index];
+        %>
         <div class="grids_of_4">
-            <%
-                if (productsChunk.length > 1) {
-
-                    var index = productsChunk.length - 1;
-                    for (; index >= 0; index -= 1) {
-            %>
-            <div class="grids_of_4">
-            <%
-                        var part = productsChunk[index];
-                        var step = part.length - 1;
-
-
-                        for (; step >= 0; step -=1) {
-                            var product = part[step];
-                %>
+        <%
+            var barrier = partProducts.length;
+            for (var step = 0; step < barrier; step +=1) {
+                var product = partProducts[step];
+        %>
             <div class="grid1_of_4">
                 <div class="content_box">
                     <a href="#lullaby/product/<%= product._id %>">
@@ -51,31 +88,39 @@
                     </div>
                 </div>
             </div>
-
-        </div>
-            <%
-                }}} else {
-            %>
-        <div class="grids_of_4">
-            <p style="text-align:center"><img src="images/defaults/product_404.png"></p>
-        </div>
             <% } %>
+            <div class="clearfix"></div>
+        </div>
+        <%
+            }} else {
+        %>
+        <div class="grids_of_4">
+            <p class="positionInCenter"><img src="images/defaults/page_404.png"></p>
+        </div>
+        <% } %>
     </div>
-    <nav class="defaultImagePosition">
+
+    <!-- pagination area -->
+    <nav class="positionInRight">
         <ul class="pagination">
             <li class="page-item">
-                <a id="prevBtn" class="page-link" href="#" aria-label="Previous">
+                <a id="prevPageBtn" class="page-link" href="javascript:;" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                     <span class="sr-only">Previous</span>
                 </a>
             </li>
             <%
-                for(index = 0; index < countPages; index += 1) {
+                var index = 0;
+
+                while(index < countPages) {
+                    index += 1;
             %>
-            <li class="page-item"><a id="goToBtn" data-id="<%= index + 1 %>" class="page-link" href="#"><%= index + 1 %></a></li>
+            <li class="page-item">
+                <a id="goToPageBtn" data-id="<%= index %>" class="page-link" href="javascript:;"><%= index %></a>
+            </li>
             <% } %>
             <li class="page-item">
-                <a id="nextBtn" class="page-link" href="" aria-label="Next">
+                <a id="nextPageBtn" class="page-link" href="javascript:;" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                     <span class="sr-only">Next</span>
                 </a>
