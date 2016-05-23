@@ -6,7 +6,7 @@ define([
     'models/category',
     'collections/categories',
     'text!templates/category/categoryList.html'
-], function (Backbone, _, CategoryModel, CategoryCollection, categoriesTemplate) {
+], function (Backbone, _, CategoryModel, Collection, categoriesTemplate) {
     var View = Backbone.View.extend({
         el      : "#categories",
         template: _.template(categoriesTemplate),
@@ -14,32 +14,29 @@ define([
         initialize: function () {
             var self = this;
 
-            this.collection = new CategoryCollection();
+            this.collection = new Collection();
             this.collection.fetch({
                 success: function() {
                     self.render();
                 },
                 error: function (err, xhr) {
-                    alert(xhr.statusText);
+                    APP.handleError(xhr);
                 }
             });
         },
 
         events: {
-            'click #globalSortBtn': 'onGlobalSort',
-            'click #filterBtn'    : 'onFilter'
+            'click #filterBtn'    : 'onFilter',
+            'click #selectCategoryBtn': 'onSelectCategory'
         },
 
-        onGlobalSort: function (e) {
-            var self      = this;
-            var sortParam = this.$el.find('input[name=radio]:checked').val();
-            
-            Backbone.history.navigate('#lullaby/product')
-
+        onSelectCategory: function (e) {
+            var categoryId  = this.$el.find(e.currentTarget).data("id");
+            var navigateUrl = '#lullaby/shop/id=' + categoryId + '/p=1';
 
             e.preventDefault();
 
-            console.log(sortParam);
+            Backbone.history.navigate(navigateUrl);
         },
 
         onFilter: function(e) {
@@ -51,7 +48,7 @@ define([
             e.stopPropagation();
             e.preventDefault();
 
-            selectedCategories = $('input:checkbox:checked').map(function() {
+            selectedCategories = this.$el.find('input:checkbox:checked').map(function() {
                 return this.value;
             }).get();
 
@@ -73,7 +70,9 @@ define([
         },
 
         render: function () {
-            this.$el.html(this.template({categories: this.collection.toJSON()}));
+            this.$el.html(this.template({
+                collection: this.collection.toJSON()})
+            );
 
             return this;
         }

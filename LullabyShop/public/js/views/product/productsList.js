@@ -14,11 +14,16 @@ define([
         template: _.template(productListTemplate),
 
         initialize: function (options) {
-            var self  = this;
+            var self    = this;
+            var options = options || { };
+
+            console.log(options);
 
             // pagination params
-            this.page = options.page || 1;
-            this.sort = options.sort || 'title';
+            this.id     = options.id     || undefined;
+            this.page   = options.page   || 1;
+            this.sort   = options.sort   || undefined;
+            this.search = options.search || undefined;
 
             // get all categories titles and ids
             $.ajax({
@@ -32,7 +37,11 @@ define([
                     // get products
                     self.collection = new Collection({
                         reset: true,
-                        data : { page: self.page, sort: self.sort }
+                        data : {
+                            search: self.search,
+                            page  : self.page,
+                            sort  : self.sort,
+                            id    : self.id }
                     });
 
                     self.collection.on('sync', function() { self.render() }, self.collection);
@@ -46,6 +55,7 @@ define([
 
         events: {
             'click #glSortByPriceBtn': 'onGlobalSortByPrice',
+            'click #glSortByTitleBtn': 'onGlobalSortByTitle',
             'click #glSortByDateBtn' : 'onGlobalSortByDate',
             'click #sortByPriceBtn'  : 'onSortByPrice',
             'click #sortByTitleBtn'  : 'onSortByTitle',
@@ -60,6 +70,12 @@ define([
             e.preventDefault();
 
             this.collection.globalSortByField('price');
+        },
+
+        onGlobalSortByTitle: function (e) {
+            e.preventDefault();
+
+            this.collection.globalSortByField('title');
         },
 
         onGlobalSortByDate: function (e) {

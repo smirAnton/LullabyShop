@@ -1,12 +1,15 @@
 <!-- Category menu area -->
 <div id="container">
     <ul class="megamenu skyblue">
-        <% _.each(categories, function(category) { %>
-        <li class="active grid" data-id="<%= category._id %>">
-            <a class="color1" href="#lullaby/category/<%= category._id %>">
-                <%= category.title%>
+        <%
+            var limit = collection.length;
+            for (var index = 0; index < limit; index += 1) {
+        %>
+        <li class="active grid">
+            <a id="selectCategoryBtn" class="color1" data-id="<%= collection[index]._id %>" href="javascript:;">
+                <%= collection[index].title %>
             </a>
         </li>
-        <% }); %>
+        <% } %>
     </ul>
 </div>

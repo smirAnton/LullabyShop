@@ -11,7 +11,9 @@ define(['backbone'], function (Backbone) {
         view: null,
         routes: {
             'lullaby/main': 'main',
-            'lullaby/shop(/p=:page)(/s=:sort)': 'shop',
+
+            'lullaby/shop(/id=:id)(/search=:search)(/s=:sort)(/p=:page)': 'shop',
+
             'lullaby/help': 'help',
             'lullaby/chat': 'chat',
             'lullaby/about': 'aboutUs',
@@ -57,9 +59,14 @@ define(['backbone'], function (Backbone) {
             }
         },
 
-        shop: function (page, sort) {
+        shop: function (id, search, sort, page) {
             var self    = this;
-            var options = { page: page, sort: sort };
+            var options = {
+                id    : id,
+                sort  : sort,
+                page  : page,
+                search: search
+            };
 
             if (!APP.mainView) {
                 APP.next = Backbone.history.fragment;

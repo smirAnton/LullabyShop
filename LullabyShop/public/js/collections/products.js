@@ -22,12 +22,16 @@ define([
         },
 
         initialize: function(options){
-            var self       = this;
-            this.sortParam = options.data.sort || '';
-            this.page      = options.data.page || 1;
-            this.count     = constant.pagination.PRODUCTS_PER_PAGE;
+            var self    = this;
+            var options = options || { };
 
-            this.fetchData(this.page, this.count, this.sortParam, {
+            this.count     = constant.pagination.PRODUCTS_PER_PAGE;
+            this.page      = options.data.page   || 1;
+            this.id        = options.data.id     || undefined;
+            this.search    = options.data.search || undefined;
+            this.sortParam = options.data.sort   || undefined;
+
+            this.fetchData(this.page, this.count, this.sortParam, this.search, this.id, {
                 success: function (response) {
                     self.countProducts = response.toJSON()[0].amount;
                     self.countPages    = Math.ceil(self.countProducts / self.count);
@@ -38,7 +42,7 @@ define([
             });
         },
 
-        fetchData: function (page, count, sort, options) {
+        fetchData: function (page, count, sort, search, id, options) {
             var success = (options && options.success) || function () {};
             var error   = (options && options.error)   || function () {};
 
@@ -53,9 +57,11 @@ define([
             this.fetch({
                 reset  : true,
                 data   : {
-                    page : page,
-                    count: count,
-                    sort : sort
+                    id    : id,
+                    page  : page,
+                    sort  : sort,
+                    count : count,
+                    search: search
                 },
                 success: success,
                 error  : error
@@ -63,18 +69,12 @@ define([
         },
 
         nextPage: function(){
-            var self     = this;
-            var page     = parseInt(this.page) + 1;
+            var self = this;
+            var page = parseInt(this.page) + 1;
             var nextPage = page > this.countPages ? this.countPages : page;
-            var navigateUrl = '#lullaby/shop/p=' + nextPage;
 
-            if (this.sortParam !== 'title') {
-                navigateUrl = navigateUrl + '/s=' + this.sortParam;
-            }
-
-            Backbone.history.navigate(navigateUrl);
-
-            this.fetchData(nextPage, this.count, this.sortParam, {
+            this.changeUrl(nextPage);
+            this.fetchData(nextPage, this.count, this.sortParam, this.search, this.id, {
                 success: function () {
                     self.page = nextPage;
                 },
@@ -87,15 +87,9 @@ define([
         prevPage: function(){
             var self = this;
             var prevPage = parseInt(this.page) - 1 || 1;
-            var navigateUrl = '#lullaby/shop/p=' + prevPage;
 
-            if (this.sortParam !== 'title') {
-                navigateUrl = navigateUrl + '/s=' + this.sortParam;
-            }
-
-            Backbone.history.navigate(navigateUrl);
-
-            this.fetchData(prevPage, this.count, this.sortParam, {
+            this.changeUrl(prevPage);
+            this.fetchData(prevPage, this.count, this.sortParam, this.search, this.id, {
                 success: function () {
                     self.page = prevPage;
                 },
@@ -107,19 +101,13 @@ define([
 
         goToPage: function(page){
             var self = this;
-            var navigateUrl = '#lullaby/shop/p=' + page;
 
-            if (this.sortParam !== 'title') {
-                navigateUrl = navigateUrl + '/s=' + this.sortParam;
-            }
-
-            Backbone.history.navigate(navigateUrl);
-
-            this.fetchData(page, this.count, this.sortParam, {
+            this.changeUrl(page);
+            this.fetchData(page, this.count, this.sortParam, this.search, this.id, {
                 success: function () {
                     self.page = page;
                 },
-                error  : function (model, xhr) {
+                error  : function (err, xhr) {
                     APP.handleError(xhr);
                 }
             });
@@ -127,16 +115,35 @@ define([
         
         globalSortByField: function (sortParam) {
             this.page = 1;
-            this.sortParam = sortParam || null;
+            this.sortParam = sortParam;
 
-            Backbone.history.navigate('#lullaby/shop/p=' + this.page + '/s=' + sortParam);
-
-            this.fetchData(this.page, this.count, this.sortParam, {
+            this.changeUrl(this.page);
+            this.fetchData(this.page, this.count, this.sortParam, this.search, this.id, {
                 success: function () { },
                 error  : function (err, xhr) {
                     APP.handleError(xhr);
                 }
             });
+        },
+
+        changeUrl: function(page) {
+            var navigateUrl = '#lullaby/shop';
+
+            if (this.id) {
+                navigateUrl = navigateUrl + '/id=' + this.id;
+            }
+
+            if (this.sortParam) {
+                navigateUrl = navigateUrl + '/s=' + this.sortParam;
+            }
+
+            if (this.search) {
+                navigateUrl = navigateUrl + '/search=' + this.search;
+            }
+
+            navigateUrl = navigateUrl + '/p=' + page;
+            // change url
+            Backbone.history.navigate(navigateUrl);
         }
     });
 });

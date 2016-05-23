@@ -16,28 +16,47 @@ var ProductHandler = function () {
         var limit = parseInt(query.count) || constant.PRODUCTS_PER_PAGE;
         var page  = parseInt(query.page)  || constant.DEFAULT_PAGE;
         var skip  = (page - 1) * limit;
-        var options;
-        var sort;
+        var idOptions = { };
+        
+        var productOptions = { };
+        var sortOptions    = { };
 
-        if (query.sort === 'price') {
-            sort = { 'price' : 1 };
-        } else if (query.sort === 'date') {
-            sort = { 'createdDate' : 1 };
-        } else {
-            sort = { 'title' : 1 };
+        console.log(query);
+
+        if (query.id) {
+            idOptions.category = ObjectId(query.id);
         }
 
-        options = {
+        switch(query.sort) {
+            case 'title':
+                sortOptions = { 'title' : 1 };
+                break;
+
+            case 'price':
+                sortOptions = { 'price' : 1 };
+                break;
+
+            case 'date':
+                sortOptions = { 'createdDate' : 1 };
+                break;
+
+            default:
+                break;
+        }
+
+        productOptions = {
             title      : 1,
             price      : 1,
             brand      : 1,
             searchImage: 1
         };
 
+        console.log(idOptions);
+
         async.parallel([
             function(callback) {
                 ProductModel
-                    .find({}, {_id: 1})
+                    .find(idOptions, {_id: 1})
                     .lean()
                     .count(function (err, amount) {
 
@@ -45,10 +64,9 @@ var ProductHandler = function () {
                     });
             },
             function(callback) {
-                console.log(sort);
                 ProductModel
-                    .find({}, options)
-                    .sort(sort)
+                    .find(idOptions, productOptions)
+                    .sort(sortOptions)
                     .skip(skip)
                     .limit(limit)
                     .lean()
