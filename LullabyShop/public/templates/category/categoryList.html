@@ -1,15 +1,50 @@
 <!-- Category menu area -->
-<div id="container">
-    <ul class="megamenu skyblue">
-        <%
-            var limit = collection.length;
-            for (var index = 0; index < limit; index += 1) {
-        %>
-        <li class="active grid">
-            <a id="selectCategoryBtn" class="color1" data-id="<%= collection[index]._id %>" href="javascript:;">
-                <%= collection[index].title %>
-            </a>
-        </li>
-        <% } %>
-    </ul>
+<ul class="megamenu skyblue">
+    <%
+         var limit = collection.length;
+         var index = 0;
+         for (; index < limit; index += 1) {
+    %>
+    <li class="active grid">
+        <a id="selectCategoryBtn" class="color1" data-id="<%= collection[index]._id %>" href="javascript:;">
+            <%= collection[index].title %>
+        </a>
+    </li>
+    <% } %>
+</ul>
+
+<!-- Category filters and sorting stuff -->
+<div class="women_main">
+   <div class="col-md-3 s-d">
+       <div class="w_sidebar">
+           <div class="w_nav1">
+
+               <!-- Global products sort area -->
+               <h4>Sort products by</h4>
+               <ul>
+                   <li><a href="javascript:;" data-id="title"       class="globalSort">TITLE</a></li>
+                   <li><a href="javascript:;" data-id="price"       class="globalSort">PRICE</a></li>
+                   <li><a href="javascript:;" data-id="createdDate" class="globalSort">DATE</a></li>
+               </ul>
+           </div>
+
+           <!-- Filters by categories area -->
+           <section class="sky-form">
+               <h4>Filter by categories</h4>
+               <div class="row1 scroll-pane">
+                    <div class="col col-4">
+                    <%
+                        for (index = 0; index < limit; index += 1) {
+                    %>
+                        <label class="checkbox"><input type="checkbox" name="checkbox" value="<%= collection[index]._id %>"><i></i><%= collection[index].title.toUpperCase() %></label>
+                    <% } %>
+                    </div>
+               </div>
+               <h1></h1>
+               <div class="registration_form">
+                   <p class="positionInCenter"><input type="submit" value="Make filter" id="selectFilterBtn"></p>
+               </div>
+           </section>
+       </div>
+   </div>
 </div>

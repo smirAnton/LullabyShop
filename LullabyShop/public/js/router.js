@@ -10,26 +10,21 @@ define(['backbone'], function (Backbone) {
     return Backbone.Router.extend({
         view: null,
         routes: {
-            'lullaby/main': 'main',
 
-            'lullaby/shop(/id=:id)(/search=:search)(/s=:sort)(/p=:page)': 'shop',
+            // shop route
+            'lullaby/shop(/id=:id)(/f=:filter)(/search=:search)(/s=:sort)(/p=:page)': 'shop',
 
-            'lullaby/help': 'help',
-            'lullaby/chat': 'chat',
-            'lullaby/about': 'aboutUs',
-            'lullaby/register': 'register',
-            'lullaby/profile': 'profile',
-            'lullaby/contacts': 'contacts',
-            'lullaby/checkout': 'checkout',
-
-            'lullaby/blog(/p=:page)': 'blogList',
-            'lullaby/blog/:id': 'blogDetails',
-
-            'lullaby/search/:word(/p=:page)(/c=:count)': 'search',
-            'lullaby/categories/:query': 'filter',
-            'lullaby/category/:id(/p=:page)(/c=:count)': 'productsCategory',
-            'lullaby/product/:id': 'productDetails',
-
+            'lullaby/main'            : 'main',
+            'lullaby/help'            : 'help',
+            'lullaby/chat'            : 'chat',
+            'lullaby/about'           : 'aboutUs',
+            'lullaby/register'        : 'register',
+            'lullaby/profile'         : 'profile',
+            'lullaby/contacts'        : 'contacts',
+            'lullaby/checkout'        : 'checkout',
+            'lullaby/blog/:id'        : 'blogDetails',
+            'lullaby/product/:id'     : 'productDetails',
+            'lullaby/blog(/p=:page)'  : 'blogList',
 
             'lullaby/activate/:secret': 'activate',
             'lullaby/recovery/:secret': 'recovery',
@@ -55,16 +50,18 @@ define(['backbone'], function (Backbone) {
                 require(['views/main'], function (View) {
 
                     APP.mainView = new View();
+                    Backbone.history.navigate('#lullaby/shop')
                 });
             }
         },
 
-        shop: function (id, search, sort, page) {
-            var self    = this;
-            var options = {
+        shop: function (id, filter, search, sort, page) {
+            var self = this;
+            var data = {
                 id    : id,
                 sort  : sort,
                 page  : page,
+                filter: filter,
                 search: search
             };
 
@@ -78,8 +75,11 @@ define(['backbone'], function (Backbone) {
 
                         self.view.undelegateEvents();
                     }
+                    // unsubscribe from events
+                    APP.channel.off('selectedCategory');
+                    APP.channel.off('selectGlobalSortEvent');
 
-                    APP.homeView = self.view = new View(options);
+                    APP.homeView = self.view = new View(data);
                 });
             }
         },
@@ -241,102 +241,28 @@ define(['backbone'], function (Backbone) {
             } else {
                 require(['views/blog/blogDetails'], function (BlogDetailsView) {
                     if (self.view) {
-
                         self.view.undelegateEvents();
                     }
+
                     self.view = new BlogDetailsView(blogId);
                 })
             }
         },
 
-        search: function (word, page, count) {
+        productDetails: function (id) {
             var self = this;
 
             if (!APP.homeView) {
-
                 APP.nextView = Backbone.history.fragment;
                 Backbone.history.navigate('#lullaby/shop', {trigger: true});
-            } else {
-                require(['views/product/productsList'], function (View) {
-                    var options = {
-                        searchWord: word,
-                        page      : page,
-                        count     : count
-                    };
 
-                    if (self.homeView) {
-
-                        self.homeView.undelegateEvents();
-                    }
-                    self.homeView = new View(options);
-                });
-            }
-        },
-
-        filter: function (filter) {
-            var self = this;
-
-            if (!APP.homeView) {
-
-                APP.nextView = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/shop', {trigger: true});
-            } else {
-                require(['views/product/productsList'], function (View) {
-                    var options = {
-                        filter: filter
-                    };
-
-                    if (self.homeView) {
-
-                        self.homeView.undelegateEvents();
-                    }
-                    self.homeView = new View(options);
-                });
-            }
-        },
-
-        productsCategory: function (categoryId, page, count) {
-            var self = this;
-
-            if (!APP.homeView) {
-
-                APP.nextView = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/shop', {trigger: true});
-            } else {
-                require(['views/product/productsList'], function (View) {
-                    var options;
-
-                    if (self.homeView) {
-
-                        self.homeView.undelegateEvents();
-                    }
-
-                    options = {
-                        categoryId: categoryId,
-                        count     : count,
-                        page      : page
-                    };
-
-
-                    self.homeView = new View(options);
-                });
-            }
-        },
-
-        productDetails: function (productId) {
-            var self = this;
-
-            if (!APP.homeView) {
-
-                APP.nextView = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/shop', {trigger: true});
             } else {
                 require(['views/product/productDetails'], function (View) {
                     if (self.homeView) {
-
                         self.homeView.undelegateEvents();
                     }
-                    self.homeView = new View(productId);
+
+                    self.homeView = new View(id);
                 });
             }
         },

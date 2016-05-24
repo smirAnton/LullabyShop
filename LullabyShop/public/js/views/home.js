@@ -6,11 +6,11 @@ define([
     'collections/products',
     'views/search/search',
     'views/order/orderMenu',
-    'views/product/productsList',
     'views/category/categoryList',
+    'views/product/productsList',
     'views/auth/authMenu',
     'text!templates/home.html'
-], function (Backbone, _, ProductCollection, SearchView, OrderMenuView, ProductListView, CategoriesView, AuthMenuView, homeTemplate) {
+], function (Backbone, _, ProductCollection, SearchView, OrderMenuView, CategoryListView, ProductListView, AuthMenuView, homeTemplate) {
     return Backbone.View.extend({
         el: "#content",
         template: _.template(homeTemplate),
@@ -32,17 +32,17 @@ define([
 
             this.searchView = new SearchView();
 
-            if (this.categoriesView) {
-                this.categoriesView.undelegateEvents()
-            }
-
-            this.categoriesView = new CategoriesView();
-
             if (this.authMenuView) {
                 this.authMenuView.undelegateEvents()
             }
 
             this.authMenuView = new AuthMenuView();
+
+            if (this.categoryListView) {
+                this.categoryListView.undelegateEvents()
+            }
+
+            this.categoryListView = new CategoryListView();
 
             if (next) {
                 delete APP.nextView;

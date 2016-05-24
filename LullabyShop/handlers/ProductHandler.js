@@ -3,28 +3,33 @@
 var CategoryModel = require('../models/Category');
 var ProductModel  = require('../models/Product');
 
-var validator     = require('validator');
+var validator     = require('../helpers/validator')();
+
 var ObjectId      = require('mongodb').ObjectID;
 var async         = require('async');
-
-var constant      = require('../constants/magicNumbers');
 
 var ProductHandler = function () {
 
     this.fetch = function (req, res, next) {
         var query = req.query;
-        var limit = parseInt(query.count) || constant.PRODUCTS_PER_PAGE;
-        var page  = parseInt(query.page)  || constant.DEFAULT_PAGE;
+        var limit = parseInt(query.count) || 12;
+        var page  = parseInt(query.page)  || 1;
         var skip  = (page - 1) * limit;
-        var idOptions = { };
-        
+
         var productOptions = { };
+        var findOptions    = { };
         var sortOptions    = { };
+        var filter;
 
-        console.log(query);
-
+        // if user select category
         if (query.id) {
-            idOptions.category = ObjectId(query.id);
+            findOptions.category = ObjectId(query.id);
+        }
+
+        // if user used filters (select several categories)
+        if (query.filter) {
+            filter = query.filter.split('&') || [ ];
+            findOptions.category = { $in: filter };
         }
 
         switch(query.sort) {
@@ -44,6 +49,7 @@ var ProductHandler = function () {
                 break;
         }
 
+        // define necessary product props for rendering
         productOptions = {
             title      : 1,
             price      : 1,
@@ -51,12 +57,10 @@ var ProductHandler = function () {
             searchImage: 1
         };
 
-        console.log(idOptions);
-
         async.parallel([
             function(callback) {
                 ProductModel
-                    .find(idOptions, {_id: 1})
+                    .find(findOptions, {_id: 1})
                     .lean()
                     .count(function (err, amount) {
 
@@ -65,7 +69,7 @@ var ProductHandler = function () {
             },
             function(callback) {
                 ProductModel
-                    .find(idOptions, productOptions)
+                    .find(findOptions, productOptions)
                     .sort(sortOptions)
                     .skip(skip)
                     .limit(limit)
@@ -76,7 +80,7 @@ var ProductHandler = function () {
                     });
             }
         ], function(err, result) {
-            var amount   = result[0];
+            var amount   = result[0] || 0;
             var products = result[1];
 
             if (err) {
@@ -84,130 +88,51 @@ var ProductHandler = function () {
                 return next(err);
             }
 
-            products[0]        = products[0] || {};
-            products[0].amount = amount      || 0;
+            // define first element and add amount of products in its prop
+            products[0] = products[0] || { };
+            products[0].amount = amount;
 
             res.status(200).send(products);
         });
     };
 
-    this.fetchByIdWithComments = function (req, res, next) {
-        var productId = req.params.id;
-        var error;
-
-        if (productId && validator.isMongoId(productId)) {
-            ProductModel
-                .aggregate(
-                    [{
-                        $match: {_id: ObjectId(productId)}
-                    }, {
-                        '$unwind': '$comments'
-                    }, {
-                        '$lookup': {
-                            from: 'comments',
-                            foreignField: '_id',
-                            localField: 'comments',
-                            as: 'comments'
-                        }
-                    }, {
-                        '$project': {
-                            _id: 1,
-                            title: 1,
-                            price: 1,
-                            brand: 1,
-                            productCode: 1,
-                            description: 1,
-                            mainImage: 1,
-                            searchImage: 1,
-                            detailImages: 1,
-                            comments: {$arrayElemAt: ['$comments', 0]}
-                        }
-                    }, {
-                        $group: {
-                            _id: {
-                                _id: '$_id',
-                                title: '$title',
-                                price: '$price',
-                                brand: '$brand',
-                                searchImage: '$searchImage',
-                                mainImage: '$mainImage',
-                                description: '$description',
-                                productCode: '$productCode',
-                                detailImages: '$detailImages'
-                            },
-                            comments: {
-                                $push: {
-                                    _id: '$comments._id',
-                                    user: '$comments.user',
-                                    text: '$comments.text',
-                                    postedDate: '$comments.postedDate',
-                                    authorName: '$comments.authorName'
-                                }
-                            }
-                        }
-                    }, {
-                        $project: {
-                            _id: '$_id._id',
-                            title: '$_id.title',
-                            price: '$_id.price',
-                            brand: '$_id.brand',
-                            description: '$_id.description',
-                            searchImage: '$_id.searchImage',
-                            mainImage: '$_id.mainImage',
-                            productCode: '$_id.productCode',
-                            comments: 1
-                        }
-                    }])
-                .exec(function (err, product) {
-                    if (err) {
-
-                        return next(err);
-                    }
-
-                    if (product) {
-
-                        res.status(200).send(product[0]);
-                    } else {
-
-                        res.status(200).send({fail: 'Not found such product'});
-                    }
-                });
-        } else {
-            error = new Error('Bad request');
-            error.status = 400;
-
-            return next(error);
-        }
-    };
-
     this.fetchById = function (req, res, next) {
         var productId = req.params.id;
-        var error;
+        var productOptions;
 
-        if (productId && validator.isMongoId(productId)) {
-            ProductModel
-                .findOne({_id: ObjectId(productId)})
-                .populate('comments')
-                .exec(function (err, product) {
+        if (!validator.isId(productId)) {
+
+            return res.status(401).send({ fail: 'Bad request' });
+        }
+
+        // define necessary product props for rendering
+        productOptions = {
+            _id        : 1,
+            brand      : 1,
+            price      : 1,
+            comments   : 1,
+            mainImage  : 1,
+            description: 1,
+            productCode: 1
+        };
+
+        ProductModel
+            .findOne({ _id: ObjectId(productId) }, productOptions)
+            .populate('comments')
+            .lean()
+            .exec(function (err, product) {
                     if (err) {
 
                         return next(err);
                     }
 
-                    if (product) {
+                    if (!product) {
 
-                        res.status(200).send(product);
-                    } else {
-
-                        res.status(200).send({fail: 'Not found such product'});
+                        return res.status(401).send({ fail: 'Not found such product' });
                     }
-                });
-        } else {
-            error = new Error('Bad request');
-            error.status = 400;
 
-            return next(error);
-        }
+                    res.status(200).send(product);
+                });
     };
 
     this.create = function (req, res, next) {

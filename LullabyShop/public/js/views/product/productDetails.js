@@ -1,29 +1,31 @@
 'use strict';
 
 define([
+    'moment',
     'backbone',
+    'validator',
     'underscore',
     'models/product',
     'models/comment',
     'text!templates/product/productDetails.html'
-], function (Backbone, _, ProductModel, CommentModel, productDetailsTemplate) {
-    var View = Backbone.View.extend({
+], function (moment, Backbone, validator, _, ProductModel, CommentModel, productDetailsTemplate) {
+
+   return Backbone.View.extend({
         el      : "#products",
         template: _.template(productDetailsTemplate),
 
         initialize: function (productId) {
             var self = this;
-            var product;
-
-            product = new ProductModel({_id: productId});
-            product.fetch({
-                success: function (model) {
-                    self.model = model.attributes;
-                    self.render();
-                },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
-                }
+      
+            new ProductModel({ _id: productId })
+                .fetch({
+                    success: function (model) {
+                        self.model = model.attributes;
+                        self.render();
+                    },
+                    error: function (err, xhr) {
+                        APP.handleError(xhr);
+                    }
             });
         },
 
@@ -44,48 +46,48 @@ define([
 
         onLeaveComment: function (e) {
             var self = this;
-            var commentText;
-            var productId;
-            var username;
-            var options;
-            var comment;
+            var $comment = this.$el.find('#comment');
+            var authorName;
+            var text;
+            var error;
+            var data;
 
             e.stopPropagation();
             e.preventDefault();
 
-            commentText = this.$el.find('#comment').val();
-            this.$el.find('#comment').val('');
+            text = $comment.val();
 
-            if (!commentText && commentText.trim().length) {
+            // validate comment
+            if (error = validator.isComment(text)) {
 
-                return alert('Please provide comment text');
+                return APP.showWarningAlert(error);
             }
 
-            username = localStorage.getItem('userFirstname');
+            authorName = APP.session.username;
 
-            productId = this.model._id;
-
-            options = {
-                commentText: commentText,
-                productId  : productId,
-                username   : username
+            data = {
+                text      : text,
+                productId : this.model._id,
+                authorName: authorName
             };
 
-            comment = new CommentModel();
-            comment.save(options, {
-                success: function () {
-                    // add comment to product page by jQuery
-                    self.$('#userComment').before(
-                        '<div class="col-md-12">' +
-                            username +
-                            '<span class="pull-right">today</span>' +
-                            '<p>' + commentText + '</p><hr>' +
-                        '</div>'
-                    );
-                },
-                error: function (err, xhr) {
-                    alert(xhr.statusText);
-                }
+            new CommentModel()
+                .save(data, {
+                    success: function () {
+                        // clean comment's text area field
+                        $comment;
+
+                        // add comment to product page by jQuery
+                        self.$('#userComment').before(
+                            '<div class="col-md-12">' + authorName +
+                                '<span class="pull-right">today</span>' +
+                                '<p>' + text + '</p><hr>' +
+                            '</div>'
+                        );
+                    },
+                    error: function (err, xhr) {
+                        APP.handleError(xhr);
+                    }
             });
         },
 
@@ -134,11 +136,12 @@ define([
         },
 
         render: function () {
-            this.$el.html(this.template({product: this.model}));
+            this.$el.html(this.template({
+                product: this.model,
+                moment : moment
+            }));
 
             return this;
         }
     });
-
-    return View;
 });

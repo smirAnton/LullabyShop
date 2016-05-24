@@ -13,100 +13,87 @@ define([
         el      : "#products",
         template: _.template(productListTemplate),
 
-        initialize: function (options) {
-            var self    = this;
-            var options = options || { };
-
-            console.log(options);
+        initialize: function (data) {
+            var self = this;
+            var data = data || { };
 
             // pagination params
-            this.id     = options.id     || undefined;
-            this.page   = options.page   || 1;
-            this.sort   = options.sort   || undefined;
-            this.search = options.search || undefined;
+            this.page   = data.page   || 1;
+            this.sort   = data.sort   || undefined;
+            this.filter = data.filter || undefined;
+            this.title  = data.title  || undefined;
+            this.search = data.search || undefined;
 
-            // get all categories titles and ids
-            $.ajax({
-                type       : 'GET',
-                url        : 'lullaby/category',
-                dataType   : 'json',
-                contentType: "application/json",
-                success    : function (categories) {
-                    self.categories = categories;
-
-                    // get products
-                    self.collection = new Collection({
-                        reset: true,
-                        data : {
-                            search: self.search,
-                            page  : self.page,
-                            sort  : self.sort,
-                            id    : self.id }
-                    });
-
-                    self.collection.on('sync', function() { self.render() }, self.collection);
-                    self.collection.on('sort', function() { self.render() }, self.collection);
-                },
-                error      : function (err) {
-                    APP.handleError(err);
-                }
+            // get products
+            self.collection = new Collection({
+                reset: true,
+                data : {
+                    search: self.search,
+                    filter: self.filter,
+                    title : self.title,
+                    page  : self.page,
+                    sort  : self.sort }
             });
+
+            // subscribe on sync and sort events
+            self.collection.on('sync', function() { self.render() }, self.collection);
+            self.collection.on('sort', function() { self.render() }, self.collection);
+
+            // subscribe on select category event
+            APP.channel.on('selectedCategory', self.onSelectCategory, self);
+
+            // subscribe on select global sort event
+            APP.channel.on('selectGlobalSort', self.onSelectGlobalSort, self);
+
+            // subscribe on select filters event
+            APP.channel.on('selectedFilter', self.onSelectFilters, self);
         },
 
         events: {
-            'click #glSortByPriceBtn': 'onGlobalSortByPrice',
-            'click #glSortByTitleBtn': 'onGlobalSortByTitle',
-            'click #glSortByDateBtn' : 'onGlobalSortByDate',
-            'click #sortByPriceBtn'  : 'onSortByPrice',
-            'click #sortByTitleBtn'  : 'onSortByTitle',
-            'click #sortByDateBtn'   : 'onSortByDate',
-            'click #addProductBtn'   : 'onAddProduct',
-            'click #goToPageBtn'     : 'onGoToPage',
-            'click #nextPageBtn'     : 'onNextPage',
-            'click #prevPageBtn'     : 'onPrevPage'
+            'click #selectCategoryBtn': 'onSelectCategory',
+            'click .selectPageSort'   : 'onSelectPageSort',
+            'click #addProductBtn'    : 'onAddProduct',
+            'click #goToPageBtn'      : 'onGoToPage',
+            'click #nextPageBtn'      : 'onNextPage',
+            'click #prevPageBtn'      : 'onPrevPage'
         },
 
-        onGlobalSortByPrice: function (e) {
-            e.preventDefault();
-
-            this.collection.globalSortByField('price');
+        onSelectCategory: function (data) {
+            this.collection.fetchCategoryProducts(data.categoryId)
         },
 
-        onGlobalSortByTitle: function (e) {
-            e.preventDefault();
-
-            this.collection.globalSortByField('title');
+        onSelectGlobalSort: function (data) {
+            this.collection.globalSortByField(data.sortParam);
         },
 
-        onGlobalSortByDate: function (e) {
-            e.preventDefault();
+        onSelectFilters: function (data) {
+            var filter = JSON.parse(data.filter);
+            var index = filter.length - 1;
+            var filterParams = '';
 
-            this.collection.globalSortByField('createdDate');
+            for (; index >=0; index -= 1) {
+                filterParams += filter[index];
+
+                if (index !== 0) {
+                    filterParams += '&';
+                }
+            }
+
+            this.collection.fetchFilteredProducts(filterParams);
         },
 
-        onSortByPrice: function(e) {
+        onSelectPageSort: function(e) {
+            var sortParam = this.$el.find(e.target).data('id');
+
             e.preventDefault();
 
-            this.collection.sortByField('price');
-        },
-
-        onSortByDate: function(e) {
-            e.preventDefault();
-
-            this.collection.sortByField('createdDate');
-        },
-
-        onSortByTitle: function(e) {
-            e.preventDefault();
-
-            this.collection.sortByField('title');
+            this.collection.sortByField(sortParam);
         },
 
         onAddProduct: function(e) {
             var productId = this.$el.find(e.currentTarget).data("id");
             var product   = this.collection.get(productId);
 
-            console.log(productId)
             e.stopPropagation();
             e.preventDefault();
 
@@ -139,7 +126,7 @@ define([
         },
 
         onGoToPage: function(e) {
-            var pageNumber = this.$el.find(e.currentTarget).data("id");
+            var pageNumber = this.$el.find(e.target).data("id");
 
             e.preventDefault();
 
@@ -152,7 +139,6 @@ define([
                 categories   : this.categories,
                 countPages   : this.collection.countPages,
                 countProducts: this.collection.countProducts,
-                // function to chunk array
                 helper       : helper})
             );
 

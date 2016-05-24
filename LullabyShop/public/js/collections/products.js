@@ -1,10 +1,9 @@
 'use strict';
 
 define([
-    'constant',
     'backbone',
     'models/product'
-], function(constant, Backbone, ProductModel){
+], function(Backbone, ProductModel){
 
     return Backbone.Collection.extend({
         url    : '/lullaby/product',
@@ -24,14 +23,26 @@ define([
         initialize: function(options){
             var self    = this;
             var options = options || { };
+            var data;
 
-            this.count     = constant.pagination.PRODUCTS_PER_PAGE;
+            this.count     = 12; // amount of products per page
+            this.id        = options.data.title  || undefined;
             this.page      = options.data.page   || 1;
-            this.id        = options.data.id     || undefined;
+            this.filter    = options.data.filter || undefined;
             this.search    = options.data.search || undefined;
             this.sortParam = options.data.sort   || undefined;
 
-            this.fetchData(this.page, this.count, this.sortParam, this.search, this.id, {
+            // define query
+            data = {
+                id    : this.id,
+                page  : this.page,
+                sort  : this.sortParam,
+                count : this.count,
+                search: this.search,
+                filter: this.filter
+            };
+
+            this.fetchData(data, {
                 success: function (response) {
                     self.countProducts = response.toJSON()[0].amount;
                     self.countPages    = Math.ceil(self.countProducts / self.count);
@@ -42,7 +53,7 @@ define([
             });
         },
 
-        fetchData: function (page, count, sort, search, id, options) {
+        fetchData: function (data, options) {
             var success = (options && options.success) || function () {};
             var error   = (options && options.error)   || function () {};
 
@@ -56,13 +67,7 @@ define([
 
             this.fetch({
                 reset  : true,
-                data   : {
-                    id    : id,
-                    page  : page,
-                    sort  : sort,
-                    count : count,
-                    search: search
-                },
+                data   : data,
                 success: success,
                 error  : error
             });
@@ -72,9 +77,17 @@ define([
             var self = this;
             var page = parseInt(this.page) + 1;
             var nextPage = page > this.countPages ? this.countPages : page;
+            var data = {
+                id    : this.id,
+                page  : nextPage,
+                sort  : this.sortParam,
+                count : this.count,
+                search: this.search,
+                filter: this.filter
+            };
 
             this.changeUrl(nextPage);
-            this.fetchData(nextPage, this.count, this.sortParam, this.search, this.id, {
+            this.fetchData(data, {
                 success: function () {
                     self.page = nextPage;
                 },
@@ -87,9 +100,17 @@ define([
         prevPage: function(){
             var self = this;
             var prevPage = parseInt(this.page) - 1 || 1;
+            var data = {
+                id    : this.id,
+                page  : prevPage,
+                sort  : this.sortParam,
+                count : this.count,
+                search: this.search,
+                filter: this.filter
+            };
 
             this.changeUrl(prevPage);
-            this.fetchData(prevPage, this.count, this.sortParam, this.search, this.id, {
+            this.fetchData(data, {
                 success: function () {
                     self.page = prevPage;
                 },
@@ -101,9 +122,17 @@ define([
 
         goToPage: function(page){
             var self = this;
+            var data = {
+                id    : this.id,
+                page  : page,
+                sort  : this.sortParam,
+                count : this.count,
+                search: this.search,
+                filter: this.filter
+            };
 
             this.changeUrl(page);
-            this.fetchData(page, this.count, this.sortParam, this.search, this.id, {
+            this.fetchData(data, {
                 success: function () {
                     self.page = page;
                 },
@@ -114,12 +143,87 @@ define([
         },
         
         globalSortByField: function (sortParam) {
+            var data;
             this.page = 1;
             this.sortParam = sortParam;
 
+            data = {
+                id    : this.id,
+                page  : this.page,
+                sort  : this.sortParam,
+                count : this.count,
+                search: this.search,
+                filter: this.filter
+            };
+
             this.changeUrl(this.page);
-            this.fetchData(this.page, this.count, this.sortParam, this.search, this.id, {
+            this.fetchData(data, {
                 success: function () { },
+                error  : function (err, xhr) {
+                    APP.handleError(xhr);
+                }
+            });
+        },
+
+        fetchCategoryProducts: function (id) {
+            var self = this;
+            var data;
+
+            this.id        = id;
+            this.page      = 1;
+            this.search    = undefined;
+            this.filter    = undefined;
+            this.sortParam = undefined;
+
+            data = {
+                id    : this.id,
+                page  : this.page,
+                sort  : this.sortParam,
+                count : this.count,
+                search: this.search,
+                filter: this.filter
+            };
+
+            this.changeUrl(this.page);
+
+            this.fetchData(data, {
+                success: function (response) {
+                    self.countProducts = response.toJSON()[0].amount;
+                    self.countPages    = Math.ceil(self.countProducts / self.count);
+                },
+                error  : function (err, xhr) {
+                    APP.handleError(xhr);
+                }
+            });
+        },
+
+        fetchFilteredProducts: function (filterParams) {
+            var self = this;
+            var data;
+            
+            // define query params
+            this.page      = 1;
+            this.filter    = filterParams;
+            this.id        = undefined;
+            this.search    = undefined;
+            this.sortParam = undefined;
+
+            data = {
+                id    : this.id,
+                page  : this.page,
+                sort  : this.sortParam,
+                count : this.count,
+                search: this.search,
+                filter: this.filter
+            };
+
+            this.changeUrl(this.page);
+
+            this.fetchData(data, {
+                success: function (response) {
+                    self.countProducts = response.toJSON()[0].amount;
+                    self.countPages    = Math.ceil(self.countProducts / self.count);
+                },
                 error  : function (err, xhr) {
                     APP.handleError(xhr);
                 }
@@ -130,18 +234,22 @@ define([
             var navigateUrl = '#lullaby/shop';
 
             if (this.id) {
-                navigateUrl = navigateUrl + '/id=' + this.id;
+                navigateUrl += '/id=' + this.id;
+            }
+
+            if (this.filter) {
+                navigateUrl += '/f=' + this.filter;
             }
 
             if (this.sortParam) {
-                navigateUrl = navigateUrl + '/s=' + this.sortParam;
+                navigateUrl += '/s=' + this.sortParam;
             }
 
             if (this.search) {
-                navigateUrl = navigateUrl + '/search=' + this.search;
+                navigateUrl += '/search=' + this.search;
             }
 
-            navigateUrl = navigateUrl + '/p=' + page;
+            navigateUrl += '/p=' + page;
             // change url
             Backbone.history.navigate(navigateUrl);
         }

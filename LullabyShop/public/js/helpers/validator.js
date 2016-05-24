@@ -72,6 +72,13 @@ define(['underscore'],
             return value && !_.isNaN(parseInt(value)) && value < 0
         }
 
+        function isComment(comment) {
+            if (!comment && comment.trim().length) {
+
+                return 'Please, provide comment';
+            }
+        }
+
 
         return {
             isMatchedPasswords: isMatchedPasswords,
@@ -79,6 +86,7 @@ define(['underscore'],
             isPhoneSecret     : isPhoneSecret,
             isBirthday        : isBirthday,
             isPassword        : isPassword,
+            isComment         : isComment,
             isMobile          : isMobile,
             isEmail           : isEmail,
             isImage           : isImage

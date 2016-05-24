@@ -1,44 +1,5 @@
 <div class="container">
 
-    <!-- Category filters and sorting stuff -->
-    <div class="women_main">
-        <div class="col-md-3 s-d">
-            <div class="w_sidebar">
-                <div class="w_nav1">
-
-                    <!-- Global products sort area -->
-                    <h4>Sort products by</h4>
-                    <ul>
-                        <!--<li><a href="javascript:;" id="glSortByTitleBtn">TITLE</a></li>-->
-                        <li><a href="javascript:;" id="glSortByTitleBtn">TITLE</a></li>
-                        <li><a href="javascript:;" id="glSortByPriceBtn">PRICE</a></li>
-                        <li><a href="javascript:;" id="glSortByDateBtn">DATE</a></li>
-                    </ul>
-                </div>
-
-                <!-- Filters by categories area -->
-                <section class="sky-form">
-                    <h4>Filter by categories</h4>
-                    <div class="row1 scroll-pane">
-                        <div class="col col-4">
-                            <%
-                                var limit = categories.length;
-                                for (var index = 0; index < limit; index += 1) {
-                                    var category = categories[index];
-                            %>
-                            <label class="checkbox"><input type="checkbox" name="checkbox" value="<%= category._id %>"><i></i><%= category.title.toUpperCase() %></label>
-                            <% } %>
-                        </div>
-                    </div>
-                    <h1></h1>
-                    <div class="registration_form">
-                        <p style="text-align: center"><input type="submit" value="Make filter" id="filterBtn"></p>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </div>
-
     <!-- Products area -->
     <div class="col-md-9 w_content">
 
@@ -47,11 +8,9 @@
             <a href="javascript:;"><h4>Products - <span><%= countProducts %> items</span></h4></a>
             <ul class="w_nav">
                 <li>Sort :</li>
-                <li><a id="sortByDateBtn"  href="javascript:;">new </a></li>
-                |
-                <li><a id="sortByTitleBtn" href="javascript:;">title </a></li>
-                |
-                <li><a id="sortByPriceBtn" href="javascript:;">price: Low High </a></li>
+                <li><a href="javascript:;" class="selectPageSort" data-id="createdDate">new </a></li>  |
+                <li><a href="javascript:;" class="selectPageSort" data-id="title">title </a></li>      |
+                <li><a href="javascript:;" class="selectPageSort" data-id="price">price: Low High </a></li>
             </ul>
             <div class="clearfix"></div>
         </div>

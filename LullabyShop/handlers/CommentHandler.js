@@ -71,33 +71,22 @@ var CommentHandler = function () {
     };
 
     this.create = function (req, res, next) {
-        var options     = {};
-        var session     = req.session      || {};
-        var body        = req.body         || {};
-        var userId      = session.userId;
-        var authorName  = body.username;
-        var productId   = body.productId;
-        var commentText = body.commentText;
+        var session = req.session || {};
+        var body    = req.body    || {};
+        var userId  = session.userId;
+        var data    = {};
         var comment;
 
-        if (!validator.isFirstname(authorName)    ||
-            !validator.isEmptyString(commentText) ||
-            !validator.isId(productId)) {
+        if (!validator.isFirstname(body.authorName) ||
+            !validator.isEmptyString(body.text)  ||
+            !validator.isId(body.productId)) {
 
-            return res.status(422).send({fail: 'Wrong incoming data'});
+            return res.status(400).send({fail: 'Wrong incoming data'});
         }
 
-        options = {
-            authorName: authorName,
-            product   : productId,
-            text      : commentText
-        };
+        body.user = session.userId;
 
-        if (validator.isId(userId)) {
-            options.user = userId;
-        }
-
-        comment = new CommentModel(options);
+        comment = new CommentModel(body);
 
         async.parallel([
                 function (callback) {
@@ -107,7 +96,7 @@ var CommentHandler = function () {
                 },
                 function (callback) {
                     ProductModel
-                        .findByIdAndUpdate(productId, {$push: {comments: comment._id}})
+                        .findByIdAndUpdate(body.productId, {$push: {comments: comment._id}})
                         .exec(function (err, category) {
                             return callback(err, category);
                         });

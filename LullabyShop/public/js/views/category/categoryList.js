@@ -3,13 +3,13 @@
 define([
     'backbone',
     'underscore',
-    'models/category',
     'collections/categories',
     'text!templates/category/categoryList.html'
-], function (Backbone, _, CategoryModel, Collection, categoriesTemplate) {
-    var View = Backbone.View.extend({
+], function (Backbone, _, Collection, categoryListTemplate) {
+
+    return Backbone.View.extend({
         el      : "#categories",
-        template: _.template(categoriesTemplate),
+        template: _.template(categoryListTemplate),
 
         initialize: function () {
             var self = this;
@@ -19,64 +19,53 @@ define([
                 success: function() {
                     self.render();
                 },
-                error: function (err, xhr) {
-                    APP.handleError(xhr);
+                error: function(err, xhr) {
+                    APP.handleError(xhr)
                 }
             });
         },
 
         events: {
-            'click #filterBtn'    : 'onFilter',
-            'click #selectCategoryBtn': 'onSelectCategory'
+            'click #selectCategoryBtn': 'onSelectCategory',
+            'click #selectFilterBtn'  : 'onSelectFilter',
+            'click .globalSort'       : 'onSelectGlobalSort'
         },
 
         onSelectCategory: function (e) {
-            var categoryId  = this.$el.find(e.currentTarget).data("id");
-            var navigateUrl = '#lullaby/shop/id=' + categoryId + '/p=1';
+            var categoryId = this.$el.find(e.currentTarget).data('id');
 
             e.preventDefault();
 
-            Backbone.history.navigate(navigateUrl);
+            APP.channel.trigger('selectedCategory', { categoryId: categoryId });
         },
 
-        onFilter: function(e) {
-            var selectedCategories;
-            var query = '';
-            var barrier;
-            var index;
+        onSelectFilter: function (e) {
+            var self = this.$el;
+            var selectedFilters = [ ];
 
-            e.stopPropagation();
             e.preventDefault();
 
-            selectedCategories = this.$el.find('input:checkbox:checked').map(function() {
-                return this.value;
-            }).get();
+            self.find('.checkbox input:checked').each(function() {
+                selectedFilters.push(self.find(this).val());
+            });
+            
+            APP.channel.trigger('selectedFilter', { filter: JSON.stringify(selectedFilters) });
+        },
 
-            if (!selectedCategories.length) {
+        onSelectGlobalSort: function (e) {
+            var sortParam = this.$el.find(e.target).data('id');
 
-                return alert('Please select categories');
-            }
+            e.preventDefault();
 
-            barrier = selectedCategories.length;
-            for(index = barrier - 1; index >= 0; index -= 1) {
-                query += selectedCategories[index];
-
-                if (index !== 0) {
-                    query += '&';
-                }
-            }
-
-            Backbone.history.navigate('#lullaby/categories/' + query, {trigger: true});
+            APP.channel.trigger('selectGlobalSort', { sortParam: sortParam })
         },
 
         render: function () {
             this.$el.html(this.template({
-                collection: this.collection.toJSON()})
+                collection: this.collection.toJSON() })
             );
 
             return this;
         }
     });
-
-    return View;
 });
