@@ -18,7 +18,7 @@ define([
                 url     : '/session',
                 dataType: 'json',
                 success : function(session){
-                    APP.session.basket   = session.basket   || [];
+                    APP.session.basket   = session.basket   || [ ];
                     APP.session.totalSum = session.totalSum || 0;
 
                     self.render();

@@ -73,42 +73,54 @@ var CommentHandler = function () {
     this.create = function (req, res, next) {
         var session = req.session || {};
         var body    = req.body    || {};
-        var userId  = session.userId;
-        var data    = {};
+        var text    = body.text;
+        var username = body.username;
+        var product = body.product;
+        var user  = session.userId || null;
+        var pushCommentOpt;
         var comment;
 
-        if (!validator.isFirstname(body.authorName) ||
-            !validator.isEmptyString(body.text)  ||
-            !validator.isId(body.productId)) {
+        if (!validator.isFirstname(username) ||
+            !validator.isText(text)        ||
+            !validator.isId(product)) {
 
             return res.status(400).send({fail: 'Wrong incoming data'});
         }
 
-        body.user = session.userId;
+        comment = new CommentModel({
+            username: username,
+            product : product,
+            user    : user,
+            text    : text
+        });
 
-        comment = new CommentModel(body);
+        pushCommentOpt = { $push: { comments: comment._id }};
 
         async.parallel([
                 function (callback) {
-                    comment.save(function (err, createdComment) {
-                        return callback(err, createdComment)
-                    });
+                    comment
+                        .save(function (err, comment) {
+                            return callback(err, comment)
+                        });
                 },
                 function (callback) {
                     ProductModel
-                        .findByIdAndUpdate(body.productId, {$push: {comments: comment._id}})
-                        .exec(function (err, category) {
-                            return callback(err, category);
+                        .find({ _id: ObjectId(product) }, pushCommentOpt)
+                        .lean()
+                        .exec(function (err, product) {
+                            return callback(err, product);
                         });
                 },
                 function (callback) {
                     if (userId) {
                         UserModel
-                            .findByIdAndUpdate(userId, {$push: {comments: comment._id}})
+                            .find({ _id: ObjectId(userId) }, pushCommentOpt)
+                            .lean()
                             .exec(function (err, user) {
                                 return callback(err, user);
                             });
                     } else {
+
                         return callback(null);
                     }
                 }
@@ -117,7 +129,7 @@ var CommentHandler = function () {
 
                     return next(err);
                 }
-                res.status(201).send({success: 'Comment successfully created'});
+                res.status(201).send({ success: 'Comment successfully created' });
             });
     };
 

@@ -2,13 +2,12 @@
 
 define([
     'helper',
-    'constant',
     'backbone',
     'validator',
     'underscore',
     'collections/blogs',
     'text!templates/blog/blogList.html'
-], function (helper, constant, Backbone, validator, _, Collection, blogListTemplate) {
+], function (helper, Backbone, validator, _, Collection, blogListTemplate) {
 
     return Backbone.View.extend({
         el      : "#content",
@@ -16,9 +15,8 @@ define([
 
         initialize: function (pageNumber) {
             var self   = this;
-            this.page  = pageNumber;
-            // use default amount topics per page 4
-            this.count = constant.pagination.TOPICS_PER_PAGE;
+            this.page  = pageNumber || 1;
+            this.count = 4;
 
             this.collection = new Collection({
                 reset: true,
@@ -26,36 +24,21 @@ define([
             });
 
             this.collection.on('sync', function() { self.render() }, self.collection);
-            this.collection.on('sort', function() { self.render() }, self.collection);
         },
 
         events: {
-            'click a#sortByTitleBtn': 'onSortByTitle',
-            'click a#sortByDateBtn' : 'onSortByDate',
-            'click a#goToPageBtn'       : 'onGoToPage',
-            'click a#nextBtn'       : 'onNext',
-            'click a#prevBtn'       : 'onPrev'
+            'click a#nextPageBtn': 'onNextPage',
+            'click a#prevPageBtn': 'onPrevPage',
+            'click a#goToPageBtn': 'onGoToPage'
         },
 
-        onSortByDate: function(e) {
-            e.preventDefault();
-
-            this.collection.sortByField('postedDate');
-        },
-
-        onSortByTitle: function(e) {
-            e.preventDefault();
-
-            this.collection.sortByField('title');
-        },
-
-        onNext: function (e) {
+        onNextPage: function (e) {
             e.preventDefault();
 
             this.collection.nextPage();
         },
 
-        onPrev: function (e) {
+        onPrevPage: function (e) {
             e.preventDefault();
 
             this.collection.prevPage();
@@ -73,8 +56,7 @@ define([
             this.$el.html(this.template({
                 collection: this.collection.toJSON(),
                 countPages: this.collection.countPages,
-                helper    : helper
-            }));
+                helper    : helper }));
 
             return this;
         }

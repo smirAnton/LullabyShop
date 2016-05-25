@@ -25,21 +25,22 @@ define([
             var options = options || { };
             var data;
 
-            this.count     = 12; // amount of products per page
-            this.id        = options.data.title  || undefined;
-            this.page      = options.data.page   || 1;
-            this.filter    = options.data.filter || undefined;
-            this.search    = options.data.search || undefined;
-            this.sortParam = options.data.sort   || undefined;
+            this.count      = 12; // amount of products per page
+            this.page       = options.data.page || 1;
+            this.filter     = options.data.filter;
+            this.search     = options.data.search;
+            this.sortParam  = options.data.sort;
+            this.productId  = options.data.productId;
+            this.categoryId = options.data.categoryId;
 
-            // define query
             data = {
-                id    : this.id,
-                page  : this.page,
-                sort  : this.sortParam,
-                count : this.count,
-                search: this.search,
-                filter: this.filter
+                categoryId: this.categoryId,
+                productId : this.productId,
+                filter    : this.filter,
+                search    : this.search,
+                count     : this.count,
+                page      : this.page,
+                sort      : this.sortParam
             };
 
             this.fetchData(data, {
@@ -78,12 +79,12 @@ define([
             var page = parseInt(this.page) + 1;
             var nextPage = page > this.countPages ? this.countPages : page;
             var data = {
-                id    : this.id,
-                page  : nextPage,
-                sort  : this.sortParam,
-                count : this.count,
-                search: this.search,
-                filter: this.filter
+                categoryId: this.categoryId,
+                filter    : this.filter,
+                search    : this.search,
+                count     : this.count,
+                page      : nextPage,
+                sort      : this.sortParam
             };
 
             this.changeUrl(nextPage);
@@ -101,12 +102,12 @@ define([
             var self = this;
             var prevPage = parseInt(this.page) - 1 || 1;
             var data = {
-                id    : this.id,
-                page  : prevPage,
-                sort  : this.sortParam,
-                count : this.count,
-                search: this.search,
-                filter: this.filter
+                categoryId: this.categoryId,
+                filter    : this.filter,
+                search    : this.search,
+                count     : this.count,
+                page      : prevPage,
+                sort      : this.sortParam
             };
 
             this.changeUrl(prevPage);
@@ -123,12 +124,12 @@ define([
         goToPage: function(page){
             var self = this;
             var data = {
-                id    : this.id,
-                page  : page,
-                sort  : this.sortParam,
-                count : this.count,
-                search: this.search,
-                filter: this.filter
+                categoryId: this.categoryId,
+                filter    : this.filter,
+                search    : this.search,
+                count     : this.count,
+                page      : page,
+                sort      : this.sortParam
             };
 
             this.changeUrl(page);
@@ -148,12 +149,12 @@ define([
             this.sortParam = sortParam;
 
             data = {
-                id    : this.id,
-                page  : this.page,
-                sort  : this.sortParam,
-                count : this.count,
-                search: this.search,
-                filter: this.filter
+                categoryId: this.categoryId,
+                filter    : this.filter,
+                search    : this.search,
+                count     : this.count,
+                page      : this.page,
+                sort      : this.sortParam
             };
 
             this.changeUrl(this.page);
@@ -165,23 +166,24 @@ define([
             });
         },
 
-        fetchCategoryProducts: function (id) {
+        fetchCategoryProducts: function (categoryId) {
             var self = this;
             var data;
 
-            this.id        = id;
-            this.page      = 1;
-            this.search    = undefined;
-            this.filter    = undefined;
-            this.sortParam = undefined;
+            this.categoryId = categoryId;
+            this.productId  = undefined;
+            this.sortParam  = undefined;
+            this.filter     = undefined;
+            this.search     = undefined;
+            this.page       = 1;
 
             data = {
-                id    : this.id,
-                page  : this.page,
-                sort  : this.sortParam,
-                count : this.count,
-                search: this.search,
-                filter: this.filter
+                categoryId: this.categoryId,
+                filter    : this.filter,
+                search    : this.search,
+                count     : this.count,
+                page      : this.page,
+                sort      : this.sortParam
             };
 
             this.changeUrl(this.page);
@@ -202,19 +204,20 @@ define([
             var data;
             
             // define query params
-            this.page      = 1;
-            this.filter    = filterParams;
-            this.id        = undefined;
-            this.search    = undefined;
-            this.sortParam = undefined;
+            this.categoryId = undefined;
+            this.productId  = undefined;
+            this.sortParam  = undefined;
+            this.search     = undefined;
+            this.filter     = filterParams;
+            this.page       = 1;
 
             data = {
-                id    : this.id,
-                page  : this.page,
-                sort  : this.sortParam,
-                count : this.count,
-                search: this.search,
-                filter: this.filter
+                categoryId: this.categoryId,
+                filter    : this.filter,
+                search    : this.search,
+                count     : this.count,
+                page      : this.page,
+                sort      : this.sortParam
             };
 
             this.changeUrl(this.page);
@@ -230,11 +233,31 @@ define([
             });
         },
 
+        fetchProduct: function (productId) {
+            var self = this;
+
+            Backbone.history.navigate('#lullaby/shop/product=' + productId);
+
+            this.fetchData({ productId : productId }, {
+                success: function (response) {
+                    self.countProducts = response.toJSON()[0].amount;
+                    self.countPages    = Math.ceil(self.countProducts / self.count);
+                },
+                error  : function (err, xhr) {
+                    APP.handleError(xhr);
+                }
+            });
+        },
+
         changeUrl: function(page) {
             var navigateUrl = '#lullaby/shop';
 
-            if (this.id) {
-                navigateUrl += '/id=' + this.id;
+            if (this.categoryId) {
+                navigateUrl += '/category=' + this.categoryId;
+            }
+
+            if (this.productId) {
+                navigateUrl += '/product=' + this.productId;
             }
 
             if (this.filter) {

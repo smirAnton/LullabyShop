@@ -6,8 +6,8 @@ define([
     'collections/products',
     'views/search/search',
     'views/order/orderMenu',
-    'views/category/categoryList',
-    'views/product/productsList',
+    'views/category/category',
+    'product/product',
     'views/auth/authMenu',
     'text!templates/home.html'
 ], function (Backbone, _, ProductCollection, SearchView, OrderMenuView, CategoryListView, ProductListView, AuthMenuView, homeTemplate) {

@@ -18,7 +18,7 @@ var BlogHandler = function () {
         async.parallel([
             function(callback) {
                 BlogModel
-                    .find({}, {__v: 0})
+                    .find({ }, {__v: 0})
                     .lean()
                     .count(function (err, amount) {
 
@@ -27,7 +27,7 @@ var BlogHandler = function () {
             },
             function(callback) {
                 BlogModel
-                    .find({}, {__v: 0})
+                    .find({ }, {__v: 0})
                     .skip(skip)
                     .limit(limit)
                     .lean()

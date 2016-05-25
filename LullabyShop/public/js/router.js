@@ -12,7 +12,7 @@ define(['backbone'], function (Backbone) {
         routes: {
 
             // shop route
-            'lullaby/shop(/id=:id)(/f=:filter)(/search=:search)(/s=:sort)(/p=:page)': 'shop',
+            'lullaby/shop(/product:id)(/category=:id)(/f=:filter)(/search=:search)(/s=:sort)(/p=:page)': 'shop',
 
             'lullaby/main'            : 'main',
             'lullaby/help'            : 'help',
@@ -23,7 +23,6 @@ define(['backbone'], function (Backbone) {
             'lullaby/contacts'        : 'contacts',
             'lullaby/checkout'        : 'checkout',
             'lullaby/blog/:id'        : 'blogDetails',
-            'lullaby/product/:id'     : 'productDetails',
             'lullaby/blog(/p=:page)'  : 'blogList',
 
             'lullaby/activate/:secret': 'activate',
@@ -55,14 +54,15 @@ define(['backbone'], function (Backbone) {
             }
         },
 
-        shop: function (id, filter, search, sort, page) {
+        shop: function (productId, categoryId, filter, search, sort, page) {
             var self = this;
             var data = {
-                id    : id,
-                sort  : sort,
-                page  : page,
-                filter: filter,
-                search: search
+                categoryId: categoryId,
+                productId : productId,
+                search    : search,
+                filter    : filter,
+                sort      : sort,
+                page      : page
             };
 
             if (!APP.mainView) {
@@ -76,8 +76,9 @@ define(['backbone'], function (Backbone) {
                         self.view.undelegateEvents();
                     }
                     // unsubscribe from events
-                    APP.channel.off('selectedCategory');
-                    APP.channel.off('selectGlobalSortEvent');
+                    APP.channel.off('selectGlobalSort');
+                    APP.channel.off('selectCategory');
+                    APP.channel.off('selectFilter');
 
                     APP.homeView = self.view = new View(data);
                 });
@@ -246,24 +247,6 @@ define(['backbone'], function (Backbone) {
 
                     self.view = new BlogDetailsView(blogId);
                 })
-            }
-        },
-
-        productDetails: function (id) {
-            var self = this;
-
-            if (!APP.homeView) {
-                APP.nextView = Backbone.history.fragment;
-                Backbone.history.navigate('#lullaby/shop', {trigger: true});
-
-            } else {
-                require(['views/product/productDetails'], function (View) {
-                    if (self.homeView) {
-                        self.homeView.undelegateEvents();
-                    }
-
-                    self.homeView = new View(id);
-                });
             }
         },
 

@@ -9,8 +9,13 @@ module.exports = function (module) {
         return str && (typeof str === 'string') && str.trim().length;
     }
 
-    function isFirstname(firstname) {
-        return isEmptyString(firstname);
+    function isText(text) {
+        return text && (typeof text === 'string') && text.trim().length;
+    }
+
+
+    function isFirstname(name) {
+        return isEmptyString(name);
     }
 
     function isSurname(surname) {
@@ -80,6 +85,7 @@ module.exports = function (module) {
         isStreet     : isStreet,
         isEmail      : isEmail,
         isPhone      : isPhone,
+        isText       : isText,
         isCity       : isCity,
         isId         : isId
     }

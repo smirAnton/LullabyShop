@@ -5,11 +5,11 @@ define([
     'underscore',
     'collections/categories',
     'text!templates/category/categoryList.html'
-], function (Backbone, _, Collection, categoryListTemplate) {
+], function (Backbone, _, Collection, categoryTemplate) {
 
     return Backbone.View.extend({
         el      : "#categories",
-        template: _.template(categoryListTemplate),
+        template: _.template(categoryTemplate),
 
         initialize: function () {
             var self = this;
@@ -26,17 +26,25 @@ define([
         },
 
         events: {
-            'click #selectCategoryBtn': 'onSelectCategory',
-            'click #selectFilterBtn'  : 'onSelectFilter',
-            'click .globalSort'       : 'onSelectGlobalSort'
+            'click .selectGlobalSortBtn': 'onSelectGlobalSort',
+            'click #selectCategoryBtn'  : 'onSelectCategory',
+            'click #selectFilterBtn'    : 'onSelectFilter'
+        },
+
+        onSelectGlobalSort: function (e) {
+            e.preventDefault();
+
+            APP.channel.trigger('selectGlobalSort', {
+                sortParam: this.$el.find(e.target).data('id')
+            })
         },
 
         onSelectCategory: function (e) {
-            var categoryId = this.$el.find(e.currentTarget).data('id');
-
             e.preventDefault();
 
-            APP.channel.trigger('selectedCategory', { categoryId: categoryId });
+            APP.channel.trigger('selectCategory', {
+                categoryId: this.$el.find(e.currentTarget).data('id')
+            });
         },
 
         onSelectFilter: function (e) {
@@ -49,21 +57,11 @@ define([
                 selectedFilters.push(self.find(this).val());
             });
             
-            APP.channel.trigger('selectedFilter', { filter: JSON.stringify(selectedFilters) });
-        },
-
-        onSelectGlobalSort: function (e) {
-            var sortParam = this.$el.find(e.target).data('id');
-
-            e.preventDefault();
-
-            APP.channel.trigger('selectGlobalSort', { sortParam: sortParam })
+            APP.channel.trigger('selectFilter', { filter: JSON.stringify(selectedFilters) });
         },
 
         render: function () {
-            this.$el.html(this.template({
-                collection: this.collection.toJSON() })
-            );
+            this.$el.html(this.template({ collection: this.collection.toJSON() }));
 
             return this;
         }

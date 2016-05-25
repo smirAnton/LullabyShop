@@ -4,7 +4,7 @@ define([
     'backbone',
     'underscore',
     'collections/products',
-    'views/product/productsList',
+    '../product/product',
     'text!templates/search/search.html'
 ], function (Backbone, _, Collection, ProductsListView, searchTemplate) {
     var View = Backbone.View.extend({

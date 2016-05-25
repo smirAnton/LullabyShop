@@ -22,8 +22,8 @@ var ProductHandler = function () {
         var filter;
 
         // if user select category
-        if (query.id) {
-            findOptions.category = ObjectId(query.id);
+        if (query.categoryId) {
+            findOptions.category = ObjectId(query.categoryId);
         }
 
         // if user used filters (select several categories)
